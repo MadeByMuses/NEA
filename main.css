@@ -1,0 +1,294 @@
+
+/* Make it all pixel font*/
+*{
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Start Blocker */
+#StartBlocker {
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#StartBlocker h1{
+    text-align: center;
+    font-size: 200px;
+}
+.StartBlockerInfo{
+    padding: 0.25em;
+    outline: 5px dotted white;
+}
+.StartBlockerButtons{
+    padding-top: 7.5vh;
+    width: 153px;
+    margin: auto;
+}
+#StartBlocker div p{
+    text-align: center;
+    font-size: 2em;
+}
+
+/* Make sure the popup is centre*/
+#Form{
+    position: absolute !important;
+    top: 0;
+    left:0;
+    color: black;
+    transform: translate(calc(50vw - 175px), calc(50vh - 250px));
+}
+
+/* Scary colour*/
+#FormWarning{
+    color:red;
+}
+
+/* Makes it the 98 aesthtics*/
+body {
+    background-color: #008080;
+}
+
+/*Used for the transition to OS*/
+#StartBlockerTransitionBlocker{
+    background-color: #00000000;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+@keyframes FadeToBlack {
+    from {
+        background-color: #00000000;
+    }
+    to{
+        background-color: black;
+    }
+}
+
+/*OS*/
+#OS{
+    top:0;
+    left:0;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    color:white;
+    z-index: 10;
+}
+#OSimg{
+    margin-top: 17.5vh;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20vw;
+}
+#OS h1{
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1ch;
+}
+p {
+    font-size: 14px;
+}
+.OSSpinner{
+    height: 1em;
+    vertical-align: middle;
+    animation: Spin 1.2s steps(6) infinite;
+}
+
+@keyframes Spin {
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
+@keyframes OS_Hide {
+    from{
+        transform: translate(0);
+    }
+    to{
+        transform: translate(0,-100vh);
+    }
+}
+
+#Taskbar{
+    width: 100vw;
+    position:fixed;
+    bottom:0;
+    left:0;
+}
+
+.DesktopGrid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+grid-template-rows: repeat(5, 1fr);
+grid-column-gap: 10px;
+grid-row-gap: 10px;
+width: 100px;
+}
+
+.div1,
+.div2,
+.div3,
+.div4,
+.div5,
+.div6,
+.div7,
+.div8,
+.div9,
+.div10,
+.div11,
+.div12,
+.div13,
+.div14,
+.div15,
+.div16 {
+grid-area: auto;
+width: 8vw;
+text-align: center;
+}
+.div1 p,
+.div2 p,
+.div3 p,
+.div4 p,
+.div5 p,
+.div6 p,
+.div7 p,
+.div8 p,
+.div9 p,
+.div10 p,
+.div11 p,
+.div12 p,
+.div13 p,
+.div14 p,
+.div15 p,
+.div16 p {
+margin-top: 0%;
+}
+
+@media (max-width: 768px) {
+  .DesktopGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+  }
+
+  .div1,
+  .div2,
+  .div3,
+  .div4,
+  .div5,
+  .div6,
+  .div7,
+  .div8,
+  .div9,
+  .div10,
+  .div11,
+  .div12,
+  .div13,
+  .div14,
+  .div15,
+  .div16 {
+    grid-area: auto;
+  }
+}
+
+
+/*For some reason this just does not like to work if you group them underone statement and share the backgroundposition, and I just don't know why*/
+#icon1 {
+    margin-right:calc(4vw-32px);
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -0px -0px;
+}
+#icon2 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -64px -0px;
+}
+#icon3 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -128px -0px;
+}
+#icon4 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -192px -0px;
+}
+#icon5 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -0px -64px;
+}
+#icon6 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -64px -64px;
+}
+#icon7 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -128px -64px;
+}
+#icon8 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -192px -64px;
+}
+#icon9 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -0px -128px;
+}
+#icon10 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -64px -128px;
+}
+
+#icon11 {
+    background: url(sprite_sheet.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+    background-position: -128px -128px;
+}
+

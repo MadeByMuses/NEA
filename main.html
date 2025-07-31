@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Civis</title>
+        <!--Description-->
+        <meta name="description" content="The Web-based City Simulation Game">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!--Personalised CSS-->
+        <link rel="stylesheet" href="main.css">
+        <!-- 98.css -->
+        <link rel="stylesheet" href="https://unpkg.com/98.css">
+        <!-- Google fonts-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div id="StartBlocker">
+            <h1>Civis</h1>
+            <div class="StartBlockerInfo">
+                <p>Welcome to Civis, a web-based city development project!</p>
+                <p>Before starting the Simulation, please press <u>Load Progress</u> if you have a save file</p>
+                <p>If you do not then please press <u>New City</u></p>
+            </div>
+            <div class="StartBlockerButtons">
+                <button onclick="LoadFormPopup()">Load File</button>
+                <button onclick="NewFormPopup()">New City</button>
+            </div>
+            <!--Below is used in the transition to OS animation-->
+            <div id="StartBlockerTransitionBlocker"></div>
+        </div>
+        <!-- OS animation-->
+        <div id="OS" style="visibility: hidden;">
+            <div>
+                <img id="OSimg" src="OS_Image.png">
+            </div>
+            <h1>Loading - <img class="OSSpinner" src="OS_Spinner.png"></h1>
+        </div>
+        <div id="Desktop">
+            <div class="DesktopGrid">
+                <div class="div1"></div>
+                <div class="div3"><div id = "icon3"> </div><br><p>City Census</p></div>
+                <div class="div11"><div id = "icon11"> </div><br><p>Policies</p></div>
+                <div class="div2"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
+                <div class="div7"><div id = "icon7"> </div><br><p>Overview</p></div>
+                <div class="div9"><div id = "icon9"> </div><br><p>News</p></div>
+                <div class="div4"><div id = "icon4"> </div><br><p>Visualise city</p></div>
+                <div class="div6"><div id = "icon6"> </div><br><p>Docs</p></div>
+                <div class="div8"><div id = "icon8"> </div><br><p>News</p></div>
+                <div class="div10"><div id = "icon10"> </div><br><p>News</p></div>
+                <div class="div5"><div id = "icon5"> </div><br><p>Settings</p></div>
+            </div>
+        </div>
+        <!-- Blocker -->
+         <div class="window" id="Taskbar">
+            <div class="status-bar">
+                <p class="status-bar-field">Today's date is: </p>
+                <p class="status-bar-field">Population: _____</p>
+                <p class="status-bar-field">Revenue: _____</p>
+            </div>
+         </div>
+
+        <!--Scripts-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+        <script src="StartBlocker.js"></script>
+        <script src="SQLJS_Framework.js"></script>
+    </body>
+</html>
