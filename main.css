@@ -37,12 +37,17 @@
 }
 
 /* Make sure the popup is centre*/
-#Form{
+#Form, #OverviewWindow{
     position: absolute !important;
     top: 0;
     left:0;
     color: black;
+}
+#Form{
     transform: translate(calc(50vw - 175px), calc(50vh - 250px));
+}
+#OverviewWindow{
+    transform: translate(calc(75vw - 175px), calc(40vh - 250px));
 }
 
 /* Scary colour*/
@@ -133,7 +138,7 @@ p {
     left:0;
 }
 
-.DesktopGrid {
+.desktop-grid {
 display: grid;
 grid-template-columns: repeat(2, 1fr);
 grid-template-rows: repeat(5, 1fr);
@@ -142,71 +147,29 @@ grid-row-gap: 10px;
 width: 100px;
 }
 
-.div1,
-.div2,
-.div3,
-.div4,
-.div5,
-.div6,
-.div7,
-.div8,
-.div9,
-.div10,
-.div11,
-.div12,
-.div13,
-.div14,
-.div15,
-.div16 {
+.desktop-grid-div{
 grid-area: auto;
 width: 8vw;
 text-align: center;
 }
-.div1 p,
-.div2 p,
-.div3 p,
-.div4 p,
-.div5 p,
-.div6 p,
-.div7 p,
-.div8 p,
-.div9 p,
-.div10 p,
-.div11 p,
-.div12 p,
-.div13 p,
-.div14 p,
-.div15 p,
-.div16 p {
+.desktop-grid-div p{
 margin-top: 0%;
 }
 
-@media (max-width: 768px) {
-  .DesktopGrid {
+@media (max-width: 770px) {
+  .desktop-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: auto;
-    grid-column-gap: 5px;
-    grid-row-gap: 5px;
+    width: 100px;
   }
 
-  .div1,
-  .div2,
-  .div3,
-  .div4,
-  .div5,
-  .div6,
-  .div7,
-  .div8,
-  .div9,
-  .div10,
-  .div11,
-  .div12,
-  .div13,
-  .div14,
-  .div15,
-  .div16 {
+  .desktop-grid-div {
     grid-area: auto;
+    width:auto;
+  }
+  #OverviewWindow{
+    transform: translate(calc(50vw - 175px), calc(50vh - 250px));
   }
 }
 

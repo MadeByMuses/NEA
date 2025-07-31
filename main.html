@@ -39,24 +39,24 @@
             <h1>Loading - <img class="OSSpinner" src="OS_Spinner.png"></h1>
         </div>
         <div id="Desktop">
-            <div class="DesktopGrid">
-                <div class="div1"></div>
-                <div class="div3"><div id = "icon3"> </div><br><p>City Census</p></div>
-                <div class="div11"><div id = "icon11"> </div><br><p>Policies</p></div>
-                <div class="div2"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
-                <div class="div7"><div id = "icon7"> </div><br><p>Overview</p></div>
-                <div class="div9"><div id = "icon9"> </div><br><p>News</p></div>
-                <div class="div4"><div id = "icon4"> </div><br><p>Visualise city</p></div>
-                <div class="div6"><div id = "icon6"> </div><br><p>Docs</p></div>
-                <div class="div8"><div id = "icon8"> </div><br><p>News</p></div>
-                <div class="div10"><div id = "icon10"> </div><br><p>News</p></div>
-                <div class="div5"><div id = "icon5"> </div><br><p>Settings</p></div>
+            <div class="desktop-grid">
+                <div class="desktop-grid-div"><div id = "icon11"> </div><br><p>Policies</p></div>
+                <div class="desktop-grid-div"><div id = "icon3"> </div><br><p>City Census</p></div>
+                <div class="desktop-grid-div"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
+                <div class="desktop-grid-div"><br><p></p></div>
+                <div class="desktop-grid-div"><div id = "icon10"> </div><br><p>Public Sector</p></div>
+                <div class="desktop-grid-div"><div id = "icon8"> </div><br><p>Private Sector</p></div>
+                <div class="desktop-grid-div"><div id = "icon4"> </div><br><p>Visualise city</p></div>
+                <div class="desktop-grid-div"><div id = "icon9"> </div><br><p>News</p></div>
+                <div class="desktop-grid-div" onclick="Overview()"><div id = "icon7"> </div><br><p>Overview</p></div>
+                <div class="desktop-grid-div"><div id = "icon5"> </div><br><p>Settings</p></div>
+                <div class="desktop-grid-div"><div id = "icon6"> </div><br><p>Docs</p></div>
             </div>
         </div>
         <!-- Blocker -->
          <div class="window" id="Taskbar">
             <div class="status-bar">
-                <p class="status-bar-field">Today's date is: </p>
+                <p id="TaskbarDate"class="status-bar-field">Today's date is: </p>
                 <p class="status-bar-field">Population: _____</p>
                 <p class="status-bar-field">Revenue: _____</p>
             </div>
@@ -66,5 +66,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
         <script src="StartBlocker.js"></script>
         <script src="SQLJS_Framework.js"></script>
+        <script src="Desktop.js"></script>
     </body>
 </html>

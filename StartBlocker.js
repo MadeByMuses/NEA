@@ -1,14 +1,24 @@
+
 // ADAPTED FROM W3SCHOOLS - https://www.w3schools.com/howto/howto_js_draggable.asp
 
 // Make the DIV element draggable:
-function DragElement(elmnt) {
+function DragElement(element) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById(elmnt.id + "Header")) {
-    /* if present, the header is where you move the DIV from:*/
-    document.getElementById(elmnt.id + "Header").onmousedown = dragMouseDown;
-  } else {
-    /* otherwise, move the DIV from anywhere inside the DIV:*/
-    elmnt.onmousedown = dragMouseDown;
+
+  if (!element){
+    console.log("element does not exist")
+    return
+  }
+  else if(!element.id){
+    console.log("element "+ element +" does not have an id")
+    element.onmousedown = dragMouseDown;
+  }
+  else if (!(document.getElementById(element.id + "Header"))){
+    console.log("element "+ element + " does not have a Header id")
+    element.onmousedown = dragMouseDown;
+  }
+  else{
+    document.getElementById(element.id + "Header").onmousedown = dragMouseDown;
   }
 
   function dragMouseDown(e) {
@@ -31,8 +41,8 @@ function DragElement(elmnt) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    element.style.top = (element.offsetTop - pos2) + "px";
+    element.style.left = (element.offsetLeft - pos1) + "px";
   }
 
   function closeDragElement() {
@@ -43,11 +53,11 @@ function DragElement(elmnt) {
     //Check if the window is outside the viewport
 
     //Get boundary
-    let boundary = elmnt.getBoundingClientRect();
+    let boundary = element.getBoundingClientRect();
 
     //Is it pass the limits?
     if(boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
-      elmnt.remove(); //DEATH TO THE WINDOW
+      element.remove(); //DEATH TO THE WINDOW
     }
   }
 }
@@ -59,8 +69,7 @@ function NewFormPopup() {
   {
     document.getElementById('Form').remove() //DEATH TO THE WINDOW 💀
   }
-  //Add the window
-  document.getElementById('StartBlocker').innerHTML += `
+  WindowPopUp(`
   <div class="window" id="Form" style="width: 350px">
       <div class="title-bar" id="FormHeader">
           <div class="title-bar-text">Create City Form</div>
@@ -81,9 +90,7 @@ function NewFormPopup() {
           <p id ="FormWarning"></p>
       </div>
   </div>
-  `;
-  //Make sure you can drag it
-  DragElement(document.getElementById("Form"));
+  `,"Form","StartBlocker");
 }
 
 //Let's add the new to the database
@@ -93,6 +100,10 @@ async function NewFormPopupFinished() {
   console.log(CityName)
   if (!CityName) {
       document.getElementById("FormWarning").textContent = "PLEASE INSERT A CITY NAME BEFORE STARTING";
+      return;
+  }
+  if (CityName.length > 24){
+      document.getElementById("FormWarning").textContent = "PLEASE INSERT A CITY NAME LESS THAN 24 CHARACTERS";
       return;
   }
   await NewDB(CityName);
@@ -107,7 +118,7 @@ function LoadFormPopup() {
     document.getElementById('Form').remove() //DEATH TO THE WINDOW 💀
   }
   //Add the window
-  document.getElementById('StartBlocker').innerHTML += `
+  WindowPopUp(`
   <div class="window" id="Form" style="width: 350px">
       <div class="title-bar" id="FormHeader">
           <div class="title-bar-text">Create City Form</div>
@@ -125,9 +136,7 @@ function LoadFormPopup() {
           <p id ="FormWarning"></p>
       </div>
   </div>
-  `;
-  //Make sure you can drag it
-  DragElement(document.getElementById("Form"));
+  `,"Form","StartBlocker");
 }
 
 //Let's add the new to the database
@@ -152,7 +161,16 @@ async function StartUp(){
   document.getElementById("OS").style.visibility = "visible";
   //Remove StartBlocker
   document.getElementById("StartBlocker").remove();
-  await delay(3000);
+  await delay(500)
+  await PrepareDesktop;
   //Hide OS animation
   document.getElementById("OS").style.animation = "OS_Hide 1s ease-in forwards"
+}
+
+async function PrepareDesktop(){
+  if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770){
+    Overview()}
+  const gameDate = await GetGameDate();
+  document.getElementById("TaskbarDate").innerText = "Today's date is... " + gameDate;
+  return;
 }

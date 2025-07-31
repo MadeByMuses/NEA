@@ -1,3 +1,17 @@
+const debugMode = true
+
+async function main(){
+  if (debugMode){
+    document.getElementById("StartBlocker").style.visibility = "hidden"
+    await NewDB("Coolville")
+    await PrepareDesktop()
+  }
+}
+/*This has to be done to ensure that the other js files are loaded*/
+window.addEventListener('load', function() {
+  main()
+})
+
 //This needs to be global, as every script may need to use the database
 var db;
 
@@ -7,27 +21,27 @@ var db;
 // For script tag / CDN
 async function NewDB(CityName) {
   if (db){
-    console.error("Database is already exists");
+    console.error("Database already exists");
     return;
   }
-  initSqlJs({
+  const SQL = await initSqlJs({
   locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-  }).then(SQL => {
+  })
   db = new SQL.Database(); // Creates new empty DB
 
   // Run a query
 
   //City Database
-  db.run("CREATE TABLE City (CityID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, StartDate T, CurrentTurnNumber INT);");
+  db.run("CREATE TABLE City (CityID INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(24) NOT NULL, StartDate T, CurrentTurnNumber INT);");
   //Prepare the SQL
   const CITYSQL = db.prepare("INSERT INTO City (Name, StartDate, CurrentTurnNumber) VALUES (?,?,0);");
   //SQL Injection prevention
-  CITYSQL.run([CityName,new Date().toISOString()]);
+  CITYSQL.run([CityName, Date.now()]);
 
   PrintTable("City");
-  StartUp();
-  });
-  return;
+  if (!debugMode){
+    StartUp()
+  };
 }
 
 //EXPORT function
@@ -53,16 +67,17 @@ function ExportDB() {
 
 //CONSOLE PRINT function
 function PrintTable(tableName) {
+  console.log("The following is the current data in the table " + tableName)
     if (!db) {
     console.error("db is undefined, stop trying to run queries!");
     return;
     }
     //Get it all
-  const PRINTTABLESQL = db.prepare(`SELECT * FROM ${tableName}`);
+  const printTableSQL = db.prepare(`SELECT * FROM ${tableName}`);
   //Each row
-  while (PRINTTABLESQL.step()) {
+  while (printTableSQL.step()) {
     //log it 🪵
-    console.log(PRINTTABLESQL.getAsObject());
+    console.log(printTableSQL.getAsObject());
   } 
 }
 
@@ -88,4 +103,19 @@ function LoadDB(){
     <button onclick="StartUp()" style="margin-left:130px">Begin</button>`
   }
   reader.readAsArrayBuffer(file)})
+}
+
+function GetCityElement(attribute) {
+  console.log("Getting data in the city under the attribute: " + attribute)
+  const stmt = db.prepare("SELECT "+ attribute +" FROM City")
+  let result = null
+  if (stmt.step()){
+    result = stmt.getAsObject()[attribute]
+  }
+  return result
+};
+
+function GetGameDate(){
+  const gameDay = new Date(GetCityElement("CurrentTurnNumber") * (604800000) + GetCityElement("StartDate")); //604800000 is the amount of milliseconds in a week (1000*60*60*24*7)
+  return gameDay.getDate() + "/" + gameDay.getMonth() + "/" + gameDay.getFullYear()
 }
