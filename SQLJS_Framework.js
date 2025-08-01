@@ -1,10 +1,10 @@
-const debugMode = true
+const debugMode = false
 
 async function main(){
   if (debugMode){
     document.getElementById("StartBlocker").style.visibility = "hidden"
     await NewDB("Coolville")
-    await PrepareDesktop()
+    PrepareDesktop()
   }
 }
 /*This has to be done to ensure that the other js files are loaded*/
@@ -32,13 +32,19 @@ async function NewDB(CityName) {
   // Run a query
 
   //City Database
-  db.run("CREATE TABLE City (CityID INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(24) NOT NULL, StartDate T, CurrentTurnNumber INT);");
+  db.run("CREATE TABLE City (city_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(24) NOT NULL, start_date T NOT NULL, money_symbol CHAR);");
   //Prepare the SQL
-  const CITYSQL = db.prepare("INSERT INTO City (Name, StartDate, CurrentTurnNumber) VALUES (?,?,0);");
+  const CITYSQL = db.prepare("INSERT INTO City (name, start_date,money_symbol) VALUES (?,?,'$');");
   //SQL Injection prevention
   CITYSQL.run([CityName, Date.now()]);
 
+  db.run("CREATE TABLE City_Attribute (city_attribute_id INTEGER PRIMARY KEY AUTOINCREMENT, attribute_name VARCHAR(64), attribute_description VARCHAR(128), attribute_value FLOAT);")
+  db.run(`INSERT INTO City_Attribute (attribute_name, attribute_description, attribute_value) VALUES 
+    ("Current turn number","What is the current turn number for the game? Used for date calculations and recording events",0),
+    ("Population","How many people live in your town",0),
+    ("Current funds","How much money does the city own",0);`)
   PrintTable("City");
+  PrintTable("City_Attribute");
   if (!debugMode){
     StartUp()
   };
@@ -105,17 +111,36 @@ function LoadDB(){
   reader.readAsArrayBuffer(file)})
 }
 
-function GetCityElement(attribute) {
-  console.log("Getting data in the city under the attribute: " + attribute)
-  const stmt = db.prepare("SELECT "+ attribute +" FROM City")
+function GetDBElement(table,attribute,whereAttribute,whereAttributeValue) {
   let result = null
-  if (stmt.step()){
-    result = stmt.getAsObject()[attribute]
+  //This is mainly implemented for the city table since there will never need to be a where clause
+  if (whereAttribute === null || whereAttributeValue === null){
+    console.log("Getting data in the table " + table + " under the attribute: " + attribute)
+    const stmt = db.prepare("SELECT "+ attribute +" FROM " + table)
+    if (stmt.step()){
+      result = stmt.getAsObject()[attribute]
+    }
+    if (result == null){
+      console.log("There was no data in " + table + " that refers to " + attribute)
+    }
+  }
+  //
+  else{
+    console.log("Getting data in the " + table + " under the attribute: " + attribute + "; the data is also expecetd to have an attribute " + whereAttribute + " of " + whereAttributeValue)
+    const stmt = db.prepare("SELECT "+ attribute +" FROM " + table + " WHERE " + whereAttribute + " IS " + whereAttributeValue)
+    if (stmt.step()){
+      result = stmt.getAsObject()[attribute]
+    }
+    if (result == null){
+      console.log("There was no data in " + table + " that refers to " + attribute + " with a " + whereAttribute + " of " + whereAttributeValue)
+    }
   }
   return result
 };
 
 function GetGameDate(){
-  const gameDay = new Date(GetCityElement("CurrentTurnNumber") * (604800000) + GetCityElement("StartDate")); //604800000 is the amount of milliseconds in a week (1000*60*60*24*7)
+  const gameStartDay = GetDBElement("City","start_date",null,null);
+  const gameTurn = GetDBElement("City_Attribute","attribute_value","city_attribute_id",1);
+  const gameDay = new Date((gameTurn * 604800000) + gameStartDay); //604800000 is the amount of milliseconds in a week (1000*60*60*24*7)
   return gameDay.getDate() + "/" + gameDay.getMonth() + "/" + gameDay.getFullYear()
 }

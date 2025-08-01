@@ -171,6 +171,9 @@ margin-top: 0%;
   #OverviewWindow{
     transform: translate(calc(50vw - 175px), calc(50vh - 250px));
   }
+  #TaskbarPopulation, #TaskbarCurrentFunds{
+    display: none;
+  }
 }
 
 

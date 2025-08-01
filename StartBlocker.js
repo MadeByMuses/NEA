@@ -46,7 +46,6 @@ function DragElement(element) {
   }
 
   function closeDragElement() {
-    /* stop moving when mouse button is released:*/
     document.onmouseup = null;
     document.onmousemove = null;
 
@@ -162,15 +161,17 @@ async function StartUp(){
   //Remove StartBlocker
   document.getElementById("StartBlocker").remove();
   await delay(500)
-  await PrepareDesktop;
+  await PrepareDesktop();
   //Hide OS animation
   document.getElementById("OS").style.animation = "OS_Hide 1s ease-in forwards"
 }
 
-async function PrepareDesktop(){
+function PrepareDesktop(){
   if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770){
-    Overview()}
-  const gameDate = await GetGameDate();
-  document.getElementById("TaskbarDate").innerText = "Today's date is... " + gameDate;
-  return;
+    Overview()
+  }
+  console.log(GetDBElement("City_Attribute","attribute_value","city_attribute_id",2))
+  document.getElementById("TaskbarDate").innerText = "Today's date is... " + GetGameDate()
+  document.getElementById("TaskbarPopulation").innerText = "Population: " + GetDBElement("City_Attribute","attribute_value","city_attribute_id",2)
+  document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElement("City","money_symbol",null,null) + GetDBElement("City_Attribute","attribute_value","city_attribute_id",3)
 }
