@@ -3,59 +3,79 @@
 
 // Make the DIV element draggable:
 function DragElement(element) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
   if (!element){
-    console.log("element does not exist")
+    console.error("element does not exist")
     return
   }
-  else if(!element.id){
-    console.log("element "+ element +" does not have an id")
-    element.onmousedown = dragMouseDown;
-  }
-  else if (!(document.getElementById(element.id + "Header"))){
-    console.log("element "+ element + " does not have a Header id")
-    element.onmousedown = dragMouseDown;
-  }
-  else{
-    document.getElementById(element.id + "Header").onmousedown = dragMouseDown;
-  }
 
-  function dragMouseDown(e) {
-    e = e || window.event;
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  const draggable = document.getElementById(element.id + "Header") || element
+  draggable.onmousedown = dragDown;
+  draggable.ontouchstart = dragDown;
+
+
+  function dragDown(e) {
     e.preventDefault();
-    // get the mouse cursor position at startup:
+
+    if (e.type === "touchmove"){
+      pos3 = e.touches[0].clientX
+      pos4 = e.touches[0].clientY
+    }
+    else{
     pos3 = e.clientX;
     pos4 = e.clientY;
+    }
+
     document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
     document.onmousemove = elementDrag;
+    document.ontouchend = closeDragElement;
+    document.ontouchmove = elementDrag;
+    
   }
 
   function elementDrag(e) {
-    e = e || window.event;
+   ToggleScroll(true)
+
     e.preventDefault();
+
+    let clientX, clientY;
     // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
+    if (e.type === "touchmove"){
+      clientX = e.touches[0].clientX
+      clientY = e.touches[0].clientY
+    }
+    else{
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    pos1 = pos3 - clientX;
+    pos2 = pos4 - clientY;
+    pos3 = clientX;
+    pos4 = clientY;
     // set the element's new position:
     element.style.top = (element.offsetTop - pos2) + "px";
     element.style.left = (element.offsetLeft - pos1) + "px";
   }
 
   function closeDragElement() {
+    ToggleScroll(false)
     document.onmouseup = null;
     document.onmousemove = null;
+    document.ontouchmove = null;
+    document.ontouchend = null;
 
     //Check if the window is outside the viewport
 
     //Get boundary
-    let boundary = element.getBoundingClientRect();
+    const boundary = element.getBoundingClientRect();
 
     //Is it pass the limits?
     if(boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
+      if (element.id == "OverviewWindow"){
+        UpdateDB("Tutorial","completed",1,"tutorial_id",3)
+      }
       element.remove(); //DEATH TO THE WINDOW
     }
   }
@@ -63,19 +83,14 @@ function DragElement(element) {
 
 //ADDS NEW FORM POPUP
 function NewFormPopup() {
-  //Is the form already there?
-  if (document.getElementById('Form') != null) 
-  {
-    document.getElementById('Form').remove() //DEATH TO THE WINDOW 💀
-  }
   WindowPopUp(`
-  <div class="window" id="Form" style="width: 350px">
-      <div class="title-bar" id="FormHeader">
+  <div class="window" id="IntroForm" style="width: 350px">
+      <div class="title-bar" id="IntroFormHeader">
           <div class="title-bar-text">Create City Form</div>
           <div class="title-bar-controls">
           <button aria-label="Minimize"></button>
           <button aria-label="Maximize"></button>
-          <button aria-label="Close" onclick="document.getElementById('Form').remove()"></button>
+          <button aria-label="Close" onclick="document.getElementById('IntroForm').remove()"></button>
           </div>
       </div>
       <div class="window-body" id="FormContent">
@@ -89,7 +104,7 @@ function NewFormPopup() {
           <p id ="FormWarning"></p>
       </div>
   </div>
-  `,"Form","StartBlocker");
+  `,"IntroForm","StartBlocker");
 }
 
 //Let's add the new to the database
@@ -105,26 +120,21 @@ async function NewFormPopupFinished() {
       document.getElementById("FormWarning").textContent = "PLEASE INSERT A CITY NAME LESS THAN 24 CHARACTERS";
       return;
   }
-  await NewDB(CityName);
+  NewDB(CityName);
 }
 
 
 //ADDS LOAD FORM POPUP
 function LoadFormPopup() {
-  //Is the form already there?
-  if (document.getElementById('Form') != null) 
-  {
-    document.getElementById('Form').remove() //DEATH TO THE WINDOW 💀
-  }
   //Add the window
   WindowPopUp(`
-  <div class="window" id="Form" style="width: 350px">
-      <div class="title-bar" id="FormHeader">
+  <div class="window" id="IntroForm" style="width: 350px">
+      <div class="title-bar" id="IntroFormHeader">
           <div class="title-bar-text">Create City Form</div>
           <div class="title-bar-controls">
           <button aria-label="Minimize"></button>
           <button aria-label="Maximize"></button>
-          <button aria-label="Close" onclick="document.getElementById('Form').remove()"></button>
+          <button aria-label="Close" onclick="document.getElementById('IntroForm').remove()"></button>
           </div>
       </div>
       <div class="window-body" id="FormContent">
@@ -135,7 +145,7 @@ function LoadFormPopup() {
           <p id ="FormWarning"></p>
       </div>
   </div>
-  `,"Form","StartBlocker");
+  `,"IntroForm","StartBlocker");
 }
 
 //Let's add the new to the database
@@ -154,7 +164,7 @@ async function StartUp(){
   //Hide Startblocker
   document.getElementById("StartBlockerTransitionBlocker").style.animation = "FadeToBlack 1s forwards";
   //Remove Popup
-  document.getElementById("Form").remove();
+  document.getElementById("IntroForm").remove();
   await delay(1000);
   //OS animation
   document.getElementById("OS").style.visibility = "visible";
@@ -167,11 +177,14 @@ async function StartUp(){
 }
 
 function PrepareDesktop(){
-  if (Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770){
+  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3) == 1){
     Overview()
   }
-  console.log(GetDBElement("City_Attribute","attribute_value","city_attribute_id",2))
+  if (GetDBElements("Tutorial","completed","tutorial_id",1) == 0){
+    Tutorial()
+  }
+  //Taskbar
   document.getElementById("TaskbarDate").innerText = "Today's date is... " + GetGameDate()
-  document.getElementById("TaskbarPopulation").innerText = "Population: " + GetDBElement("City_Attribute","attribute_value","city_attribute_id",2)
-  document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElement("City","money_symbol",null,null) + GetDBElement("City_Attribute","attribute_value","city_attribute_id",3)
+  document.getElementById("TaskbarPopulation").innerText = "Population: " + GetDBElements("City_Attribute","attribute_value","city_attribute_id",2)
+  document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null) + GetDBElements("City_Attribute","attribute_value","city_attribute_id",3)
 }

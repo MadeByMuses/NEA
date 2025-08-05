@@ -7,18 +7,24 @@ async function main(){
     PrepareDesktop()
   }
 }
-/*This has to be done to ensure that the other js files are loaded*/
+
+//This has to be done to ensure that the other js files are loaded
 window.addEventListener('load', function() {
+    document.addEventListener('click', function(event) {
+      if (event.target.tagName.toLowerCase() === 'button') {
+        const clickSound = new Audio('Assets/Audio/click.wav');
+        clickSound.play();
+      }
+  });
+
   main()
 })
 
 //This needs to be global, as every script may need to use the database
-var db;
+let db;
 
 
-// TAKEN FROM SQL.JS DOCS
-
-// For script tag / CDN
+// ADAPTED FROM SQL.JS DOCS
 async function NewDB(CityName) {
   if (db){
     console.error("Database already exists");
@@ -32,19 +38,46 @@ async function NewDB(CityName) {
   // Run a query
 
   //City Database
-  db.run("CREATE TABLE City (city_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(24) NOT NULL, start_date T NOT NULL, money_symbol CHAR);");
+  db.run("CREATE TABLE City (city_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(24) NOT NULL, start_date T, money_symbol CHAR);")
   //Prepare the SQL
-  const CITYSQL = db.prepare("INSERT INTO City (name, start_date,money_symbol) VALUES (?,?,'$');");
+  const CITYSQL = db.prepare("INSERT INTO City (name, start_date,money_symbol) VALUES (?,?,'$');")
   //SQL Injection prevention
-  CITYSQL.run([CityName, Date.now()]);
+  CITYSQL.run([CityName, Date.now()])
 
+  //City_attribute table
   db.run("CREATE TABLE City_Attribute (city_attribute_id INTEGER PRIMARY KEY AUTOINCREMENT, attribute_name VARCHAR(64), attribute_description VARCHAR(128), attribute_value FLOAT);")
   db.run(`INSERT INTO City_Attribute (attribute_name, attribute_description, attribute_value) VALUES 
     ("Current turn number","What is the current turn number for the game? Used for date calculations and recording events",0),
     ("Population","How many people live in your town",0),
     ("Current funds","How much money does the city own",0);`)
-  PrintTable("City");
-  PrintTable("City_Attribute");
+
+
+  //Tutorial Table
+  db.run(`CREATE TABLE Tutorial (tutorial_id INTEGER PRIMARY KEY AUTOINCREMENT, completed BOOL NOT NULL, title VARCHAR(32), description TEXT, category TEXT);`)
+  db.run(`INSERT INTO Tutorial (completed, title, description, category) VALUES
+    (0,"End tutorial","You have finished the tutorial 🎊, please continue enjoying the project and see how large you can make your town","N/A"),
+    (0,"Open window","Before we start, welcome to Civis!<br>This is the tutorial window which will be your guide to how to use this website. As you can see the UI is very similiar to your desktop... try to open the <u>'Overview Window' by pressing on 'Overview'</u>.","Windows"),
+    (0,"✅ Close window","Wow you learn fast! That is the overview window where you can get data on all things that is vital for planning your town out. You can close that window now by sliding it off screen (recommended for 📲 mobile users) or by pressing the x ","Windows"),
+    (0,"Close tutorial window","You can also close this window, but please remember that I can always be popped back up by going into the settings tab. Practise by closing this 'non-draggable' window and reopening it.<br><br><h4 style='margin-top:0px'>Reopen via the settings</h4>","Window");`)
+  //This has to be done since the button contains JS
+  db.run(`INSERT INTO Tutorial (completed, title, description, category) VALUES (?,?,?,?)`,[
+    0,
+    "Finish tutorial window",
+    `Hey! :D<br>You seem to be pretty good using the 'windows' just press the button below to move onto the REAL fun </p><br><button onclick="UpdateDB('Tutorial','completed',1,'tutorial_id',5)">Continue</button>`,
+    "Windows"])
+  db.run(`INSERT INTO Tutorial (completed,title,description,category) VALUES
+    (0,"Policies","Policies is how your town will grow! Policies can help promote development, add quality of life services, or help tailor your town to your own. To get started you need to 'have' policies, let's go to the 'policy purchase' window to the side","Policies"),
+    (0,"Buy policy pack","As you can see, there is only one 'policy pack' for you to purchase. Purchase the 'founding pack'.","Policies"),
+    (0,"Open policy window","Good job! You got a nice selection of policies 😉.<br>Notice how you didn't purchase it with your money? Policies are purchased by a different form of currency, the Incre (§), we will discuss how to gain Incres later.<br>Now open the 'policy panel'","Policies"),
+    (0,"Act the policies","In this panel you can look at all of the policies you have collected over the game and choose which ones to implement","Policies");`)
+
+
+  //Policy Pack table
+  db.run(`CREATE TABLE Policy_Pack (policy_pack_id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(64), policy_pack_description VARHCAR(64),cost float,unlocked BOOL)`)
+  db.run(`INSERT INTO Policy_Pack (title,policy_pack_description,cost,unlocked) VALUES
+    ("Founding Pack","Vital to start your city",50,1),
+    ("ERROR PACK","This an error 🚫",50,1)`)
+  PrintTable("Tutorial")
   if (!debugMode){
     StartUp()
   };
@@ -111,36 +144,53 @@ function LoadDB(){
   reader.readAsArrayBuffer(file)})
 }
 
-function GetDBElement(table,attribute,whereAttribute,whereAttributeValue) {
-  let result = null
+function GetDBElements(table,attribute,whereAttribute,whereAttributeValue) {
+  let result = []
+  let stmt = null
   //This is mainly implemented for the city table since there will never need to be a where clause
   if (whereAttribute === null || whereAttributeValue === null){
     console.log("Getting data in the table " + table + " under the attribute: " + attribute)
-    const stmt = db.prepare("SELECT "+ attribute +" FROM " + table)
-    if (stmt.step()){
-      result = stmt.getAsObject()[attribute]
+    stmt = db.prepare("SELECT "+ attribute +" FROM " + table)
+    while (stmt.step()){
+      let row = stmt.getAsObject()
+      result.push(row[attribute])
     }
-    if (result == null){
-      console.log("There was no data in " + table + " that refers to " + attribute)
+    if (result.length == 0){
+      console.error("There was no data in " + table + " that refers to " + attribute)
     }
   }
   //
   else{
     console.log("Getting data in the " + table + " under the attribute: " + attribute + "; the data is also expecetd to have an attribute " + whereAttribute + " of " + whereAttributeValue)
-    const stmt = db.prepare("SELECT "+ attribute +" FROM " + table + " WHERE " + whereAttribute + " IS " + whereAttributeValue)
-    if (stmt.step()){
-      result = stmt.getAsObject()[attribute]
+    stmt = db.prepare("SELECT "+ attribute +" FROM " + table + " WHERE " + whereAttribute + " IS " + whereAttributeValue)
+    while (stmt.step()){
+      let row = stmt.getAsObject()
+      result.push(row[attribute])
     }
-    if (result == null){
-      console.log("There was no data in " + table + " that refers to " + attribute + " with a " + whereAttribute + " of " + whereAttributeValue)
+    if (result.length == 0){
+      console.error("There was no data in " + table + " that refers to " + attribute + " with a " + whereAttribute + " of " + whereAttributeValue)
     }
   }
-  return result
+  stmt.free()
+  if (result.length == 1 && table != "Tutorial" && table != "Policy_Pack")
+    return result[0]
+  else{
+    return result
+  }
 };
 
+function UpdateDB(table,attribute,attributeReplacement,whereAttribute,whereAttributeValue) {
+  console.log("Updating " + table + " where " + whereAttribute + " is " + whereAttributeValue + " so " + attribute + " is now " + attributeReplacement)
+  db.run("UPDATE " + table + " SET " + attribute + " = " + attributeReplacement + " WHERE " + whereAttribute + " IS " + whereAttributeValue)
+  //Update the Tutorial Window if it exists
+  if (table == "Tutorial" && document.getElementById("TutorialWindowContent")){
+    UpdateTutorial()
+  }
+}
+
 function GetGameDate(){
-  const gameStartDay = GetDBElement("City","start_date",null,null);
-  const gameTurn = GetDBElement("City_Attribute","attribute_value","city_attribute_id",1);
+  const gameStartDay = GetDBElements("City","start_date",null,null);
+  const gameTurn = GetDBElements("City_Attribute","attribute_value","city_attribute_id",1);
   const gameDay = new Date((gameTurn * 604800000) + gameStartDay); //604800000 is the amount of milliseconds in a week (1000*60*60*24*7)
   return gameDay.getDate() + "/" + gameDay.getMonth() + "/" + gameDay.getFullYear()
 }

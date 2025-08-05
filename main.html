@@ -16,7 +16,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
     </head>
-    <body>
+    <body id="Body">
+        <!--Where the user first goes-->
         <div id="StartBlocker">
             <h1>Civis</h1>
             <div class="StartBlockerInfo">
@@ -25,24 +26,26 @@
                 <p>If you do not then please press <u>New City</u></p>
             </div>
             <div class="StartBlockerButtons">
-                <button onclick="LoadFormPopup()">Load File</button>
-                <button onclick="NewFormPopup()">New City</button>
+                <button aria-label="Load file" onclick="LoadFormPopup()">Load File</button>
+                <button aria-label="New city" onclick="NewFormPopup()">New City</button>
             </div>
             <!--Below is used in the transition to OS animation-->
             <div id="StartBlockerTransitionBlocker"></div>
         </div>
         <!-- OS animation-->
-        <div id="OS" style="visibility: hidden;">
+        <div id="OS" style="visibility: hidden;cursor: wait;">
             <div>
-                <img id="OSimg" src="OS_Image.png">
+                <img id="OSimg" src="Assets/OS_Image.png">
             </div>
-            <h1>Loading - <img class="OSSpinner" src="OS_Spinner.png"></h1>
+            <h1>Loading - <img class="OSSpinner" src="Assets/OS_Spinner.png"></h1>
         </div>
+
+        <!-- This is where the main stuff is-->
         <div id="Desktop">
             <div class="desktop-grid">
                 <div class="desktop-grid-div"><div id = "icon11"> </div><br><p>Policies</p></div>
                 <div class="desktop-grid-div"><div id = "icon3"> </div><br><p>City Census</p></div>
-                <div class="desktop-grid-div"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
+                <div class="desktop-grid-div" onclick="PolicyPurchase()"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
                 <div class="desktop-grid-div"><br><p></p></div>
                 <div class="desktop-grid-div"><div id = "icon10"> </div><br><p>Public Sector</p></div>
                 <div class="desktop-grid-div"><div id = "icon8"> </div><br><p>Private Sector</p></div>
@@ -53,7 +56,7 @@
                 <div class="desktop-grid-div"><div id = "icon6"> </div><br><p>Docs</p></div>
             </div>
         </div>
-        <!-- Blocker -->
+        <!-- Task bar-->
          <div class="window" id="Taskbar">
             <div class="status-bar">
                 <p id="TaskbarDate" class="status-bar-field">Today's date is: </p>
