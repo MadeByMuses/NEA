@@ -174,6 +174,8 @@ async function StartUp(){
   await PrepareDesktop();
   //Hide OS animation
   document.getElementById("OS").style.animation = "OS_Hide 1s ease-in forwards"
+  await delay(1000)
+  document.getElementById("OS").remove()
 }
 
 function PrepareDesktop(){

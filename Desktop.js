@@ -1,3 +1,103 @@
+function PolicyPurchase(){
+    if (GetDBElements("Tutorial","completed","tutorial_id",5) == 1){
+        UpdateDB("Tutorial","completed",1,"tutorial_id",6)
+    }
+    WindowPopUp(`
+    <div class="window" id="Form" style="width: 350px">
+        <div class="title-bar" id="FormHeader">
+            <div class="title-bar-text"> Policy Purchase Terminal </div>
+            <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="document.getElementById('Form').remove()"></button>
+            </div>
+        </div>
+        <div class="window-body" id="FormContent">
+            <div id="PolicyPurchaseFlex">
+                <div class="field-row" style="float:left;height:100%">
+                    <label for="PolicyPurchaseSlider">Slider</label>
+                    <div class="is-vertical">
+                        <input id="PolicyPurchaseSlider" class="has-box-indicator" type="range" min="1" max="3" step="1" value="3" oninput="PolicyPurchaseUpdate()" onchange="PolicyPurchaseUpdate()"/>
+                    </div>
+                </div>
+                <div id="PolicyPurchaseInterface">
+                </div>
+            </div>
+        </div>
+    </div>
+    `,"Form","Desktop")
+    PolicyPurchaseUpdate()
+}
+
+function PolicyPurchaseUpdate(){
+    let unlockedPolicyPacks = GetDBElements("Policy_Pack","policy_pack_id","policy_pack_unlocked",1);
+    let policyPurchaseInterface =  document.getElementById("PolicyPurchaseInterface");
+    let policyPurchasSlider = document.getElementById("PolicyPurchaseSlider");
+    PolicyPurchaseInterface.innerHTML = "";
+
+    if (unlockedPolicyPacks.length == 0){
+        unlockedPolicyPacks = [2];
+    }
+
+    policyPurchasSlider.max = Math.ceil(unlockedPolicyPacks.length / 6);
+    policyPurchasSlider.value = policyPurchasSlider.max
+
+
+    const selectedPolicyPacks = unlockedPolicyPacks.slice((document.getElementById("PolicyPurchaseSlider").ariaValueNow * 6) - 6,6);
+    let leftside = true;
+    let iteration = 1;
+
+    for (let policypack of selectedPolicyPacks){
+        policyPurchaseInterface.innerHTML += leftside ? `<div> ` : ``;
+
+        policyPurchaseInterface.innerHTML += `
+        <div id="PP` + iteration +`" onclick="PolicyPurchaseConfirmation(` + policypack + `)">
+            <img src='Assets/Policies/PP_`+policypack+`.png'>
+            <h4>` + GetDBElements("Policy_Pack","policy_pack_name","policy_pack_id",policypack) + `</h4>
+            <p>` + GetDBElements("Policy_Pack","policy_pack_description","policy_pack_id",policypack) +`</p>
+        </div>`;
+
+        document.getElementById("PP" + iteration).style.float = leftside ? "left" : "right"; //VERY PROUD OF THIS :D
+        policyPurchaseInterface.innerHTML += !leftside ? `</div><br>` : ``;
+        leftside = !leftside;
+        iteration++;
+    }
+}
+function PolicyPurchaseConfirmation(id){
+    let policyContents = PoliciesInPolicyPack(id);
+    let list = "";
+    
+    if (policyContents.length === 0){
+        policyContents = [1];
+    }
+
+    for (policy of policyContents){
+        list += `<li><details><summary>` + GetDBElements("Policy","policy_name","policy_id",id) +`</summary><ul><li>` + GetDBElements("Policy","policy_description","policy_id",id) + `<li></details></li>`
+    }
+
+    document.getElementById("Body").innerHTML += `
+    <div id="PolicyPurchaseConfirmation">
+        <div class="window" id="Confirmation" style="width: 350px">
+            <div class="title-bar" id="ConfirmationHeader">
+                <div class="title-bar-text"> Confirmation </div>
+                <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close" onclick="document.getElementById('PolicyPurchaseConfirmation').remove()"></button>
+                </div>
+            </div>
+            <div class="window-body" id="FormContent">
+                <h3>` + GetDBElements("Policy_Pack","policy_pack_name","policy_pack_id",id) +`</h3>
+                <p>` + GetDBElements("Policy_Pack","policy_pack_description","policy_pack_id",id)  + `
+                <hr>
+                <ul class="tree-view">` + list + `
+                </ul>
+                <br>
+            </div>
+        </div>
+    </div> 
+    `;
+}
 
 function Settings(){
     WindowPopUp(`
@@ -87,10 +187,9 @@ function OverviewButton(){
 }
 
 
-//TODO
 function Tutorial(){
     const tutorialToDo = GetDBElements("Tutorial","tutorial_id","completed",0);
-    //
+    
     let tutorialToDoPick = 1;
     if (tutorialToDo.length == 1){
         tutorialToPick = 0;
@@ -110,12 +209,12 @@ function Tutorial(){
             </div>
         </div>
         <div class="window-body" id="TutorialWindowContent">
-            <h3 id="TutorialHeader">` + GetDBElements("Tutorial","title","tutorial_id",tutorialToDo[tutorialToDoPick]) + `</h3>
-            <p>` + GetDBElements("Tutorial","description","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
+            <h3 id="TutorialHeader">` + GetDBElements("Tutorial","tutorial_title","tutorial_id",tutorialToDo[tutorialToDoPick]) + `</h3>
+            <p>` + GetDBElements("Tutorial","tutorial_description","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
         </div>
         <div class="status-bar" id="TutorialWindowStatus">
             <p class="status-bar-field">Tutorial number: ` + tutorialToDo[tutorialToDoPick] + `</p>
-            <p class="status-bar-field">` + GetDBElements("Tutorial","category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
+            <p class="status-bar-field">` + GetDBElements("Tutorial","tutorial_category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
             <p class="status-bar-field">` + tutorialPercentage + `</p>
         </div>
     </div>
@@ -141,20 +240,18 @@ function UpdateTutorial(){
         tutorialPercentage = "Completed";
     }
 
-    if (GetDBElements("Tutorial","title","tutorial_id",tutorialToDo[tutorialToDoPick]) != document.getElementById("TutorialHeader").innerHTML){
+    if (GetDBElements("Tutorial","tutorial_title","tutorial_id",tutorialToDo[tutorialToDoPick]) != document.getElementById("TutorialHeader").innerHTML){
         tutorialUpdate.play();
     }
     document.getElementById("TutorialWindowContent").innerHTML=`
-            <h3 id="TutorialHeader">` + GetDBElements("Tutorial","title","tutorial_id",tutorialToDo[tutorialToDoPick]) + `</h3>
-            <p>` + GetDBElements("Tutorial","description","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>`
+            <h3 id="TutorialHeader">` + GetDBElements("Tutorial","tutorial_title","tutorial_id",tutorialToDo[tutorialToDoPick]) + `</h3>
+            <p>` + GetDBElements("Tutorial","tutorial_description","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>`
     document.getElementById("TutorialWindowStatus").innerHTML=`
             <p class="status-bar-field">Tutorial number: ` + tutorialToDo[tutorialToDoPick] + `</p>
-            <p class="status-bar-field">` + GetDBElements("Tutorial","category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
+            <p class="status-bar-field">` + GetDBElements("Tutorial","tutorial_category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
             <p class="status-bar-field">` + tutorialPercentage + `</p>
     `
 }
-
-
 
 function WindowPopUpAdd(innerHTML,Source){
     document.getElementById(Source).innerHTML += innerHTML;
