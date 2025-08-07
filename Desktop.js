@@ -63,6 +63,7 @@ function PolicyPurchaseUpdate(){
         iteration++;
     }
 }
+
 function PolicyPurchaseConfirmation(id){
     let policyContents = PoliciesInPolicyPack(id);
     let list = "";
@@ -70,9 +71,9 @@ function PolicyPurchaseConfirmation(id){
     if (policyContents.length === 0){
         policyContents = [1];
     }
-
+    console.log(policyContents)
     for (policy of policyContents){
-        list += `<li><details><summary>` + GetDBElements("Policy","policy_name","policy_id",id) +`</summary><ul><li>` + GetDBElements("Policy","policy_description","policy_id",id) + `<li></details></li>`
+        list += `<li><details><summary>` + GetDBElements("Policy","policy_name","policy_id",policy) +`</summary><ul><li>` + GetDBElements("Policy","policy_description","policy_id",policy) + `</li><li>` + GetDBElements("City","money_symbol",null,null) + GetDBElements("Policy","policy_act_cost","policy_id",policy) + `</li></details></li>`
     }
 
     document.getElementById("Body").innerHTML += `
@@ -90,9 +91,13 @@ function PolicyPurchaseConfirmation(id){
                 <h3>` + GetDBElements("Policy_Pack","policy_pack_name","policy_pack_id",id) +`</h3>
                 <p>` + GetDBElements("Policy_Pack","policy_pack_description","policy_pack_id",id)  + `
                 <hr>
-                <ul class="tree-view">` + list + `
+                <ul style="max-height:200px" class="tree-view">` + list + `
                 </ul>
+                <hr>
+                <p>Price of pack is: §` + GetDBElements("Policy_Pack","policy_pack_cost","policy_pack_id",id) + `</p>
+                <p>You will get ` + GetDBElements("Policy_Pack","policies_to_gain","policy_pack_id",id) + ` policy/policies from this pack</p>
                 <br>
+                <button>Purchase policy pack</button>
             </div>
         </div>
     </div> 

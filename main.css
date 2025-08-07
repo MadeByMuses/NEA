@@ -314,3 +314,7 @@ margin-top: 0%;
     position:absolute;
     transform: translate(calc(50vw - 175px), calc(50vh - 300px));
 }
+
+.tree-view{
+    overflow-y: scroll;
+}

@@ -1,4 +1,4 @@
-const debugMode = false
+const debugMode = true
 
 async function Debug(){
   if (debugMode){
@@ -73,20 +73,21 @@ async function NewDB(CityName) {
 
 
   //Policy Pack table
-  db.run(`CREATE TABLE Policy_Pack (policy_pack_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_pack_name VARCHAR(64), policy_pack_description VARCHAR(64),policy_pack_cost float,policy_pack_unlocked BOOL);`)
-  db.run(`INSERT INTO Policy_Pack (policy_pack_name,policy_pack_description,policy_pack_cost,policy_pack_unlocked) VALUES
-    ("Founding Pack","Vital to start your city",50,1),
-    ("ERROR PACK","This an error 🚫",999,1);`)
+  db.run(`CREATE TABLE Policy_Pack (policy_pack_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_pack_name VARCHAR(64), policy_pack_description VARCHAR(64),policy_pack_cost float,policy_pack_unlocked BOOL,policies_to_gain INTEGER NOT NULL);`)
+  db.run(`INSERT INTO Policy_Pack (policy_pack_name,policy_pack_description,policy_pack_cost,policy_pack_unlocked,policies_to_gain) VALUES
+    ("Founding Pack","Vital to start your city",50,1,5),
+    ("ERROR PACK","This an error 🚫",0,1,1);`)
 
   //Policies
   db.run(`CREATE TABLE Policy (policy_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_name VARCHAR(64), policy_category VARCHAR(64), policy_description VARCHAR (128), policy_act_cost float);`)
-  db.run(`INSERT INTO Policy (policy_name, policy_description, policy_category) VALUES
+  db.run(`INSERT INTO Policy (policy_name, policy_description, policy_category,policy_act_cost) VALUES
     ("This should only be seen for debugging","If you are seeing this then I apologies, something VERY BAD has happened- this is a debug policy which SHOULD NOT BE HAPPENING","Debug",0)`)
 
   //
   db.run(`CREATE TABLE Policy_Pack_Policy (ppp_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_pack_id INTEGER, policy_id INTEGER, FOREIGN KEY (policy_pack_id) REFERENCES Policy_Pack(policy_pack_id), FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
   db.run(`INSERT INTO Policy_Pack_Policy (policy_pack_id,policy_id) VALUES
-    (2,1)`)
+    (2,1),
+    (1,1)`)
   if (!debugMode){
     StartUp()
   };
@@ -215,6 +216,6 @@ function PoliciesInPolicyPack(id) {
   }
 
   stmt.free();
-
+  console.log(result)
   return result;
 }
