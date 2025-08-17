@@ -94,12 +94,12 @@ function NewFormPopup() {
           </div>
       </div>
       <div class="window-body" id="FormContent">
-          <p>Please write the name of your city:</p>
+          <p style="color:black">Please write the name of your city:</p>
           <br>
           <div class="field-row" style="padding-left: 45px;">
-              <label for="FormCityName">City Name</label>
-              <input id="FormCityName" type="text" />
-              <button onclick="NewFormPopupFinished()"> Confirm </button>
+              <label for="FormCityName"style="color:black">City Name</label>
+              <input id="FormCityName" type="text" / style="color:black">
+              <button onclick="NewFormPopupFinished()"style="color:black"> Confirm </button>
           </div>
           <p id ="FormWarning"></p>
       </div>
@@ -138,10 +138,10 @@ function LoadFormPopup() {
           </div>
       </div>
       <div class="window-body" id="FormContent">
-          <p>Please upload your file</p>
+          <p style="color:black">Please upload your file</p>
           <br>
-          <input id="FormLoadDB" type="file" accept=".sqlite" onchange="LoadDB()" style="display:none"></input>
-          <label id="ForFormLoadDB" for="FormLoadDB" style="margin-left:110px">Click here to upload save</label>
+          <input id="FormLoadDB" type="file" accept=".sqlite" onchange="LoadDB()" style="display:none;color:black"></input>
+          <label id="ForFormLoadDB" for="FormLoadDB" style="margin-left:110px;color:black;">Click here to upload save</label>
           <p id ="FormWarning"></p>
       </div>
   </div>
@@ -179,7 +179,7 @@ async function StartUp(){
 }
 
 function PrepareDesktop(){
-  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3) == 1){
+  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] == 1){
     Overview()
   }
   if (GetDBElements("Tutorial","completed","tutorial_id",1) == 0){
@@ -187,6 +187,6 @@ function PrepareDesktop(){
   }
   //Taskbar
   document.getElementById("TaskbarDate").innerText = "Today's date is... " + GetGameDate()
-  document.getElementById("TaskbarPopulation").innerText = "Population: " + GetDBElements("City_Attribute","attribute_value","city_attribute_id",2)
-  document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null) + GetDBElements("City_Attribute","attribute_value","city_attribute_id",3)
+  document.getElementById("TaskbarPopulation").innerText = "Population: " + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",2),"default")
+  document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null)[0] + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3),"currency")
 }

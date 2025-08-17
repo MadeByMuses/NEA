@@ -21,13 +21,13 @@
         <div id="StartBlocker">
             <h1>Civis</h1>
             <div class="StartBlockerInfo">
-                <p>Welcome to Civis, a web-based city development project!</p>
-                <p>Before starting the Simulation, please press <u>Load Progress</u> if you have a save file</p>
-                <p>If you do not then please press <u>New City</u></p>
+                <p style="font-size: 3em;">Welcome to Civis, a web-based city development project!</p>
+                <p style="font-size: 3em;">Before starting the Simulation, please press <u style="color:white; text-decoration-color:white">Load Progress</u> if you have a save file</p>
+                <p style="font-size: 3em;">If you do not then please press <u style="color:white; text-decoration-color:white">New City</u></p>
             </div>
             <div class="StartBlockerButtons">
-                <button aria-label="Load file" onclick="LoadFormPopup()">Load File</button>
-                <button aria-label="New city" onclick="NewFormPopup()">New City</button>
+                <button aria-label="Load file" onclick="LoadFormPopup()" style="color:black">Load File</button>
+                <button aria-label="New city" onclick="NewFormPopup()" style="color:black">New City</button>
             </div>
             <!--Below is used in the transition to OS animation-->
             <div id="StartBlockerTransitionBlocker"></div>
@@ -37,13 +37,13 @@
             <div>
                 <img id="OSimg" src="Assets/OS_Image.png">
             </div>
-            <h1>Loading - <img class="OSSpinner" src="Assets/OS_Spinner.png"></h1>
+            <h1 style="color:white">Loading - <img class="OSSpinner" src="Assets/OS_Spinner.png"></h1>
         </div>
 
         <!-- This is where the main stuff is-->
         <div id="Desktop">
             <div class="desktop-grid">
-                <div class="desktop-grid-div"><div id = "icon11"> </div><br><p>Policies</p></div>
+                <div class="desktop-grid-div" onclick="PrePolicyPanel()"><div id = "icon11"> </div><br><p>Policy Panel</p></div>
                 <div class="desktop-grid-div"><div id = "icon3"> </div><br><p>City Census</p></div>
                 <div class="desktop-grid-div" onclick="PolicyPurchase()"><div id = "icon2"> </div><br><p>Policy Purchase</p></div>
                 <div class="desktop-grid-div"><br><p></p></div>
@@ -70,5 +70,6 @@
         <script src="StartBlocker.js"></script>
         <script src="SQLJS_Framework.js"></script>
         <script src="Desktop.js"></script>
+        <script src="Debug.js"></script>
     </body>
 </html>

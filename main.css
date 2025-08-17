@@ -3,6 +3,7 @@
     font-family: "Jersey 10", sans-serif;
     font-weight: 400;
     font-style: normal;
+    color: black;
 }
 
 h4{
@@ -37,13 +38,16 @@ button{
     z-index: 10;
 }
 
+
 #StartBlocker h1{
     text-align: center;
     font-size: 200px;
+    color: white;
 }
 .StartBlockerInfo{
     padding: 0.25em;
     outline: 5px dotted white;
+    color: white;
 }
 .StartBlockerButtons{
     padding-top: 7.5vh;
@@ -52,7 +56,8 @@ button{
 }
 #StartBlocker div p{
     text-align: center;
-    font-size: 2em;
+    font-size: 2em !important;
+    color: white;
 }
 
 /* Make sure the popup is centre or where I want it*/
@@ -65,8 +70,11 @@ button{
 #TutorialWindow, #IntroForm{
     transform: translate(calc(50vw - 175px), calc(50vh - 250px));
 }
-#OverviewWindow, #Form{
+#OverviewWindow{
     transform: translate(calc(75vw - 175px), calc(40vh - 250px));
+}
+#Form {
+    transform: translate(calc(75vw - 175px), calc(35vh - 250px));
 }
 
 /* Scary colour*/
@@ -187,12 +195,15 @@ margin-top: 0%;
     grid-area: auto;
     width:auto;
   }
-  #OverviewWindow, #Form{
+  #OverviewWindow{
     transform: translate(calc(50vw - 175px), calc(50vh - 250px));
   }
   #TaskbarPopulation, #TaskbarCurrentFunds{
     display: none;
   }
+    #Form {
+        transform: translate(calc(50vw - 175px), calc(35vh - 250px));
+    }
 }
 
 
