@@ -150,7 +150,7 @@ function PrePolicyPanel(){
     WindowPopUp(`
         <div id="Form" class="window" style="width:350px">
             <menu role="tablist" class="multirows">
-                <li role="tab"><a onclick="PolicyPanel(null)">All</a></li>
+                <li role="tab" onclick="PolicyPanel(null)"><a style="font-size:1.2rem">All</a></li>
             </menu>
             <menu role="tablist" class="multirows">
                 <li role="tab"><a ></a></li>
@@ -217,16 +217,14 @@ function UpdatePolicyPanel(id, change, method){
         let inactivatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0)
         let activatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1)
         if (method == 'sub' && activatedList.length > 0){
-            const activationSfx = new Audio()
             for (let i = 0; i < change; i++){
                 const ActivatedSfx = new Audio('Assets/Audio/Activation.wav')
                 ActivatedSfx.play()
-                UpdateDB("Tutorial","completed",1,"tutorial_id",9)
                 UpdateDB("Policy_Collection","policy_active",0,"policy_collection_id",activatedList[i])
             }
         }
         else if (method == 'add' && inactivatedList.length > 0){
-            if (GetDBElements("Policy","policy_act_cost","policy_id",id) > GetDBElements("City_Attribute","attribute_value","city_attribute_id",3)){
+            if (Number(GetDBElements("Policy","policy_act_cost","policy_id",id)) > Number(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3))){
                 const errorSfx = new Audio('Assets/Audio/Hit_Hurt.wav');
                 errorSfx.play()
                 return
@@ -238,24 +236,27 @@ function UpdatePolicyPanel(id, change, method){
                 UpdateDB("Policy_Collection","policy_active",1,"policy_collection_id",inactivatedList[i])
                 UpdateDB("City_Attribute","attribute_value",GetDBElements("City_Attribute","attribute_value","city_attribute_id",3) - GetDBElements("Policy","policy_act_cost","policy_id",id),"city_attribute_id",3)
             }
+            if (GetDBElements("Policy_Collection","policy_collection_id","policy_active",1).length >= 4){
+                UpdateDB("Tutorial","completed",1,"tutorial_id",10)
+            }
         }
     }
     let element = document.getElementById("P_"+id)
     const elementNumber = GetDBElements("Policy_Collection","policy_collection_id","policy_id",id)
     if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0).length == elementNumber.length){
-        element.innerHTML = `<button disabled> -1 </button>`
+        element.innerHTML = `<button disabled> deactivate </button>`
     }
     else{
-        element.innerHTML = `<button onclick="UpdatePolicyPanel(` + id + `,1,'sub')"> -1 </button>`
+        element.innerHTML = `<button onclick="UpdatePolicyPanel(` + id + `,1,'sub')"> deactivate </button>`
     }
     
     element.innerHTML += "<span style='font-size:1.5em;padding-left:1.25em;padding-right:1.25em'>" + GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length + " are active</span>"
 
     if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length == elementNumber.length){
-        element.innerHTML += `<button disabled> +1 </button>`
+        element.innerHTML += `<button disabled> activate </button>`
     }
     else{
-        element.innerHTML += `<button onclick="UpdatePolicyPanel(` + id + `,1,'add')"> +1 </button>`
+        element.innerHTML += `<button onclick="UpdatePolicyPanel(` + id + `,1,'add')"> activate </button>`
     }
 
     //Update funds
@@ -263,6 +264,21 @@ function UpdatePolicyPanel(id, change, method){
 }
 
 function Settings(){
+    let selects = ['','','','']
+    switch (GetDBElements("City","money_symbol","city_id",1).toString()){
+        case "£":
+            selects[0] = ` selected`
+            break
+        case "$":
+            selects[1] = ` selected`
+            break
+        case "€":
+            selects[2] = ` selected`
+            break
+        case "¥":
+            selects[3] = ` selected`
+            break
+    }
     WindowPopUp(`
     <div class="window" id="Form" style="width: 350px">
         <div class="title-bar" id="FormHeader">
@@ -279,11 +295,11 @@ function Settings(){
             <button onclick="Tutorial();if(!document.getElementById('TutorialWindow')){UpdateDB('Tutorial','completed',1,'tutorial_id',4)};getElementById('Form').remove()">Open Tutorial Window</button>
             <br><br>
             <p>Currency symbol</p>
-            <select>
-                <option>£</option>
-                <option selected>$</option>
-                <option>€</option>
-                <option>¥</option>
+            <select id="CurrencySelect" onchange="let moneySymbol = document.getElementById('CurrencySelect').value; console.log(moneySymbol); UpdateDB('City','money_symbol',moneySymbol,'city_id',1)">
+                <option` + selects[0] + `>£</option>
+                <option` + selects[1] + `>$</option>
+                <option` + selects[2] + `>€</option>
+                <option` + selects[3] + `>¥</option>
             </select>
             <hr>
             <button onclick="ExportDB()">Export</button>
@@ -416,6 +432,36 @@ function UpdateTutorial(){
             <p class="status-bar-field">` + GetDBElements("Tutorial","tutorial_category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
             <p class="status-bar-field">` + tutorialPercentage + `</p>
     `;
+}
+
+async function Simulation(){
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    const nextDate = GetGameDate(1)
+    document.getElementById("Body").innerHTML += `
+    <div id="SimulationBlocker">
+        <h1>Simulating - ` +  nextDate + `</h1>
+        <br><br><br>
+        <div id="SimulationProgressBars">
+            <p id="SimulationProgressBarsDetail"></p> 
+            <div class="progress-indicator segmented">
+                <span id="SimulationProgressBarsDetailProgressIndicator" class="progress-indicator-bar" style="width: 0%;" />
+            </div>
+            <br>
+            <br>
+            <p id="SimulationProgressBarsDetailSpecifics"></p>
+            <div class="progress-indicator">
+                <span id="SimulationProgressBarsDetailSpecificsProgressIndicator" class="progress-indicator-bar"  style="width: 00%;" />
+            </div>
+        </div>
+    </div>`
+
+    const SimulationProgressBarsDetailSpecificsProgressIndicator = document.getElementById("SimulationProgressBarsDetailSpecificsProgressIndicator")
+    const SimulationProgressBarsDetailSpecifics = document.getElementById("SimulationProgressBarsDetailSpecifics")
+    const SimulationProgressBarsDetail = document.getElementById("SimulationProgressBarsDetail")
+    const SimulationProgressBarsDetailProgressIndicator = document.getElementById("SimulationProgressBarsDetailProgressIndicator")
+    
+    await delay(1000)
+    await Simulate()
 }
 
 function WindowPopUpAdd(innerHTML,Source){

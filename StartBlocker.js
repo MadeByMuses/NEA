@@ -173,7 +173,7 @@ async function StartUp(){
   await delay(500)
   await PrepareDesktop();
   //Hide OS animation
-  document.getElementById("OS").style.animation = "OS_Hide 1s ease-in forwards"
+  document.getElementById("OS").style.animation = "Hide 1s ease-in forwards"
   await delay(1000)
   document.getElementById("OS").remove()
 }
@@ -182,7 +182,7 @@ function PrepareDesktop(){
   if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] == 1){
     Overview()
   }
-  if (GetDBElements("Tutorial","completed","tutorial_id",1) == 0){
+  if (GetDBElements("Tutorial","completed","tutorial_id",4) == 0){
     Tutorial()
   }
   //Taskbar

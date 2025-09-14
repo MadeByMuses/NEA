@@ -4,6 +4,10 @@ async function Debug(){
   if (debugMode){
     document.getElementById("StartBlocker").style.visibility = "hidden"
     await NewDB("Coolville")
+    UpdateDB("Tutorial","completed",1,"tutorial_id",2)
+    UpdateDB("Tutorial","completed",1,"tutorial_id",3)
+    UpdateDB("Tutorial","completed",1,"tutorial_id",4)
+    await UpdateDB("Tutorial","completed",1,"tutorial_id",5)
     PrepareDesktop()
   }
 }
