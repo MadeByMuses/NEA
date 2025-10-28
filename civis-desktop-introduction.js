@@ -72,8 +72,8 @@ function DragElement(element) {
     const boundary = element.getBoundingClientRect();
 
     //Is it pass the limits?
-    if(boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
-      if (element.id == "OverviewWindow"){
+    if (boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
+      if (element.id === "OverviewWindow"){
         UpdateDB("Tutorial","completed",1,"tutorial_id",3)
       }
       element.remove(); //DEATH TO THE WINDOW
@@ -111,7 +111,6 @@ function NewFormPopup() {
 async function NewFormPopupFinished() {
   //Get the City Name
   const CityName = document.getElementById('FormCityName').value.trim();
-  console.log(CityName)
   if (!CityName) {
       document.getElementById("FormWarning").textContent = "PLEASE INSERT A CITY NAME BEFORE STARTING";
       return;
@@ -158,7 +157,7 @@ async function StartUp(){
   const delay = ms => new Promise(res => setTimeout(res, ms));
   // Making sure that StartUp is only occouring when the StartBlocker is present
   if (!document.getElementById("StartBlocker")){
-    console.error("StartUp already begun!");
+    console.warning("StartUp already begun!");
     return;
   }
   //Hide Startblocker
@@ -179,10 +178,10 @@ async function StartUp(){
 }
 
 function PrepareDesktop(){
-  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] == 1){
+  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] === 1){
     Overview()
   }
-  if (GetDBElements("Tutorial","completed","tutorial_id",4) == 0){
+  if (GetDBElements("Tutorial","completed","tutorial_id",4) === 0){
     Tutorial()
   }
   //Taskbar

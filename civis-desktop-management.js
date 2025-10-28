@@ -1,7 +1,7 @@
 //Opens the policy window
-async function PolicyPurchase(){
+async function PolicyPurchase (){
     // They have done what they have been told to do (Open this window)
-    if (GetDBElements("Tutorial","completed","tutorial_id",5)[0] == 1){
+    if (GetDBElements("Tutorial","completed","tutorial_id",5)[0] === 1){
         UpdateDB("Tutorial","completed",1,"tutorial_id",6)
     }
     await WindowPopUp(`
@@ -38,7 +38,7 @@ async function PolicyPurchase(){
     policyPurchasSlider.ariaValueNow = policyPurchasSlider.max
 }
 
-function PolicyPurchaseSetUp(){
+function PolicyPurchaseSetUp (){
     //I call this early incase there is no policiy packs unlocked so I can default it to the DEBUG pack 
     const unlockedPolicyPacks = GetDBElements("Policy_Pack","policy_pack_id","policy_pack_unlocked",1);
 
@@ -46,7 +46,7 @@ function PolicyPurchaseSetUp(){
     PolicyPurchaseInterface.innerHTML = "";
 
     //See previous comment talking about unlockedPolicyPacks
-    if (unlockedPolicyPacks.length == 0){
+    if (unlockedPolicyPacks.length === 0){
         unlockedPolicyPacks = [2];
     }
 
@@ -72,7 +72,7 @@ function PolicyPurchaseSetUp(){
     }
 }
 
-function PolicyPurchaseConfirmation(id){
+function PolicyPurchaseConfirmation (id){
     let policyContents = PoliciesInPolicyPack(id);
     let list = "";
     
@@ -91,7 +91,7 @@ function PolicyPurchaseConfirmation(id){
                 <div class="title-bar-controls">
                 <button aria-label="Minimize"></button>
                 <button aria-label="Maximize"></button>
-                <button aria-label="Close" onclick="if(GetDBElements('City_Attribute','attribute_value','city_attribute_id',5)==0){document.getElementById('PolicyPurchaseConfirmation').remove()}"></button>
+                <button aria-label="Close" onclick="if (GetDBElements('City_Attribute','attribute_value','city_attribute_id',5)[0]===0){document.getElementById('PolicyPurchaseConfirmation').remove()}"></button>
                 </div>
             </div>
             <div class="window-body" id="ConfirmationContent">
@@ -112,11 +112,11 @@ function PolicyPurchaseConfirmation(id){
     `;
 }
 
-async function PurchasePolicyPack(id){
+async function PurchasePolicyPack (id){
     const delay = ms => new Promise(res => setTimeout(res, ms));
     let policiesChosen = []
     if (GetDBElements("City_Attribute","attribute_value","city_attribute_id",4) < GetDBElements("Policy_Pack","policy_pack_cost","policy_pack_id",id)) {
-        document.getElementById("PolicyPurchaseConfirmationComment").innerHTML = `<p id="FormWarning">You are missing § funds!</p>`;
+        document.getElementById("PolicyPurchaseConfirmationComment").innerHTML = `<p id="Formwarn">You are missing § funds!</p>`;
         return;
     }
     else{
@@ -130,7 +130,7 @@ async function PurchasePolicyPack(id){
             const policyChosen = policies[Math.floor(Math.random() * policies.length)];
             policiesChosen.push(policyChosen)
             document.getElementById("PolicyPackPurchaseWhatDidYouGet").innerHTML += `<li>` + GetDBElements("Policy","policy_name","policy_id",policyChosen) + `</li>`;
-            InsertDB("Policy_Collection","(city_id, policy_id, policy_active)","(1," + policyChosen + ",0)")
+            InsertDB('Policy_Collection','(policy_id, policy_active)','('+String(policyChosen) + ',0)')
             await delay(500)
         }
         await delay(500)
@@ -146,7 +146,7 @@ async function PurchasePolicyPack(id){
 }
 
 //Opens dictionary of policies
-function PrePolicyPanel(){
+function PrePolicyPanel (){
     WindowPopUp(`
         <div id="Form" class="window" style="width:350px">
             <menu role="tablist" class="multirows">
@@ -174,8 +174,8 @@ function PrePolicyPanel(){
         </div>`,`Form`,`Desktop`)
 }
 
-function PolicyPanel(category){
-    if (GetDBElements("Tutorial","completed","tutorial_id",7) == 1){
+function PolicyPanel (category){
+    if (GetDBElements("Tutorial","completed","tutorial_id",7) === 1){
         UpdateDB("Tutorial","completed",1,"tutorial_id",8)
     }
     WindowPopUp(`
@@ -213,20 +213,20 @@ function PolicyPanel(category){
 }
 
 function UpdatePolicyPanel(id, change, method){
-    if (method != 'sub' || method !='add'){
+    if (method === 'sub' || method ==='add'){
         let inactivatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0)
         let activatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1)
-        if (method == 'sub' && activatedList.length > 0){
+        if (method === 'sub' && activatedList.length > 0){
             for (let i = 0; i < change; i++){
                 const ActivatedSfx = new Audio('Assets/Audio/Activation.wav')
                 ActivatedSfx.play()
                 UpdateDB("Policy_Collection","policy_active",0,"policy_collection_id",activatedList[i])
             }
         }
-        else if (method == 'add' && inactivatedList.length > 0){
+        else if (method === 'add' && inactivatedList.length > 0){
             if (Number(GetDBElements("Policy","policy_act_cost","policy_id",id)) > Number(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3))){
-                const errorSfx = new Audio('Assets/Audio/Hit_Hurt.wav');
-                errorSfx.play()
+                const warnSfx = new Audio('Assets/Audio/Hit_Hurt.wav');
+                warnSfx.play()
                 return
             }
             for (let i = 0; i < change; i++){
@@ -243,7 +243,7 @@ function UpdatePolicyPanel(id, change, method){
     }
     let element = document.getElementById("P_"+id)
     const elementNumber = GetDBElements("Policy_Collection","policy_collection_id","policy_id",id)
-    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0).length == elementNumber.length){
+    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0).length === elementNumber.length){
         element.innerHTML = `<button disabled> deactivate </button>`
     }
     else{
@@ -252,7 +252,7 @@ function UpdatePolicyPanel(id, change, method){
     
     element.innerHTML += "<span style='font-size:1.5em;padding-left:1.25em;padding-right:1.25em'>" + GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length + " are active</span>"
 
-    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length == elementNumber.length){
+    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length === elementNumber.length){
         element.innerHTML += `<button disabled> activate </button>`
     }
     else{
@@ -263,7 +263,7 @@ function UpdatePolicyPanel(id, change, method){
     document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null)[0] + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3),"currency")
 }
 
-function Settings(){
+function Settings (){
     let selects = ['','','','']
     switch (GetDBElements("City","money_symbol","city_id",1).toString()){
         case "£":
@@ -292,10 +292,10 @@ function Settings(){
         <div class="window-body" id="FormContent">
             <p>Welcome to the settings</p>
             <br>
-            <button onclick="Tutorial();if(!document.getElementById('TutorialWindow')){UpdateDB('Tutorial','completed',1,'tutorial_id',4)};getElementById('Form').remove()">Open Tutorial Window</button>
+            <button onclick="Tutorial();if (!document.getElementById('TutorialWindow')){UpdateDB('Tutorial','completed',1,'tutorial_id',4)};getElementById('Form').remove()">Open Tutorial Window</button>
             <br><br>
             <p>Currency symbol</p>
-            <select id="CurrencySelect" onchange="let moneySymbol = document.getElementById('CurrencySelect').value; console.log(moneySymbol); UpdateDB('City','money_symbol',moneySymbol,'city_id',1)">
+            <select id="CurrencySelect" onchange="let moneySymbol = document.getElementById('CurrencySelect').value; UpdateDB('City','money_symbol',moneySymbol,'city_id',1)">
                 <option` + selects[0] + `>£</option>
                 <option` + selects[1] + `>$</option>
                 <option` + selects[2] + `>€</option>
@@ -309,7 +309,7 @@ function Settings(){
     `, "Form","Desktop")
 }
 
-function Overview(){
+function Overview (){
     UpdateDB("Tutorial","completed",1,"tutorial_id",2)
     const cityName = GetDBElements("City","name","city_id",1) 
     WindowPopUp(`
@@ -344,7 +344,7 @@ function Overview(){
     `, "OverviewWindow","Desktop")
 }
 
-function OverviewButton(){
+function OverviewButton (){
     document.getElementById("OverviewWindowContentResponse").innerHTML = ``
     let radioID = null
     const overviews = document.querySelectorAll("input[name='OverviewWindow']")
@@ -355,7 +355,7 @@ function OverviewButton(){
         }
     }
     if (radioID === null){
-        console.error("No radio selected")
+        console.warn("No radio selected")
         window.alert("No overview was selected, please select one")
         return
     }
@@ -373,15 +373,15 @@ function OverviewButton(){
     document.getElementById("OverviewWindowContentResponse").innerHTML += `<h3>` + infoTextHeading + `</h3><p>` + infoTextDescription + `</p><br><h4 style="margin-top:0px">`+ infoTextValue +`</h4>`
 }
 
-function Tutorial(){
+function Tutorial (){
     const tutorialToDo = GetDBElements("Tutorial","tutorial_id","completed",0);
     
     let tutorialToDoPick = 1;
-    if (tutorialToDo.length == 1){
+    if (tutorialToDo.length === 1){
         tutorialToPick = 0;
     }
     let tutorialPercentage = FormattedNumber((tutorialToDo[tutorialToDoPick] - 1)/(Math.max.apply(Math,GetDBElements("Tutorial","tutorial_id",null,null)) - 1) * 100, 'percentage') + "%"
-    if (tutorialToDo.length == 1){
+    if (tutorialToDo.length === 1){
         tutorialPercentage = "Completed";
     }
     WindowPopUp(`
@@ -391,7 +391,7 @@ function Tutorial(){
             <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="if(GetDBElements('Tutorial','completed','tutorial_id',2) == 1 && GetDBElements('Tutorial','completed','tutorial_id',3) == 1){UpdateDB('Tutorial','completed',1,'tutorial_id',4); document.getElementById('TutorialWindow').remove()}"></button>
+            <button aria-label="Close" onclick="if (GetDBElements('Tutorial','completed','tutorial_id',2) === 1 && GetDBElements('Tutorial','completed','tutorial_id',3) === 1){UpdateDB('Tutorial','completed',1,'tutorial_id',4); document.getElementById('TutorialWindow').remove()}"></button>
             </div>
         </div>
         <div class="window-body" id="TutorialWindowContent">
@@ -407,12 +407,12 @@ function Tutorial(){
     `, "TutorialWindow","Desktop")
 }
 
-function UpdateTutorial(){
+function UpdateTutorial (){
     const tutorialUpdate = new Audio('Assets/Audio/TutorialUpdate.wav');
     const tutorialToDo = GetDBElements("Tutorial","tutorial_id","completed",0);
     //NOO
     let tutorialToDoPick = 1;
-    if (tutorialToDo.length == 0){
+    if (tutorialToDo.length === 0){
         tutorialToDoPick = 0;
     }
 
@@ -421,7 +421,7 @@ function UpdateTutorial(){
         tutorialPercentage = FormattedNumber((tutorialToDo[tutorialToDoPick] - 1)/(Math.max.apply(Math,GetDBElements("Tutorial","tutorial_id",null,null)) - 1) * 100, 'percentage') + "%"
     }
 
-    if (GetDBElements("Tutorial","tutorial_title","tutorial_id",tutorialToDo[tutorialToDoPick]) != document.getElementById("TutorialHeader").innerHTML){
+    if (GetDBElements("Tutorial","tutorial_title","tutorial_id",tutorialToDo[tutorialToDoPick]) !== document.getElementById("TutorialHeader").innerHTML){
         tutorialUpdate.play();
     }
     document.getElementById("TutorialWindowContent").innerHTML=`
@@ -434,7 +434,7 @@ function UpdateTutorial(){
     `;
 }
 
-async function Simulation(){
+async function Simulation (){
     const delay = ms => new Promise(res => setTimeout(res, ms));
     const nextDate = GetGameDate(1)
     document.getElementById("Body").innerHTML += `
@@ -461,15 +461,15 @@ async function Simulation(){
     const SimulationProgressBarsDetailProgressIndicator = document.getElementById("SimulationProgressBarsDetailProgressIndicator")
     
     await delay(1000)
-    await Simulate()
+    await simulateCity()
 }
 
-function WindowPopUpAdd(innerHTML,Source){
+function WindowPopUpAdd (innerHTML,Source){
     document.getElementById(Source).innerHTML += innerHTML;
     return;
 }
 
-async function WindowPopUp(innerHTML,id,Source){
+async function WindowPopUp (innerHTML,id,Source){
     //remove existing windows
     if (document.getElementById(id)){
      document.getElementById(id).remove()
@@ -480,18 +480,18 @@ async function WindowPopUp(innerHTML,id,Source){
     await WindowPopUpAdd(innerHTML,Source)
 
     //Make it draggable
-    if (id != "TutorialWindow"){
+    if (id !== "TutorialWindow"){
      DragElement(document.getElementById(id))
     }
 
     return;
 }
 
-function ToggleScroll(lockScroll){
+function ToggleScroll (lockScroll){
     const html = document.documentElement;
     const body = document.body;
 
-    if(lockScroll){
+    if (lockScroll){
         html.overflow = "hidden";
         body.overflow = "hidden";
     }

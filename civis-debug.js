@@ -1,6 +1,6 @@
 const debugMode = true
 
-async function Debug(){
+async function Debug (){
   if (debugMode){
     document.getElementById("StartBlocker").style.visibility = "hidden"
     await NewDB("Coolville")
