@@ -1,10 +1,13 @@
-async function simulateCity(){
-    await resetCityAttributes()
-    await demandCalculations()
-    await creationPolicySimulation()
-    await commercialSimulation()
-    await residentialSimulation()
-    await citizenSimulation()
+async function simulateCity(loop){
+    for (let i = 0; i < loop; i++){
+        await resetCityAttributes()
+        await demandCalculations()
+        await creationPolicySimulation()
+        await industrialSimulation()
+        await commercialSimulation()
+        await residentialSimulation()
+        await citizenSimulation()
+    }
 } 
 
 async function creationPolicySimulation(){
@@ -115,10 +118,8 @@ async function commercialSimulation(){
 
     const commercialBuildingsIds = GetDBElements('Commercial','commercial_id',null,null)
 
-    const loader = new LoadObject()
-
     for (id of commercialBuildingsIds){
-        commercialBuidlings.push(await loader.constructCommercial(id))
+        commercialBuidlings.push(await LoadObject.constructCommercial(id))
     }
 
     if (currentLowerCommercialAmount == 0){
@@ -138,16 +139,60 @@ async function commercialSimulation(){
         }
     }*/
 
-
-    //Below is debug for seeing each element in the array
-    //*
-    commercialBuidlings.forEach(function(entry) {
-        console.log(entry);
-        entry.save()
-    });//*/
-
+    for (object of commercialBuidlings){
+        object.simulate()
+        object.save()
+    }
 }
 
+async function industrialSimulation(){
+    let industrialBuildings = []
+    const currentIndustrialIds = GetDBElements('Industrial','industrial_id',null,null)
+    let currentIndustrialModelsMaterials = []
+    let availableIndustrialModelsMaterials = []
+    for (id of currentIndustrialIds){
+        const building = (await LoadObject.constructIndustrial(id)).init()
+        industrialBuildings.push(building)
+        currentIndustrialModelsMaterials.push(building.getStockMadeMaterialId())
+    }
+    const attributeIds = [16,17]
+
+    for (id of attributeIds){
+        const loop = GetDBElements('City_Attribute','attribute_value','city_attribute_id',id).length
+        for (let i = 0; i < loop; i++){
+            availableIndustrialModelsMaterials.push(id-15)
+        }
+    }       
+
+    let potentialIndustrialModelsMaterial = availableIndustrialModelsMaterials.filter(id => !currentIndustrialModelsMaterials.includes(id));
+
+    const chance = 1
+    if (Math.random() <= chance){
+        const chosenMaterial = potentialIndustrialModelsMaterial[Math.floor(Math.random() * potentialIndustrialModelsMaterial.length)]
+            potentialIndustrialModelsMaterial.forEach(function(entry) {
+                console.log(entry);
+            });
+        console.log(chosenMaterial)
+        potentialIndustrialModelsMaterial.splice(potentialIndustrialModelsMaterial.indexOf(chosenMaterial),1)
+        industrialBuildings.push(await industrialSimulationCreateRandomiser(chosenMaterial))
+    }
+
+
+    industrialBuildings.forEach(function(entry) {
+        console.log(entry);
+    });
+
+    for (const industrial of industrialBuildings){
+        industrial.save()
+    }
+}
+
+async function industrialSimulationCreateRandomiser(materialId){
+    const possibleModels = GetDBElements('Industrial_Model','industrial_model_id','stock_made_material_id',materialId)
+    let industrialBuilding = await (new Industrial(null,null,null,possibleModels[Math.floor(Math.random() * possibleModels.length)],null,2000))
+    await industrialBuilding.init()
+    return industrialBuilding
+}
 
 async function residentialSimulation(){
     const types = ['budget','lower','middle','upper','lowrent','affordable','regular','luxury']
@@ -155,10 +200,8 @@ async function residentialSimulation(){
 
     const residentialBuildingsIds = GetDBElements('Residential','residential_id',null,null)
 
-    const loader = new LoadObject()
-
     for (id of residentialBuildingsIds){
-        residentialBuildings.push(await loader.constructResidential(id))
+        residentialBuildings.push(await LoadObject.constructResidential(id))
     }
 
     for (type of types){
@@ -231,12 +274,11 @@ async function residentialSimulationCreateRandomiser(type){
 
 async function citizenSimulation(){
     const standardOfLiving = 500
-    const loader = new LoadObject()
     const citizenIds = GetDBElements("Citizen","citizen_id",null,null)
 
     let citizens = []
     for (citizenId of citizenIds){
-        citizens.push(loader.constructCitizen(citizenId))
+        citizens.push(LoadObject.constructCitizen(citizenId))
     }
     const happiness = 0.9
     //f(h) = 3.1log(h) {h in Real: 0<= h <=1}
@@ -252,22 +294,16 @@ async function citizenSimulation(){
     const actualGroupPopulation = actualGroupPopulationList.length
 
     const potentialdeltaGroupPopulation =  possibleGroupPopulation - actualGroupPopulation
-    console.log(`potentialdeltaGroupPopulation: ${potentialdeltaGroupPopulation}`)
 
     const turn = await GetDBElements('City_Attribute','attribute_value','city_attribute_id','1')
     for (let i = 0; i < potentialdeltaGroupPopulation; i++){
         const assignedRandomValue = Math.random()
         if (assignedRandomValue <= chance){
-            const citizen = await new Citizen(null,null,null,null,turn,standardOfLiving,null,0)
+            const citizen = await new Citizen(null,null,null,null,turn,standardOfLiving * 0.7,null,Math.floor(Math.random()*52*2) + 26)
             await citizen.init()
             citizens.push(citizen)
         }
     }
-    //Below is debug for seeing each element in the array
- 
-    citizens.forEach(function(entry) {
-        console.log(entry);
-    });//*/
 
     for (citizen of citizens){
         await citizen.simulate()
@@ -280,4 +316,6 @@ async function citizenSimulation(){
     printTable('Group_Residential_Collection')
     printTable('Residential')
     printTable('Building')
+    printTable('Industrial')
+    printTable('Employer')
 }

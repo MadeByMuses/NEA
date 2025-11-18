@@ -313,41 +313,41 @@ function Overview (){
     UpdateDB("Tutorial","completed",1,"tutorial_id",2)
     const cityName = GetDBElements("City","name","city_id",1) 
     WindowPopUp(`
-    <div class="window" id="OverviewWindow" style="width: 350px">
-        <div class="title-bar" id="OverviewWindowHeader">
+    <div class="window" id="Form" style="width: 350px">
+        <div class="title-bar" id="FormHeader">
             <div class="title-bar-text">`+ cityName +`</div>
             <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="document.getElementById('OverviewWindow').remove();UpdateDB('Tutorial','completed',1,'tutorial_id',3)"></button> <!-- That does not need to be an IF cause tutorial_id 2 is only true if this pops up --!>
+            <button aria-label="Close" onclick="document.getElementById('Form').remove();UpdateDB('Tutorial','completed',1,'tutorial_id',3)"></button> <!-- That does not need to be an IF cause tutorial_id 2 is only true if this pops up --!>
             </div>
         </div>
-        <div class="window-body" id="OverviewWindowContent">
+        <div class="window-body" id="FormContent">
             <p>The current data of ` + cityName + `:</p>
             <div class="field-row">
-                <input id="OverviewWindowRadioPopulation" type="radio" name="OverviewWindow">
-                <label for="OverviewWindowRadioPopulation">` + GetDBElements("City_Attribute","attribute_name","city_attribute_id",2) + `</label>
+                <input id="FormRadioPopulation" type="radio" name="Form">
+                <label for="FormRadioPopulation">` + GetDBElements("City_Attribute","attribute_name","city_attribute_id",2) + `</label>
             </div>
             <div class="field-row">
-                <input id="OverviewWindowRadioRevenue" type="radio" name="OverviewWindow">
-                <label for="OverviewWindowRadioRevenue">Revenue</label>
+                <input id="FormRadioRevenue" type="radio" name="Form">
+                <label for="FormRadioRevenue">Revenue</label>
             </div>
             <div class="field-row">
-                <input disabled id="OverviewWindowRadioPolicyCount" type="radio" name="OverviewWindow">
-                <label for="OverviewWindowRadioPolicyCount">Amount of policies collected</label>
+                <input disabled id="FormRadioPolicyCount" type="radio" name="Form">
+                <label for="FormRadioPolicyCount">Amount of policies collected</label>
             </div>
             <br>
             <button onclick="OverviewButton()">Submit</button>
-            <div id="OverviewWindowContentResponse"></div>
+            <div id="FormContentResponse"></div>
         </div>
     </div>
-    `, "OverviewWindow","Desktop")
+    `, "Form","Desktop")
 }
 
 function OverviewButton (){
-    document.getElementById("OverviewWindowContentResponse").innerHTML = ``
+    document.getElementById("FormContentResponse").innerHTML = ``
     let radioID = null
-    const overviews = document.querySelectorAll("input[name='OverviewWindow']")
+    const overviews = document.querySelectorAll("input[name='Form']")
     for (const radio of overviews){
         if (radio.checked){
             radioID = radio.id
@@ -359,18 +359,18 @@ function OverviewButton (){
         window.alert("No overview was selected, please select one")
         return
     }
-    document.getElementById("OverviewWindowContentResponse").innerHTML += `<hr>`
+    document.getElementById("FormContentResponse").innerHTML += `<hr>`
     let infoTextHeading = `Uh oh - 📺`
     let infoTextDescription = `This is not supposed to happen... sorry! I must have forgotten to update the responses. Send me a message about this please!`
     let infoTextValue = `Beep boop, I'm a mistake`
     switch (radioID){
-        case ("OverviewWindowRadioPopulation"):
+        case ("FormRadioPopulation"):
             infoTextHeading = GetDBElements("City_Attribute","attribute_name","city_attribute_id",2)
             infoTextDescription = GetDBElements("City_Attribute","attribute_description","city_attribute_id",2)
             infoTextValue = GetDBElements("City_Attribute","attribute_value","city_attribute_id",2)
             break
     }
-    document.getElementById("OverviewWindowContentResponse").innerHTML += `<h3>` + infoTextHeading + `</h3><p>` + infoTextDescription + `</p><br><h4 style="margin-top:0px">`+ infoTextValue +`</h4>`
+    document.getElementById("FormContentResponse").innerHTML += `<h3>` + infoTextHeading + `</h3><p>` + infoTextDescription + `</p><br><h4 style="margin-top:0px">`+ infoTextValue +`</h4>`
 }
 
 function Tutorial (){
@@ -461,7 +461,7 @@ async function Simulation (){
     const SimulationProgressBarsDetailProgressIndicator = document.getElementById("SimulationProgressBarsDetailProgressIndicator")
     
     await delay(1000)
-    await simulateCity()
+    await simulateCity(1)
 }
 
 function WindowPopUpAdd (innerHTML,Source){

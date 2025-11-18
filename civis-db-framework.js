@@ -54,10 +54,10 @@ async function NewDB(CityName) {
     (15,"High-Commercial Capacity","highcomc","The limit of high-commercials",0,1),
     (115,"High-Commercial Demand","highcomd","The demand of high-commercials",0,1),
 
-    (16,"Forest Industry Capacity","foresti","The limit of forest-industries",0,1),
-    (116,"Wood Availability","woodava","The amount of available wood in the city for buying",0,1),
-    (17,"Agriculture Industry Capacity","agriculturei","The limit of Agriculture-industries",0,1),
-    (117,"Agriculture Availability","agriava","The amount of available agriculture in the city for buying",0,1),
+    (16,"Forest Industry Capacity","forestc","The limit of forest-industries",0,1),
+    (116,"Forest Industry Demand","forestd","The amount of available wood in the city for buying",0,1),
+    (17,"Agriculture Industry Capacity","agric","The limit of Agriculture-industries",0,1),
+    (117,"Agriculture Industry Demand","agrid","The amount of available agriculture in the city for buying",0,1),
 
     (100,"Vehicle Capacity","vehiclec","The limit of vehicles on roads",0,1),
     (101,"Vehicle's in use","vehicleu","The number of vehicles on roads",0,1)`)
@@ -99,7 +99,7 @@ async function NewDB(CityName) {
   //Policies
   db.run(`CREATE TABLE Policy (policy_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_name VARCHAR(64), policy_category VARCHAR(64), policy_description VARCHAR (128), policy_act_cost float, dynamic_attribute_id INTEGER, cost_multiplier FLOAT);`)
   db.run(`INSERT INTO Policy (policy_name, policy_description, policy_category,policy_act_cost,dynamic_attribute_id, cost_multiplier) VALUES
-    ("This should only be seen for debugging","If you are seeing this then I apologies, something VERY BAD has happened- this is a debug policy which SHOULD NOT BE HAPPENING","Debug",0,null,0),
+    ("This should only be seen for debugging","If you are seeing this then I apologise, something VERY BAD has happened- this is a debug policy which SHOULD NOT BE HAPPENING","Debug",0,null,0),
     ("Roadhouse","lower residential capacity is increased by +3","Building",50,null,0),
     ("Mini-conviniece store","lower commercial capacity is increased by +1","Building",50,null,0),
     ("Small forest site","forest industry capacity is increased by +1","Building",50,null,0),
@@ -127,37 +127,69 @@ async function NewDB(CityName) {
   db.run(`CREATE TABLE Policy_Collection (policy_collection_id INTEGER PRIMARY KEY AUTOINCREMENT, policy_id INTEGER, policy_active BOOL, FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
 
   db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(128), city_visulisation_char CHAR(1))`)
-  db.run(`CREATE TABLE Commercial (commercial_id INTEGER PRIMARY KEY AUTOINCREMENT, building_id INTEGER, employer_id INTEGER, commercial_model_id INTEGER, stock_quantity INTEGER, money FLOAT, FOREIGN KEY (building_id) REFERENCES building(building_id))`)
-  db.run(`CREATE TABLE Commercial_Model (commercial_model_id INTEGER PRIMARY KEY AUTOINCREMENT, stock_material_id INTEGER, max_staff INTEGER, type VARCHAR(16), FOREIGN KEY (stock_material_id) REFERENCES Material(material_id))`)
-  db.run(`INSERT INTO Commercial_Model (stock_material_id, max_staff, type) VALUES 
-    (1,4,'primary'),
-    (1,6,'primary'),
+  db.run(`CREATE TABLE Inventory (inventory_id INTEGER PRIMARY KEY AUTOINCREMENT, industrial_id INTEGER, material_id INTEGER, quantity INTEGER, FOREIGN KEY (industrial_id) REFERENCES Industrial(industrial_id), FOREIGN KEY (material_id) REFERENCES Material(material_id))`)
+  db.run(`CREATE TABLE Industrial (industrial_id INTEGER PRIMARY KEY AUTOINCREMENT, building_id INTEGER, industrial_model_id INTEGER, money FLOAT, FOREIGN KEY (building_id) REFERENCES building(building_id))`)
+  db.run(`CREATE TABLE Industrial_Model (industrial_model_id INTEGER PRIMARY KEY AUTOINCREMENT, stock_made_material_id INTEGER, stock_made_quantity INTEGER NOT NULL, FOREIGN KEY (stock_made_material_id) REFERENCES Material(material_id))`)
+  db.run(`INSERT INTO Industrial_Model (industrial_model_id, stock_made_material_id, stock_made_quantity) VALUES
+    (1,1,100),
+    (2,2,100)`)
+  db.run(`CREATE TABLE Industrial_Model_Requirement (industrial_model_requirement_id INTEGER PRIMARY KEY AUTOINCREMENT, industrial_model_id INTEGER, material_id INTEGER NOT NULL, min_quantity INTEGER, quantity_used INTEGER, FOREIGN KEY (material_id) REFERENCES Material(material_id), FOREIGN KEY (industrial_model_id) REFERENCES Industrial_Model(industrial_model_id))`)
+  db.run(`INSERT INTO Industrial_Model_Requirement (industrial_model_id, material_id, min_quantity, quantity_used) VALUES
+    (0,0,0,0)`)
+  db.run(`CREATE TABLE Commercial (commercial_id INTEGER PRIMARY KEY AUTOINCREMENT, building_id INTEGER, commercial_model_id INTEGER, stock_quantity INTEGER, money FLOAT, FOREIGN KEY (building_id) REFERENCES building(building_id))`)
+  db.run(`CREATE TABLE Commercial_Model (commercial_model_id INTEGER PRIMARY KEY AUTOINCREMENT, stock_material_id INTEGER, min_stock INTEGER NOT NULL, type VARCHAR(16), FOREIGN KEY (stock_material_id) REFERENCES Material(material_id))`)
+  db.run(`INSERT INTO Commercial_Model (stock_material_id, min_stock ,type) VALUES 
+    (1,25,'primary'),
+    (2,25,'primary'),
     
-    (10,12,'regular'),
-    (10,8,'regular'),
-    (11,12,'regular'),
-    (11,14,'regular'),
-    (12,7,'regular'),
-    (12,10,'regular')`)
-  db.run(`CREATE TABLE Material (material_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(128), local_price FLOAT, trade_price FLOAT)`)
-  db.run(`INSERT INTO Material (name, local_price, trade_price) VALUES
-    ('Wood', 3, 5),
-    ('Agriculture', 2, 8)`)
-  db.run(`CREATE TABLE Employer (employer_id INTEGER PRIMARY KEY AUTOINCREMENT, employer_job_title VARCHAR(20), min_education_turns INT, wage FLOAT NOT NULL, citizen_id INTEGER, FOREIGN KEY (citizen_id) REFERENCES Citizen(citizen_id))`)
+    (10,35,'regular'),
+    (11,35,'regular'),
+    (12,35,'regular')`)  
+  db.run(`CREATE TABLE Employer_Template_Commercial (employer_template_commercial_id INTEGER PRIMARY KEY AUTOINCREMENT, commercial_model_id INTEGER, job_id INTEGER, amount INTEGER, FOREIGN KEY (commercial_model_id) REFERENCES Commercial_Model(commercial_model_id), FOREIGN KEY (job_id) REFERENCES Job(job_id))`)
+  db.run(`INSERT INTO Employer_Template_Commercial (commercial_model_id, job_id, amount) VALUES
+    (3,3,4),
+    (4,2,2),
+    (4,4,3),
+    (5,2,2),
+    (5,5,2)`)
+  db.run(`CREATE TABLE Employer_Template_Industrial (employer_template_industrial_id INTEGER PRIMARY KEY AUTOINCREMENT, industrial_model_id INTEGER, job_id INTEGER, amount INTEGER, FOREIGN KEY (industrial_model_id) REFERENCES Industrial_Model(industrial_model_id), FOREIGN KEY (job_id) REFERENCES Job(job_id))`)
+  db.run(`INSERT INTO Employer_Template_Industrial (industrial_model_id, job_id, amount) VALUES
+  (1,6,5),
+  (2,7,5)`)
+  db.run(`CREATE TABLE Employer (employer_listing_id INTEGER PRIMARY KEY AUTOINCREMENT, building_id INTEGER,job_id INTEGER, citizen_id INTEGER, FOREIGN KEY (citizen_id) REFERENCES Citizen(citizen_id), FOREIGN KEY (job_id) REFERENCES Job(job_id), FOREIGN KEY (building_id) REFERENCES Building(building_id))`)
+  db.run(`CREATE TABLE Job (job_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(24), wage FLOAT, min_education_weeks INTEGER, importance FLOAT)`)
+  db.run(`INSERT INTO Job (name,wage,min_education_weeks,importance) VALUES
+    ("CEO",500,200,1),
+    ("Store clerk",150,0,0.5),
+    ("Fishmonger",155,10,0.8),
+    ("Baker",155,10,0.8),
+    ("Butcher",155,10,0.8),
+    ("Lumberjack",155,15,0.6),
+    ("Farmer",155,25,0.6)
+    `)
+  db.run(`CREATE TABLE Material (material_id INTEGER PRIMARY KEY, name VARCHAR(128), local_price FLOAT, trade_price FLOAT)`)
+  db.run(`INSERT INTO Material (material_id,name, local_price, trade_price) VALUES
+    (1,'Wood', 3, 5),
+    (2,'Agriculture', 2, 5),
+    (10,'Processed Fish', 4, 7),
+    (11,'Baked Goods', 4, 8),
+    (12,'Meat', 3, 8)`)
   db.run(`CREATE TABLE Residential (residential_id INTEGER PRIMARY KEY AUTOINCREMENT, building_id INTEGER, residential_model_id INTEGER, FOREIGN KEY (residential_model_id) REFERENCES Residential_Model(residential_model_id))`)
   db.run(`CREATE TABLE Residential_Model (residential_model_id INTEGER PRIMARY KEY AUTOINCREMENT, max_groups INTEGER, rent FLOAT, type VARCHAR(16))`)
   db.run(`INSERT INTO Residential_Model (max_groups, rent, type) VALUES
-    (2,10,'budget'),
-    (3,10,'budget'),
-    (4,10,'budget'),
-    (5,10,'budget')`)
+    (2,25,'budget'),
+    (3,25,'budget'),
+    (4,25,'budget'),
+    (5,20,'budget')`)
   db.run(`CREATE TABLE Citizen (citizen_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(32), parent_id INTEGER,turn_of_birth INTEGER, money FLOAT, residential_id INTEGER, education_weeks INTEGER, dead BOOLEAN)`)
   db.run(`CREATE TABLE Group_Collection (group_collection_id INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER, citizen_id INTEGER, FOREIGN KEY (citizen_id) REFERENCES Citizen(citizen_id))`)
   db.run(`CREATE TABLE Group_Residential_Collection (group_residential_id INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER, residential_id INTEGER, FOREIGN KEY (group_id) REFERENCES Group_Collection(group_id), FOREIGN KEY (residential_id) REFERENCES Residential(residential_id))`)
+
   if (!debugMode){
     StartUp()
   };
 }
+
 
 //LOAD function
 function LoadDB(){
@@ -376,21 +408,30 @@ function saveResidential(residentialId, buildingId, residentialModelId){
   db.run(`UPDATE Residential SET building_id = ${Number(buildingId)}, residential_model_id = ${Number(residentialModelId)} WHERE residential_id = ${Number(residentialId)}`)
 }
 
-function saveCommercial(commercialId,buildingId,commercialModelId, employerId, stockQuantity, money){
+function saveCommercial(commercialId,buildingId,commercialModelId, stockQuantity, money){
   console.log(`commercial of commercialId ${commercialId} is being saved`)
   if (!commercialId){
     console.error("commercialId is not valid")
     return
   }
-  
-  console.log({commercialId, buildingId, commercialModelId, employerId, stockQuantity, money});
 
-  db.run(`UPDATE Commercial SET building_id = ${Number(buildingId)}, commercial_model_id = ${Number(commercialModelId)}, employer_id = ${Number(employerId)}, stock_quantity = ${Number(stockQuantity)}, money = ${Number(money)} WHERE commercial_id = ${Number(commercialId)}`)
+  db.run(`UPDATE Commercial SET building_id = ${Number(buildingId)}, commercial_model_id = ${Number(commercialModelId)}, stock_quantity = ${Number(stockQuantity)}, money = ${Number(money)} WHERE commercial_id = ${Number(commercialId)}`)
+}
+
+function saveIndustrial(industrialId, buildingId, industrialModelId, money, inventory){
+  console.log(`industrial of industrialId ${industrialId} is being saved`)
+  if (!industrialId){
+    console.error("industrialId is not valid")
+    return
+  }
+  db.run(`UPDATE Industrial SET building_id = ${Number(buildingId)}, industrial_model_id = ${Number(industrialModelId)}, money = ${Number(money)} WHERE industrial_id = ${Number(industrialId)}`)
+  for (inv of inventory){
+    db.run(`UPDATE Inventory SET quantity = ${Number(inv[2])}, material_id = ${Number(inv[1])} WHERE inventory_id = ${Number(inv[0])}`)
+  }
 }
 
 //db.run(`CREATE TABLE Citizen (citizen_id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(32), parent_id INTEGER,turn_of_birth INTEGER, money FLOAT, education_weeks INTEGER, dead BOOLEAN)`)
 async function saveCitizen(citizenId,name,parentId,turnOfBirth,money,residentialId,educationWeeks,dead,groupId){
-  console.log(money)
   console.log("citizen of citizenId " + citizenId + " is being saved")
   if (!citizenId){
     console.error("citizenId is not valid")
@@ -399,8 +440,6 @@ async function saveCitizen(citizenId,name,parentId,turnOfBirth,money,residential
   if (parentId != null){
     parentId = Number(parentId)
   }
-  
-  console.log(GetDBElements("Citizen","citizen_id",null,null))
   //Citizen Table
   db.run(`UPDATE Citizen SET name = "${name}", parent_id = ${parentId},turn_of_birth = ${Number(turnOfBirth)}, money = ${Number(money)}, education_weeks = ${Number(educationWeeks)}, dead = ${Number(dead)} WHERE citizen_id = ${Number(citizenId)};`)
 

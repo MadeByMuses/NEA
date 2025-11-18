@@ -1,4 +1,5 @@
-/* Make it all pixel font*/
+/* Global style */
+
 *{
     font-family: "Jersey 10", sans-serif;
     font-weight: 400;
@@ -6,18 +7,21 @@
     color: black;
 }
 
-h4{
-    font-size: 1.2rem !important;
-    margin: 0 !important;
+/* Makes it the 98 aesthtics*/
+body {
+    background-color: #008080;
 }
 
-h3{
+h3, h4, p {
     margin: 0 !important;
+}
+h4{
+    font-size: 1.2rem !important;
 }
 p {
     font-size: 14px !important;
-    margin: 0 !important;
 }
+
 
 /*Better cursor*/
 button{
@@ -26,7 +30,12 @@ button{
     cursor: grab;
 }
 
+
+
+/* ------------- */
 /* Start Blocker */
+/* ------------- */
+
 #StartBlocker {
     height: 100vh;
     width: 100vw;
@@ -60,31 +69,24 @@ button{
     color: white;
 }
 
+
+/* ------------- */
+/* Windows and pop ups */
+/* ------------- */
 /* Make sure the popup is centre or where I want it*/
-#Form, #OverviewWindow, #TutorialWindow, #IntroForm{
+#Form, #TutorialWindow, #IntroForm{
     position: absolute !important;
     top: 0;
     left:0;
     color: black;
-}
-#TutorialWindow, #IntroForm{
-    transform: translate(calc(50vw - 175px), calc(50vh - 250px));
-}
-#OverviewWindow{
-    transform: translate(calc(75vw - 175px), calc(40vh - 250px));
-}
-#Form {
-    transform: translate(calc(75vw - 175px), calc(35vh - 250px));
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* Scary colour*/
 #FormWarning{
     color:red;
-}
-
-/* Makes it the 98 aesthtics*/
-body {
-    background-color: #008080;
 }
 
 /*Used for the transition to OS*/
@@ -106,6 +108,12 @@ body {
         background-color: black;
     }
 }
+
+
+/* ------ */
+/* OS */
+/* ------ */
+
 
 /*OS*/
 #OS{
@@ -220,17 +228,10 @@ margin-top: 0%;
     grid-area: auto;
     width:auto;
   }
-  #OverviewWindow{
-    transform: translate(calc(50vw - 175px), calc(50vh - 250px));
-  }
   #TaskbarPopulation, #TaskbarCurrentFunds{
     display: none;
   }
-    #Form {
-        transform: translate(calc(50vw - 175px), calc(35vh - 250px));
-    }
 }
-
 
 /*For some reason this just does not like to work if you group them underone statement and share the backgroundposition, and I just don't know why*/
 #icon1 {
