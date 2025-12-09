@@ -73,7 +73,7 @@ function DragElement(element) {
 
     //Is it pass the limits?
     if (boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
-      if (element.id === "OverviewWindow"){
+      if (element.id === "Form"){
         UpdateDB("Tutorial","completed",1,"tutorial_id",3)
       }
       element.remove(); //DEATH TO THE WINDOW
@@ -177,12 +177,12 @@ async function StartUp(){
   document.getElementById("OS").remove()
 }
 
-function PrepareDesktop(){
+async function PrepareDesktop(){
   if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] === 1){
     Overview()
   }
-  if (GetDBElements("Tutorial","completed","tutorial_id",4) === 0){
-    Tutorial()
+  if (GetDBElements("Tutorial","completed","tutorial_id",4)[0] === 0){
+    await Tutorial()
   }
   //Taskbar
   document.getElementById("TaskbarDate").innerText = "Today's date is... " + GetGameDate()

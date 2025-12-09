@@ -1,28 +1,64 @@
-async function simulateCity(loop){
-    for (let i = 0; i < loop; i++){
+async function simulateCity(){    
+    for (let i = 0; i < 1; i++){
+        document.getElementById('SimulationBlockerHeader').innerHTML = 'Simulating - ' + await GetGameDate(1)
+        updateProgressBars(0,"",0,"")
         await resetCityAttributes()
+        //10 
         await demandCalculations()
+        //4
         await creationPolicySimulation()
+        //10
         await industrialSimulation()
+        //19
         await commercialSimulation()
+        //19
         await residentialSimulation()
+        //19
         await citizenSimulation()
+        //19
+        await UpdateDB("City_Attribute","attribute_value",await GetDBElements("City_Attribute","attribute_value","city_attribute_id",1)[0] + 1,"city_attribute_id",1)
+        
+        updateProgressBars(100,"Completed all tasks",100,"Returning to simulation screen")
     }
+        printTable("Employer")
+        printTable("Industrial")
+        printTable("Commercial")
+        printTable("Inventory")
+        printTable("Citizen")
+        printTable("Residential")
+        printTable("Group_Collection")
+        printTable("Group_Residential_Collection")
+        printTable("Building")
+    document.getElementById('SimulationBlocker').remove()
 } 
 
+async function resetCityAttributes(){
+    let counter = 0
+    const attributeIds = GetDBElements("City_attribute","city_attribute_id","clear_on_simulation",1)
+    const total = attributeIds.length
+    for (const id of attributeIds){
+        counter++
+        await updateProgressBars(10*(counter/total),"Reseting city attribute values",100 * (counter/total), String(await GetDBElements("City_attribute","attribute_name","city_attribute_id",id)) + " is being reset")
+        await UpdateDB("City_Attribute","attribute_value",0,"city_attribute_id",id)
+    }
+}
+
+async function demandCalculations(){
+    if (GetDBElements("Citizen","citizen_id",null,null).length === 0){
+        UpdateDB("City_Attribute","attribute_value",100,"city_attribute_id",106)
+    }
+    await updateProgressBars(10 + (4*(1)),"Calculating demand",(100), "")
+}
+
 async function creationPolicySimulation(){
-    //document elements
-    //policies to use
     const policies = GetDBElements("Policy_Collection","policy_id","policy_active",1);
-    let attribute_iteration = 0;
-    for (policy of policies){
-        attribute_iteration++;
-        SimulationProgressBarsDetail.innerHTML = "Implementing policies";
-        SimulationProgressBarsDetailProgressIndicator.style.width = "5%";
-        SimulationProgressBarsDetailSpecificsProgressIndicator.style.width = (attribute_iteration/policies.length) * 100 + "%";
-        SimulationProgressBarsDetailSpecifics.innerHTML = "Calculating: " + GetDBElements("Policy","policy_name","policy_id",policy);
+    let attributeIteration = 0;
+    const total = policies.length
+    for (const policy of policies){
+        attributeIteration++;
+        await updateProgressBars(14 + (10 * (attributeIteration/total)),"Implementing policies",100 * (attributeIteration/total), "Calculating: " + String(await GetDBElements("Policy","policy_name","policy_id",policy)[0]))
         const effects = GetDBElements("Policy_Effect","policy_effect_id","policy_id",policy);
-        for (effect of effects){
+        for (const effect of effects){
             switch (GetDBElements("Policy_Effect","method","policy_effect_id",effect).toString().toLowerCase()){
                 case "add":
                 case "addition":
@@ -87,27 +123,84 @@ async function creationPolicySimulation(){
                     )
                     break;
             }
-            await new Promise(res => setTimeout(res, 10));
+            //await new Promise(res => setTimeout(res, 10));
         }
     }
 }
 
-async function resetCityAttributes(){
-    let attribute_iteration = 0
-    const attribute_ids = GetDBElements("City_attribute","city_attribute_id","clear_on_simulation",1)
-    document.getElementById("SimulationProgressBarsDetail").innerHTML = "Setting Up Simulations"
-    for (attribute of attribute_ids){
-        attribute_iteration++;
-        SimulationProgressBarsDetailSpecificsProgressIndicator.style.width = (attribute_iteration/attribute_ids.length) * 100 + "%";
-        SimulationProgressBarsDetailSpecifics.innerHTML = "Preparing: " + GetDBElements("City_Attribute","attribute_name","city_attribute_id",attribute)
-        UpdateDB("City_Attribute","attribute_value",0,"city_attribute_id",attribute)
+async function industrialSimulation(){
+
+    let attributeIds = {
+        16:0,
+        17:0,
+        21:0
+    }
+
+    let industrialBuildings = []
+    const currentIndustrialIds = GetDBElements('Industrial','industrial_id',null,null)
+    let currentIndustrialModelsMaterials = []
+    let availableIndustrialModelsMaterials = []
+
+    for (const id of currentIndustrialIds){
+        const building = await LoadObject.constructIndustrial(id)
+        industrialBuildings.push([building,await building.getOrderIndex()])
+        attributeIds[await building.getStockMadeMaterialId()] -= 1
+    }
+
+    for (let id of Object.keys(attributeIds)){
+        const count = GetDBElements('City_Attribute','attribute_value','city_attribute_id',id)[0]
+        attributeIds[id] += count
+    }
+
+
+    let potentialIndustrialModelsMaterial = []
+    for (const[key,value] of Object.entries(attributeIds)){
+        for (let i = 0; i < value; i++){
+            potentialIndustrialModelsMaterial.push(Number(key) - 15)
+        }
+    }
+
+    if (potentialIndustrialModelsMaterial == null){
+        return
+    }
+    potentialIndustrialModelsMaterial = await SortingObject.shuffle(potentialIndustrialModelsMaterial)
+    const loopLength = potentialIndustrialModelsMaterial.length
+    const chance = 1
+    for (let i = 0; i < loopLength; i++){
+        if (Math.random() <= chance){
+            console.log(potentialIndustrialModelsMaterial)
+            const chosenMaterial = potentialIndustrialModelsMaterial.pop()
+                /*potentialIndustrialModelsMaterial.forEach(function(entry) {
+                    console.log(entry);
+                });
+            console.log(chosenMaterial)*/
+            const building = await industrialSimulationCreateRandomiser(chosenMaterial)
+            industrialBuildings.push([building,await building.getOrderIndex()])
+        }
+    }
+
+
+    /*industrialBuildings.forEach(function(entry) {
+        console.log(entry);
+    });*/
+
+    let industrialIteration = 0
+    const total = industrialBuildings.length
+    industrialBuildings = await SortingObject.mergeSort(industrialBuildings,1)
+    for (let industrial of industrialBuildings){
+        industrial = industrial[0]
+        industrialIteration++
+        await industrial.simulate()
+        await industrial.save()
+        updateProgressBars(24 + (19*(industrialIteration/total)),"Simulating Industrial", 100 * (industrialIteration/total), "Simulating " + industrial.getName() + ": ")
     }
 }
 
-function demandCalculations(){
-    if (GetDBElements("Citizen","citizen_id",null,null).length === 0){
-        UpdateDB("City_Attribute","attribute_value",100,"city_attribute_id",106)
-    }
+async function industrialSimulationCreateRandomiser(materialId){
+    const possibleModels = GetDBElements('Industrial_Model','industrial_model_id','stock_made_material_id',Number(materialId))
+    let industrialBuilding = await (new Industrial(null,null,null,possibleModels[Math.floor(Math.random() * possibleModels.length)],2000))
+    await industrialBuilding.init()
+    return industrialBuilding
 }
 
 async function commercialSimulation(){
@@ -126,7 +219,7 @@ async function commercialSimulation(){
         const regularModelIds = GetDBElements('Commercial_Model','commercial_model_id','type','regular')
         for (let i = 0; i < deltaLowerCommercialAmount; i++){
             const id = regularModelIds[Math.floor(Math.random() * regularModelIds.length)]
-            const building = await new Commercial(null,null,null,id,0,0,10000)
+            const building = await new Commercial(null,null,null,id,0,1000)
             await building.init()
             commercialBuidlings.push(building)
         }
@@ -139,59 +232,14 @@ async function commercialSimulation(){
         }
     }*/
 
-    for (object of commercialBuidlings){
-        object.simulate()
-        object.save()
+    let commercialIteration = 0
+    const total = commercialBuidlings.length
+    for (commercial of commercialBuidlings){
+        await commercial.simulate()
+        await commercial.save()
+        commercialIteration++
+        updateProgressBars(43 + (19*(commercialIteration/total)),"Simulating Industrial", 100 * (commercialIteration/total), "Simulating " + commercial.getName() + ": ")
     }
-}
-
-async function industrialSimulation(){
-    let industrialBuildings = []
-    const currentIndustrialIds = GetDBElements('Industrial','industrial_id',null,null)
-    let currentIndustrialModelsMaterials = []
-    let availableIndustrialModelsMaterials = []
-    for (id of currentIndustrialIds){
-        const building = (await LoadObject.constructIndustrial(id)).init()
-        industrialBuildings.push(building)
-        currentIndustrialModelsMaterials.push(building.getStockMadeMaterialId())
-    }
-    const attributeIds = [16,17]
-
-    for (id of attributeIds){
-        const loop = GetDBElements('City_Attribute','attribute_value','city_attribute_id',id).length
-        for (let i = 0; i < loop; i++){
-            availableIndustrialModelsMaterials.push(id-15)
-        }
-    }       
-
-    let potentialIndustrialModelsMaterial = availableIndustrialModelsMaterials.filter(id => !currentIndustrialModelsMaterials.includes(id));
-
-    const chance = 1
-    if (Math.random() <= chance){
-        const chosenMaterial = potentialIndustrialModelsMaterial[Math.floor(Math.random() * potentialIndustrialModelsMaterial.length)]
-            potentialIndustrialModelsMaterial.forEach(function(entry) {
-                console.log(entry);
-            });
-        console.log(chosenMaterial)
-        potentialIndustrialModelsMaterial.splice(potentialIndustrialModelsMaterial.indexOf(chosenMaterial),1)
-        industrialBuildings.push(await industrialSimulationCreateRandomiser(chosenMaterial))
-    }
-
-
-    industrialBuildings.forEach(function(entry) {
-        console.log(entry);
-    });
-
-    for (const industrial of industrialBuildings){
-        industrial.save()
-    }
-}
-
-async function industrialSimulationCreateRandomiser(materialId){
-    const possibleModels = GetDBElements('Industrial_Model','industrial_model_id','stock_made_material_id',materialId)
-    let industrialBuilding = await (new Industrial(null,null,null,possibleModels[Math.floor(Math.random() * possibleModels.length)],null,2000))
-    await industrialBuilding.init()
-    return industrialBuilding
 }
 
 async function residentialSimulation(){
@@ -220,9 +268,12 @@ async function residentialSimulation(){
     });*/
 
 
+    let residentialIteration = 0
+    const total = residentialBuildings.length
     for (residentialBuilding of residentialBuildings){
         residentialBuilding.simulate()
         residentialBuilding.save()
+        updateProgressBars(62 + (19*(residentialIteration/total)),"Simulating Residential", 100 * (residentialIteration/total), "Simulating " + residentialBuilding.getName() + ": ")
     }
 }
 
@@ -278,7 +329,7 @@ async function citizenSimulation(){
 
     let citizens = []
     for (citizenId of citizenIds){
-        citizens.push(LoadObject.constructCitizen(citizenId))
+        citizens.push(await LoadObject.constructCitizen(citizenId))
     }
     const happiness = 0.9
     //f(h) = 3.1log(h) {h in Real: 0<= h <=1}
@@ -299,23 +350,32 @@ async function citizenSimulation(){
     for (let i = 0; i < potentialdeltaGroupPopulation; i++){
         const assignedRandomValue = Math.random()
         if (assignedRandomValue <= chance){
-            const citizen = await new Citizen(null,null,null,null,turn,standardOfLiving * 0.7,null,Math.floor(Math.random()*52*2) + 26)
+            const citizen = await new Citizen(null,null,null,null,turn - Math.floor(((Math.random() * 20) + 20)*52),standardOfLiving * 0.7,null,Math.floor(Math.random()*52*2) + 26)
             await citizen.init()
             citizens.push(citizen)
         }
     }
 
+    let citizenIteration = 0
+    const total = citizens.length
     for (citizen of citizens){
+        citizenIteration++
         await citizen.simulate()
         await citizen.save()
+        updateProgressBars(81 + (19*(citizenIteration/total)),"Simulating Citizen", 100 * (citizenIteration/total), "Simulating " + citizen.getName() + ": ")
     }
+}
 
-    printTable('Citizen')
-    printTable('Commercial')
-    printTable('Group_Collection')
-    printTable('Group_Residential_Collection')
-    printTable('Residential')
-    printTable('Building')
-    printTable('Industrial')
-    printTable('Employer')
+async function updateProgressBars(progress, text, specificProgress, specificText){
+    const SimulationProgressBarsDetailSpecificsProgressIndicator = document.getElementById("SimulationProgressBarsDetailSpecificsProgressIndicator")
+    const SimulationProgressBarsDetailSpecifics = document.getElementById("SimulationProgressBarsDetailSpecifics")
+    const SimulationProgressBarsDetail = document.getElementById("SimulationProgressBarsDetail")
+    const SimulationProgressBarsDetailProgressIndicator = document.getElementById("SimulationProgressBarsDetailProgressIndicator")
+
+    SimulationProgressBarsDetail.innerHTML = text
+    SimulationProgressBarsDetailProgressIndicator.style.width = (progress) + "%"
+    SimulationProgressBarsDetailSpecifics.innerHTML = specificText
+    SimulationProgressBarsDetailSpecificsProgressIndicator.style.width = (specificProgress) + "%"
+
+    await new Promise(r => setTimeout(r));
 }

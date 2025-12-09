@@ -226,9 +226,10 @@ class Residential extends Building {
     async simulate(){
         const residentialId = await this.getResidentialId();
         const citizenIds = await GetDBElements('Citizen','citizen_id','residential_id',residentialId)
-        for (citizenId of citizenIds){
-            const citizen = LoadObject.constructCitizen(citizenIds)
+        for (const citizenId of citizenIds){
+            const citizen = LoadObject.constructCitizen(citizenId)
             await citizen.payRentShare(this.getRent())
+            await citizen.save()
         }
     }
 
@@ -331,7 +332,7 @@ class Citizen extends Entity{
     async createGroupId(){
         if (this.getGroupId() == null){
             if(this.getParentId() != null){
-                const parent = await createCitizen(await this.getParentId())
+                const parent = await constructCitizen(await this.getParentId())
                 this.insertIntoProtectedData('groupId',parent.getGroupId())
             }
             else{
@@ -383,7 +384,9 @@ class Citizen extends Entity{
         //budget
         const budget = ((this.getMoney() * 2) / 3) //TODO when wages are implemnted make sure the budget includes this
         let selectionOfHomes = []
-        selectionOfHomes = availableHouses().slice(0,20)
+        const homes = await availableHouses();
+        selectionOfHomes = homes.slice(0,20);
+
 
         let housesInBudget = []
         for (const home of selectionOfHomes){
@@ -400,30 +403,39 @@ class Citizen extends Entity{
     }
 
     async findJob(){
-        const jobsAvailable = GetDBElements('Employer','employer_listing_id','citizen_id',null).slice(0,25)
+        if (await GetDBElements("Employer","employer_listing_id","citizen_id",await this.getCitizenId()).length != 0)
+        {
+            return
+        }
+        const jobsAvailable = SortingObject.shuffle(await GetDBElements('Employer','employer_listing_id','citizen_id',-1)).slice(0,25)
+        if (!Array.isArray(jobsAvailable)){
+            jobsAvailable = [jobsAvailable]
+        }
         let jobs = []
-        for (const job of jobsAvailable){
-            const jobWeeks = GetDBElements('Job','min_education_weeks','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])
-            const jobWage = GetDBElements('Job','wage','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])
-            const rating = (Math.pow(Math.E,-1 * (Math.pow((this.getEducationTurns() - jobWeeks),2))/(2*Math.pow((Math.max(1,jobWeeks)),2))) * Math.min((Math.log(jobWage+1))/(Math.log(1000 * (jobWeeks + 1))),1))
-            jobs.push([job,rating])
+        for (let i = 0; i < jobsAvailable.length; i++){
+            let listingId = jobsAvailable[i]
+            let jobId = await GetDBElements('Employer','job_id','employer_listing_id',listingId)[0]
+            const jobWeeks = await GetDBElements('Job','min_education_weeks','job_id',jobId)[0]
+            const jobWage = await GetDBElements('Job','wage','job_id',jobId)[0]
+            const rating = (Math.pow(Math.E,-1 * (Math.pow((this.getEducationTurns() - jobWeeks),2))/(2*Math.pow((Math.max(1,jobWeeks)),2))) * Math.min((Math.log(jobWage+1))/(Math.log(1000 * (jobWeeks + 1))),1)) + (Math.random() * 0.2)
+            jobs.push([listingId,rating])
         }
 
-        jobs = SortingObject.mergeSort(jobs,1)
+        
+        SortingObject.mergeSort(jobs,1)
+        jobs.reverse()
         
         for (const job of jobs){
             const buildingId = GetDBElements('Employer','building_id','employer_listing_id',job[0])[0]
             if (GetDBElements('Commercial','commercial_id','building_id',buildingId).length != 0){
-                const employer = await LoadObject.constructCommmercial(GetDBElements('Commercial','commercial_id','building_id',buildingId)[0])
-                const result = await employer.applicationForJob(this,job[0])
-                if (result){
+                const employer = await LoadObject.constructCommercial(await GetDBElements('Commercial','commercial_id','building_id',buildingId)[0])
+                if (await employer.applicationForJob(this,job[0])){
                     return
                 }
             }
             else{
-                const employer = await LoadObject.constructIndustrial(GetDBElements('Industrial','industrial_id','building_id',buildingId)[0])
-                const result = await employer.applicationForJob(this,job[0])
-                if (result){
+                const employer = await LoadObject.constructIndustrial(await GetDBElements('Industrial','industrial_id','building_id',buildingId)[0])
+                if (await employer.applicationForJob(this,job[0])){
                     return
                 }
             }
@@ -433,7 +445,7 @@ class Citizen extends Entity{
     async payRentShare(rent) {
         const group = GetDBElements("Group_Collection","citizen_id","group_id",this.getGroupId()) 
         let adultGroup = []
-        for (citizenId of group){
+        for (const citizenId of group){
             if ((18 * 52) > GetDBElements("Citizen","turnOfBirth","citizen_id",citizenId)){
                 adultGroup.push(citizenId)
             }
@@ -456,6 +468,10 @@ class Citizen extends Entity{
 
         //TODO dead mechanic
         await saveCitizen(citizenId,name,parentId,turnOfBirth,money,residentialId,educationTurns,false,groupId)
+    }
+
+    async payDay(wage){
+        this.insertIntoProtectedData('money',this.getMoney() + wage)
     }
 }
 
@@ -500,7 +516,7 @@ class Commercial extends Building{
         if (this.getName() == null){
             const names = await loadNames();
             let newName = 'Regular Store'
-            switch (Number(this.getStockMaterialId())){
+            switch (Number(await this.getStockMaterialId())){
                 case(10):
                     newName = names.commercialFishStore.generate();
                 case(11):
@@ -521,17 +537,16 @@ class Commercial extends Building{
     }
     
     async createJobs(){
-        
-
-        if (GetDBElements("Employer","employer_listing_id","building_id",this.getBuildingId()).length == 0){
-            let jobsToAdd = GetDBElements('Employer_Template_Commercial','job_id','commercial_model_id',await this.getCommercialModelId())
-            for (let job of jobsToAdd){
-                for (let i = 0; i < GetDBElementsDoubleCondition('Employer_Template_Commercial','amount','commercial_model_id',await this.getCommercialModelId(),'job_id',job)[0]; i++){
-                    InsertDB('Employer','(building_id,job_id,citizen_id)','('+this.getBuildingId()+','+job+',null)')
+        const listedJobsCount = await GetDBElements("Employer","employer_listing_id","building_id",await this.getBuildingId()).length
+        if (listedJobsCount == 0){
+            let jobsToAdd = await GetDBElements('Employer_Template_Commercial','job_id','commercial_model_id',await this.getCommercialModelId())
+            for (const job of jobsToAdd){
+                const loop = await GetDBElementsDoubleCondition('Employer_Template_Commercial','amount','commercial_model_id',await this.getCommercialModelId(),'job_id',job)[0]
+                for (let i = 0; i < loop; i++){
+                    await InsertDB('Employer','(building_id,job_id,citizen_id)','('+this.getBuildingId()+','+job+',-1)')
                 }
             }
         }
-        printTable('Employer')
     }
 
     getCommercialId() {
@@ -553,13 +568,14 @@ class Commercial extends Building{
         return this.getProtectedData().minStock
     }
 
-    applicationForJob(citizen,job){
-        const minWeeks = GetDBElements('Job','min_education_weeks','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])[0]
-        const importance = GetDBElements('Job','importance','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])[0]
+    async applicationForJob(citizen,job){  
+        const jobId = await GetDBElements('Employer','job_id','employer_listing_id',job)[0]
+        const minWeeks = await GetDBElements('Job','min_education_weeks','job_id', jobId)[0]
+        const importance = await GetDBElements('Job','importance','job_id',jobId)[0]
         const eduDifference = citizen.getEducationTurns() - minWeeks
         let qualificationFactor = 0
         if (eduDifference >= 0){
-            qualificationFactor = GetDBElements('Job','importance','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])[0]
+            qualificationFactor = importance
         }
         else{
             qualificationFactor = Math.pow(Math.E,-1 * (Math.pow(eduDifference,2)/(2*(1-(5*importance/6))*Math.pow(Math.max(1,0.7*minWeeks))),2))
@@ -574,7 +590,26 @@ class Commercial extends Building{
 
     async simulate(){
         //purchase simulation
+        await this.payWorkers()
         await this.purchase()
+    }
+
+    async payWorkers(){
+        //remove this as wages should be paid prior to purchasing
+        const jobsCurrent = GetDBElements("Employer","employer_listing_id","building_id", this.getBuildingId())
+        if (jobsCurrent != null){
+            for (const id of jobsCurrent){
+                const citizenId = GetDBElements("Employer","citizen_id","employer_listing_id",id)[0]
+                if (citizenId != -1){
+                    const jobId = GetDBElements("Employer","job_id","employer_listing_id",id)[0]
+                    const wage = await GetDBElements('Job','wage','job_id',jobId)
+                    let citizen = await LoadObject.constructCitizen(citizenId)
+                    await citizen.payDay(wage)
+                    await citizen.save()
+                    this.insertIntoProtectedData('money', this.getMoney() - wage)
+                }
+            }
+        }
     }
 
     async purchase(){
@@ -583,47 +618,38 @@ class Commercial extends Building{
         const importStockPrice = await GetDBElements("Material","trade_price","material_id",await this.getStockMaterialId())[0]
         const localStockPrice = await GetDBElements("Material","local_price","material_id",await this.getStockMaterialId())[0]
         let stockToBuy = stockQuantity - minStock
+
         if (stockToBuy >= 0){
             return
         }
-        stockToBuy *= 2
+        stockToBuy *= -2
 
-        //remove this as wages should be paid prior to purchasing
-        const jobsCurrent = GetDBElements("Employer","employer_listing_id","building_id",await this.getBuildingId())
-        let jobsWorking = []
-        jobsCurrent.forEach(job => {
-            if (GetDBElements("Employer","citizen_id","employer_listing_id",job)[0] !== null){
-            jobsWorking.push(GetDBElements("Employer","job_id","employer_listing_id",job)[0])
-            }
-        });
-        let currentExplicitCosts = 0
-        jobsWorking.forEach( job => {
-            currentExplicitCosts += GetDBElements("Job","wage","job_id",job)[0]
-        })
-
-        let budget = await this.getMoney() - currentExplicitCosts
+        let budget = await this.getMoney() * 0.45
         if (budget <= 0){
             return
         }
 
-        const listOfPossiblePlacesToBuy = GetDBElementsDoubleCondition("Inventory","inventory_id","material_id",await this.getStockMaterialId())
+        const listOfPossiblePlacesToBuy = await GetDBElements("Inventory","inventory_id","material_id",await this.getStockMaterialId())
         let listOfPlacesToBuy = []
         for (const id of listOfPossiblePlacesToBuy){
-            if (GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',await GetDBElements('Industrial','industrial_model_id','industrial_id',await GetDBElements('Inventory','industrial_id','inventory_id',id)[0])[0])[0]  == this.getStockMaterialId()){
+            const industrialId = await GetDBElements('Inventory','industrial_id','inventory_id',id)[0]
+            const modelId = await GetDBElements('Industrial','industrial_model_id','industrial_id',industrialId)[0]
+            if (await GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',modelId)[0]  == this.getStockMaterialId()){
                 listOfPlacesToBuy.push(id)
             }
         }
-        //the list is then shuffled to ensure that there is no bias towards the oldest sellers
 
-        for (const inventory of listOfPlacesToBuy){
+        await SortingObject.shuffle(listOfPlacesToBuy)
+
+        for (let i = 0; i < listOfPlacesToBuy.length; i++){
+            let inventoryId = listOfPlacesToBuy[i]
             //theortical max is how much could they spend if they spent ALL of their money?
             const theoreticalMax = budget / localStockPrice
             //how much does the seller have
-            const sellerStockQuantity = GetDBElements("Inventory","inventory_amount","inventory_id",inventory)[0]
+            const sellerStockQuantity = await GetDBElements("Inventory","quantity","inventory_id",inventoryId)[0]
             if (sellerStockQuantity > 0){
-                const industrialSeller = LoadObject.constructIndustrial(await GetDBElements("Inventory","industrial_id","inventory_id",inventory)[0])
-                await industrialSeller.init()
-                await industrialSeller.buyStock(inventory,Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
+                const industrialSeller = await LoadObject.constructIndustrial(await GetDBElements("Inventory","industrial_id","inventory_id",inventoryId)[0])
+                await industrialSeller.buyStock(inventoryId,Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
                 await industrialSeller.save()
                 this.insertIntoProtectedData('stockQuantity',this.getStockQuantity() + Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
                 this.insertIntoProtectedData('money',this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice)
@@ -631,6 +657,7 @@ class Commercial extends Building{
             }
 
             //checks to get out of loop
+
             if (stockToBuy <= 0){
                 return
             }
@@ -639,10 +666,13 @@ class Commercial extends Building{
             }
         }
 
-        /*
+
         while (budget > importStockPrice && stockToBuy > 0) {
-            budget -= importStockPrice;
-        }*/
+            stockToBuy -= 1
+            this.insertIntoProtectedData('stockQuantity',this.getStockQuantity() + 1)
+            budget -= importStockPrice
+            this.insertIntoProtectedData('money',this.getMoney() - importStockPrice)
+        }
     }
 
     async save() {
@@ -670,6 +700,7 @@ class Industrial extends Building{
         //requirements
         //stockMadeId
         //stockMadeQuantity
+        //stockMadeMax
     //money;
 
     constructor(name, buildingId,industrialId,industrialModelId,money){
@@ -693,26 +724,63 @@ class Industrial extends Building{
 
         await this.createIndustrial()
 
+        await this.requirementsInventoryImport()
+
         await this.createJobs()
     }
     
     async importModelValues(){
-        this.insertIntoProtectedData('stockMadeMaterialId',Number(GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',this.getIndustrialModelId())[0]))
-        this.insertIntoProtectedData('stockMadeQuantity',Number(GetDBElements('Industrial_Model','stock_made_quantity','industrial_model_id',this.getIndustrialModelId())[0]))
+        const modelId = await this.getIndustrialModelId()
+        await this.insertIntoProtectedData('stockMadeMaterialId',Number(await GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',modelId)[0]))
+        await this.insertIntoProtectedData('stockMadeQuantity',Number(await GetDBElements('Industrial_Model','stock_made_quantity','industrial_model_id',modelId)[0]))
+        await this.insertIntoProtectedData('stockMadeMax',Number(await GetDBElements('Industrial_Model','stock_made_max','industrial_model_id',modelId)[0]))
+        await this.insertIntoProtectedData('orderIndex',Number(await GetDBElements('Industrial_Model','order_index','industrial_model_id',modelId)[0]))
+    }
 
-        const requirementIds = await GetDBElements('Industrial_Model_Requirement','industrial_model_requirement_id','industrial_model_id', this.getIndustrialModelId())
+    async requirementsInventoryImport(){ 
+        const requirementIds = await GetDBElements('Industrial_Model_Requirement','industrial_model_requirement_id','industrial_model_id',await this.getIndustrialModelId())
 
         for (const id of requirementIds){
-            const minQuantity = await GetDBElements('Industrial_Model_Requirement','min_quantity','industrial_model_requirement_id',id)
-            const materialId = await GetDBElements('Industrial_Model_Requirement','material_id','industrial_model_requirement_id',id)
+            const minQuantity = await GetDBElements('Industrial_Model_Requirement','min_quantity','industrial_model_requirement_id',id)[0]
+            const materialId = await GetDBElements('Industrial_Model_Requirement','material_id','industrial_model_requirement_id',id)[0]
+            const usedQuantity = await GetDBElements('Industrial_Model_Requirement','quantity_used','industrial_model_requirement_id',id)[0]
             const current = this.getRequirements()
             if (current == null){
-                this.insertIntoProtectedData('nventory',[id,materialId,minQuantity])
+                this.insertIntoProtectedData('requirements',[id,materialId,minQuantity,usedQuantity])
                 continue
             }
-            this.insertIntoProtectedData('inventory',[...current,[id,materialId,minQuantity]])
-            console.log(this.getInventory())
+            this.insertIntoProtectedData('requirements',[current,[id,materialId,minQuantity,usedQuantity]])
         }
+        if (await this.getRequirements() != null){
+            if (!Array.isArray(await this.getRequirements()[0])){
+                this.insertIntoProtectedData('requirements',[await this.getRequirements()])
+            }
+        }
+        //create Inventory slots in inventory table
+        const industrialId = await this.getIndustrialId()
+        const requirements = await this.getRequirements()
+        if (await GetDBElements("Inventory","inventory_id","industrial_id",industrialId).length == 0){
+            if (requirements != null){
+                for (let i = 0; i < requirements.length; i++){
+                    await InsertDB('Inventory','(industrial_id,material_id,quantity)','(' + industrialId + ',' + requirements[i][1] + ',0)')
+                }
+            }
+            await InsertDB('Inventory','(industrial_id,material_id,quantity)','(' + industrialId + ',' + await this.getStockMadeMaterialId() + ',0)')
+        }
+        const inventoryIds = await GetDBElements("Inventory","inventory_id","industrial_id",industrialId)
+        let inventoryArray = []
+        for (const id of inventoryIds){
+            const materialId = await GetDBElements("Inventory","material_id","inventory_id",id)[0]
+            const quantity = await GetDBElements("Inventory","quantity","inventory_id",id)[0]
+            inventoryArray.push([id,materialId,quantity])
+        }
+        this.insertIntoProtectedData('inventory',inventoryArray)
+        if (!Array.isArray(await this.getInventory()[0])){
+            this.insertIntoProtectedData('inventory',[await this.getInventory()])
+        }
+        /*
+        window.alert(this.getRequirements())
+        window.alert(this.getInventory())*/
     }
     
     async createName() {
@@ -740,12 +808,12 @@ class Industrial extends Building{
     }
     
     async createJobs(){
-        
-        if (GetDBElements("Employer","employer_listing_id","building_id",this.getBuildingId()).length == 0){
-            let jobsToAdd = GetDBElements('Employer_Template_Industrial','job_id','industrial_model_id',await this.getIndustrialModelId())
-            for (let job of jobsToAdd){
-                for (let i = 0; i < GetDBElementsDoubleCondition('Employer_Template_Industrial','amount','industrial_model_id',await this.getIndustrialModelId(),'job_id',job)[0]; i++){
-                    InsertDB('Employer','(building_id,job_id,citizen_id)','('+this.getBuildingId()+','+job+',null)')
+        const listedJobsCount = await GetDBElements("Employer","employer_listing_id","building_id",await this.getBuildingId()).length
+        if (listedJobsCount == 0){
+            const jobsToAdd = await GetDBElements('Employer_Template_Industrial','job_id','industrial_model_id',await this.getIndustrialModelId())
+            for (const job of jobsToAdd){
+                for (let i = 0; i < await GetDBElementsDoubleCondition('Employer_Template_Industrial','amount','industrial_model_id',await this.getIndustrialModelId(),'job_id',job)[0]; i++){
+                    await InsertDB('Employer','(building_id,job_id,citizen_id)','('+this.getBuildingId()+','+job+',-1)')
                 }
             }
         }
@@ -753,7 +821,7 @@ class Industrial extends Building{
 
 
     getInventory() {
-        return this.getProtectedData().getInventory;
+        return this.getProtectedData().inventory;
     }
     getRequirements() {
         return this.getProtectedData().requirements;
@@ -773,10 +841,17 @@ class Industrial extends Building{
     getStockMadeQuantity() {
         return this.getProtectedData().stockMadeQuantity;
     }
+    getStockMadeMax() {
+        return this.getProtectedData().stockMadeMax;
+    }
+    getOrderIndex(){
+        return this.getProtectedData().orderIndex
+    }
 
-    applicationForJob(citizen,job){
-        const minWeeks = GetDBElements('Job','min_education_weeks','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])[0]
-        const importance = GetDBElements('Job','importance','job_id',GetDBElements('Employer','job_id','employer_listing_id',job)[0])[0]
+    async applicationForJob(citizen,job){   
+        const jobId = await GetDBElements('Employer','job_id','employer_listing_id',job)[0]
+        const minWeeks = await GetDBElements('Job','min_education_weeks','job_id', jobId)[0]
+        const importance = await GetDBElements('Job','importance','job_id',jobId)[0]
         const eduDifference = citizen.getEducationTurns() - minWeeks
         let qualificationFactor = 0
         if (eduDifference >= 0){
@@ -791,34 +866,146 @@ class Industrial extends Building{
             return true
         }
         return false
-    }
+    } 
 
     async simulate(){
+
         //purchase simulation
-        //await this.purchase()
+        for(let i = 0; i < this.getInventory().length; i++){
+            const inv = this.getInventory()[i]
+            if (inv[1] == await this.getStockMadeMaterialId()){
+                continue
+            }
+            await this.purchase(inv,i)
+        }
+
+        await this.produce()
     }
 
-    async purchase(){
-        /*
-        const stockQuantity = await this.getStockQuantity()
-        const minStock = await this.getMinStock()
-        const stockToBuy = stockQuantity - minStock
+    async produce(){
+        const creationMaterialId = await this.getStockMadeMaterialId()
+        const creationQuantity = await this.getStockMadeQuantity()
+        const creationMax = await this.getStockMadeMax()
+        let requirements = await this.getRequirements()
+        let inventory = await this.getInventory()
+        if (requirements != null){
+            requirements = await SortingObject.mergeSort(requirements,1)
+            for (let i = 0; i < creationMax; i++){
+                inventory = await SortingObject.mergeSort(inventory,1)
+                //CHECK IT
+                let arrayFixDigit = 0
+                for (let j = 0; j < inventory.length; j++){
+                    if (inventory[j][1] == creationMaterialId){
+                        arrayFixDigit += 1
+                        continue
+                    }
+                    if (inventory[j][1] < requirements[j - arrayFixDigit][3]){
+                        return
+                    }
+                }
+
+                //PRODUCE IT
+
+                //DEDUCT
+                let indexOfMaterial = 0
+                for (let j = 0; j < inventory.length; j++){
+                    if (inventory[j][1] == creationMaterialId){
+                        indexOfMaterial = j
+                        continue
+                    }
+                    inventory[j][2] -= requirements[j][3]
+                }
+
+                inventory[indexOfMaterial][2] += creationQuantity 
+            }
+        }
+        else{
+            inventory[0][2] = (creationQuantity) * creationMax
+        }
+        this.insertIntoProtectedData('inventory',inventory)
+    }
+
+    async purchase(inv,index){
+        printTable('Inventory')
+        const stockQuantity = inv[2]
+        const minStock = await GetDBElements("Industrial_Model_Requirement","min_quantity","industrial_model_id",await this.getIndustrialModelId())[0]
+        const importStockPrice = await GetDBElements("Material","trade_price","material_id",inv[1])[0]
+        const localStockPrice = await GetDBElements("Material","local_price","material_id",inv[1])[0]
+        let stockToBuy = stockQuantity - minStock
+
         if (stockToBuy >= 0){
             return
         }
-        const jobsCurrent = GetDBElements("Employer","employer_listing_id","employer_id",this.getEmployerId())
-        let jobsWorking = []
-        jobsCurrent.forEach(job => {
-            if (GetDBElements("Employer","citizen_id","employer_listing_id",job)[0] !== null){
-            jobsWorking.push(GetDBElements("Employer","job_id","employer_listing_id",job)[0])
+        stockToBuy *= -2.5
+        stockToBuy = Math.round(stockToBuy)
+
+        let budget = await this.getMoney() * 0.45
+        if (budget <= 0){
+            return
+        }
+
+        const listOfPossiblePlacesToBuy = await GetDBElements("Inventory","inventory_id","material_id",inv[1])
+        let listOfPlacesToBuy = []
+        for (const id of listOfPossiblePlacesToBuy){
+            const industrialId = await GetDBElements('Inventory','industrial_id','inventory_id',id)[0]
+            const modelId = await GetDBElements('Industrial','industrial_model_id','industrial_id',industrialId)[0]
+            if (await GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',modelId)[0]  == inv[1]){
+                listOfPlacesToBuy.push(id)
             }
-        });
-        let currentExplicitCosts = 0
-        jobsWorking.forEach( job => {
-            currentExplicitCosts += GetDBElements("Job","wage","job_id",job)
-        })
-        console.log(currentExplicitCosts)
-        const importStockPrice = GetDBElements()*/
+        }
+
+        await SortingObject.shuffle(listOfPlacesToBuy)
+
+        for (let i = 0; i < listOfPlacesToBuy.length; i++){
+            let inventoryId = listOfPlacesToBuy[i]
+            //theortical max is how much could they spend if they spent ALL of their money?
+            const theoreticalMax = budget / localStockPrice
+            //how much does the seller have
+            const sellerStockQuantity = await GetDBElements("Inventory","quantity","inventory_id",inventoryId)[0]
+            if (sellerStockQuantity > 0){
+                const industrialSeller = await LoadObject.constructIndustrial(await GetDBElements("Inventory","industrial_id","inventory_id",inventoryId)[0])
+                await industrialSeller.buyStock(inventoryId,Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
+                await industrialSeller.save()
+                let inventoryToInsert = this.getInventory()
+                inventoryToInsert[index][2] += Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
+                this.insertIntoProtectedData('inventory',inventoryToInsert)
+                this.insertIntoProtectedData('money',this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice)
+                stockToBuy -= Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
+            }
+
+            //checks to get out of loop
+
+            if (stockToBuy <= 0){
+                return
+            }
+            if (budget <= 0){
+                return
+            }
+        }
+
+
+        while (budget > importStockPrice && stockToBuy > 0) {
+            stockToBuy -= 1
+            let inventoryToInsert = this.getInventory()
+            inventoryToInsert[index][2] += 1
+            this.insertIntoProtectedData('inventory',inventoryToInsert)
+            budget -= importStockPrice
+            this.insertIntoProtectedData('money',this.getMoney() - importStockPrice)
+        }
+    }
+    //buyStock refers to another source buying your goods, not yourself buying somebody else's goods
+    async buyStock(inventoryId,quantity){
+        let inventory = await this.getInventory()
+        for (let i = 0; i < inventory.length; i++){
+            if (inventory[i][0] == inventoryId){
+                inventory[i][2] -= quantity
+                await this.insertIntoProtectedData('inventory',inventory)
+                await this.insertIntoProtectedData('money',this.getMoney() + quantity * await GetDBElements('Material','local_price','material_id',inventory[i][1])[0])
+                await this.save()
+                return
+            }
+
+        }
     }
 
     async save() {
@@ -830,11 +1017,11 @@ class Industrial extends Building{
         //stockMadeQuantity
     //money;
         await super.save()
-        const buildingId =  this.getBuildingId();
-        const industrialId = this.getIndustrialId()
-        const industrialModelId =  this.getIndustrialModelId();
-        const inventory =  this.getInventory()
-        const money =  this.getMoney();
+        const buildingId =  await this.getBuildingId();
+        const industrialId = await this.getIndustrialId()
+        const industrialModelId = await this.getIndustrialModelId();
+        const inventory = await this.getInventory()
+        const money = await this.getMoney();
 
         saveIndustrial(industrialId, buildingId, industrialModelId, money, inventory)
     }
@@ -843,34 +1030,40 @@ class Industrial extends Building{
 class LoadObject{
 
     static async constructCitizen(citizenId){
-        const citizenName = GetDBElements("Citizen","name","citizen_id",citizenId);
-        const citizenParentId = GetDBElements("Citizen","parent_id","citizen_id",citizenId) || null;
-        const citizenGroupId = GetDBElements("Group_Collection","group_id","citizen_id",citizenId);
-        const citizenTurnOfBirth = GetDBElements("Citizen","turn_of_birth","citizen_id",citizenId) || 0;
-        const citizenMoney = GetDBElements("Citizen","money","citizen_id",citizenId);
-        const citizenResidentialId = GetDBElements("Citizen","residentialId","citizen_id",citizenId);
-        const citizenEducationTurns = GetDBElements("Citizen","educationTurns","citizen_id",citizenId);
+        const citizenName = await GetDBElements("Citizen","name","citizen_id",citizenId)[0];
+        const citizenParentId = await GetDBElements("Citizen","parent_id","citizen_id",citizenId)[0] || null;
+        const citizenGroupId = await GetDBElements("Group_Collection","group_id","citizen_id",citizenId)[0];
+        const citizenTurnOfBirth = await GetDBElements("Citizen","turn_of_birth","citizen_id",citizenId)[0] || 0;
+        const citizenMoney = await GetDBElements("Citizen","money","citizen_id",citizenId)[0];
+        const citizenResidentialId = await GetDBElements("Group_Residential_Collection","residential_id","group_id",citizenGroupId)[0];
+        const citizenEducationTurns = await GetDBElements("Citizen","education_weeks","citizen_id",citizenId)[0];
 
-        return new Citizen(citizenName,citizenParentId,citizenGroupId,citizenTurnOfBirth,citizenMoney,citizenResidentialId,citizenEducationTurns)
+        let object = (new Citizen(citizenName,citizenId,citizenParentId,citizenGroupId,citizenTurnOfBirth,citizenMoney,citizenResidentialId,citizenEducationTurns))
+        await object.init()
+        return object
     }
 
     static async constructResidential(residentialId){
-        const buildingId = GetDBElements("Residential","building_id","residential_id",residentialId);
-        const residentialName = GetDBElements("Building","name","building_id",buildingId);
-        const residentialChar = GetDBElements("Building","name","city_visulisation_char",buildingId);
-        const residentialModelId = GetDBElements("Residential","residential_model_id","residential_id",residentialId);
+        const buildingId = GetDBElements("Residential","building_id","residential_id",residentialId)[0];
+        const residentialName = GetDBElements("Building","name","building_id",buildingId)[0] || null;
+        const residentialChar = GetDBElements("Building","name","city_visulisation_char",buildingId)[0];
+        const residentialModelId = GetDBElements("Residential","residential_model_id","residential_id",residentialId)[0];
         
-        return new Residential(residentialName, buildingId, residentialChar,residentialModelId,residentialId)
+        let object = (new Residential(residentialName, buildingId, residentialChar,residentialModelId,residentialId))
+        await object.init()
+        return object
     }
 
-    static async constructCommmercial(commercialId){
-        const buildingId = GetDBElements('Commercial','building_id','commercial_id',commercialId)[0]
-        const name = GetDBElements('Building','name','building_id',buildingId)[0]
-        const commercialModelId = GetDBElements('Commercial','commercial_model_id','commercial_id',commercialId)[0]
-        const stockQuantity = GetDBElements('Commercial','stock_quantity','commercial_id',commercialId)[0]
-        const money = GetDBElements('Commercial','money','commercial_id',commercialId)[0]
+    static async constructCommercial(commercialId){
+        const buildingId = await GetDBElements('Commercial','building_id','commercial_id',commercialId)[0]
+        const name = await GetDBElements('Building','name','building_id',buildingId)[0]
+        const commercialModelId = await GetDBElements('Commercial','commercial_model_id','commercial_id',commercialId)[0]
+        const stockQuantity = await GetDBElements('Commercial','stock_quantity','commercial_id',commercialId)[0]
+        const money = await GetDBElements('Commercial','money','commercial_id',commercialId)[0]
 
-        return new Commercial(name,buildingId,commercialId,commercialModelId,stockQuantity,money)
+        let object = await (new Commercial(name,buildingId,commercialId,commercialModelId,stockQuantity,money))
+        await object.init()
+        return object
     }
 
     static async constructIndustrial(industrialId){
@@ -879,21 +1072,22 @@ class LoadObject{
         const IndustrialModelId = GetDBElements('Industrial','industrial_model_id','industrial_id',industrialId)[0]
         const money = GetDBElements('Industrial','money','industrial_id',industrialId)[0]
 
-        return new Industrial(name,buildingId,industrialId,IndustrialModelId,money)
+        let object = (new Industrial(name,buildingId,industrialId,IndustrialModelId,money))
+        await object.init()
+        return object
     }
 }
 
 class SortingObject{
     static mergeSort(array, indexOfComparison) {
-
         if (array.length <= 1) 
             {return array}
         let middle = Math.floor(array.length / 2)
         
-        let left = mergeSort(array.slice(0, middle),indexOfComparison)
-        let right = mergeSort(array.slice(middle),indexOfComparison)
+        let left = SortingObject.mergeSort(array.slice(0, middle),indexOfComparison)
+        let right = SortingObject.mergeSort(array.slice(middle),indexOfComparison)
 
-        return merge(left, right, indexOfComparison)
+        return SortingObject.merge(left, right, indexOfComparison)
     }
 
     static merge(left, right, indexOfComparison) {
@@ -910,5 +1104,22 @@ class SortingObject{
     return [...sortedArray, ...left, ...right]
     }
 
+    static shuffle(array) {
+        if (array.length <= 1){
+            return array
+        }
+        let currentIndex = array.length;
 
+        while (currentIndex != 0) {
+
+            // Pick a remaining element...
+            let randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+        return array
+    }
 }

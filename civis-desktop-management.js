@@ -1,5 +1,5 @@
 //Opens the policy window
-async function PolicyPurchase (){
+async function PolicyPurchase(){
     // They have done what they have been told to do (Open this window)
     if (GetDBElements("Tutorial","completed","tutorial_id",5)[0] === 1){
         UpdateDB("Tutorial","completed",1,"tutorial_id",6)
@@ -150,7 +150,7 @@ function PrePolicyPanel (){
     WindowPopUp(`
         <div id="Form" class="window" style="width:350px">
             <menu role="tablist" class="multirows">
-                <li role="tab" onclick="PolicyPanel(null)"><a style="font-size:1.2rem">All</a></li>
+                <li role="tab" onclick="PolicyPanel(null); UpdateDB('Tutorial','completed',1,'tutorial_id',8); UpdateTutorial()"><a style="font-size:1.2rem">All</a></li>
             </menu>
             <menu role="tablist" class="multirows">
                 <li role="tab"><a ></a></li>
@@ -175,9 +175,6 @@ function PrePolicyPanel (){
 }
 
 function PolicyPanel (category){
-    if (GetDBElements("Tutorial","completed","tutorial_id",7) === 1){
-        UpdateDB("Tutorial","completed",1,"tutorial_id",8)
-    }
     WindowPopUp(`
     <div class="window" id="Form" style="width: 350px">
         <div class="title-bar" id="FormHeader">
@@ -264,6 +261,9 @@ function UpdatePolicyPanel(id, change, method){
 }
 
 function Settings (){
+    if (GetDBElements('Tutorial','completed','tutorial_id',12)[0] == 1){
+        UpdateDB('Tutorial','completed',1,'tutorial_id',13)
+    }
     let selects = ['','','','']
     switch (GetDBElements("City","money_symbol","city_id",1).toString()){
         case "£":
@@ -391,7 +391,7 @@ function Tutorial (){
             <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="if (GetDBElements('Tutorial','completed','tutorial_id',2) === 1 && GetDBElements('Tutorial','completed','tutorial_id',3) === 1){UpdateDB('Tutorial','completed',1,'tutorial_id',4); document.getElementById('TutorialWindow').remove()}"></button>
+            <button aria-label="Close" onclick="if (GetDBElements('Tutorial','completed','tutorial_id',2)[0] === 1 && GetDBElements('Tutorial','completed','tutorial_id',3)[0] === 1){UpdateDB('Tutorial','completed',1,'tutorial_id',4); document.getElementById('TutorialWindow').remove()}"></button>
             </div>
         </div>
         <div class="window-body" id="TutorialWindowContent">
@@ -407,12 +407,214 @@ function Tutorial (){
     `, "TutorialWindow","Desktop")
 }
 
+async function CityCensus (){
+    const cityName = GetDBElements("City","name","city_id",1) 
+    let ageWeekArray = GetDBElements("Citizen","turn_of_birth",null,null)
+    await WindowPopUp(`
+    <div class="window" id="Form" style="width: 350px">
+        <div class="title-bar" id="FormHeader">
+            <div class="title-bar-text">City census: `+ cityName +`</div>
+            <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="document.getElementById('Form').remove()"></button> 
+            </div>
+        </div>
+        <div class="window-body" id="FormContent" style="max-height:650px; overflow-y:auto">
+            <h3>The demographic</h3>
+            <p>Population of ` + cityName + ` : ` + ageWeekArray.length +`</p>
+            <hr>
+            <canvas id="AgePieChart" width="250px" height="250px"></canvas>
+            <p>Details</p>
+            <ul id="AgePieChartBulletList">
+            </ul>
+            <hr>
+            <canvas id="JobPieChart" width="250px" height="250px"></canvas>
+            <p>Details</p>
+            <ul id="JobPieChartBulletList">
+            </ul>
+            <hr>
+            <div class="sunken-panel" style="height: 120px; width: 240px;">
+                <table class="interactive" id="CitizenCensusTable">
+                </table>
+            </div>
+        </div>
+    </div>
+    `, "Form","Desktop")
+    let jobArray = []
+    let ageArray = [["Baby",0,"#006e7fff"],["Child",0,"#7d8508ff"],["Teenager",0,"#341539ff"],["Young Adult",0,"#06a165ff"],["Adult",0,"#960909ff"],["Elder",0,"#1a45d3ff"]]
+
+    const jobIds = await GetDBElements("Job","job_id",null,null)
+    for (const id of jobIds){
+        const count = await GetDBElements("Employer","employer_listing_id","job_id",id).length
+        if (count == 0){
+            continue
+        }
+        const name = await GetDBElements("Job","name","job_id",id)[0]
+        const hexColour = await GetDBElements("Job","hex_colour","job_id",id)[0]
+        jobArray.push([name,count,hexColour])
+    }
+
+    const birthWeeks = await GetDBElements("Citizen","turn_of_birth",null,null)
+    const turn = await GetDBElements("City_Attribute","attribute_value","city_attribute_id",1)
+    for (const birthWeek of birthWeeks){
+        const trueAge = turn - birthWeek
+        if (trueAge <= (52 * 5)){
+            ageArray[0][1] += 1
+        }
+        else if (trueAge <= (52*13)){
+            ageArray[1][1] += 1
+        }
+        else if (trueAge <= (52*18)){
+            ageArray[2][1] += 1
+        }
+        else if (trueAge <= (52*33)){
+            ageArray[3][1] += 1
+        }
+        else if (trueAge <= (52*65)){
+            ageArray[4][1] += 1
+        }
+        else{
+            ageArray[5][1] += 1
+        }
+
+    }
+    DrawPieChart("AgePieChart",ageArray)
+    DrawPieChart("JobPieChart",jobArray)
+
+    let citizenDataArray = []
+    const citizenParameters = ["citizen_id","name","parent_id","turn_of_birth","money","residential_id","education_weeks"]
+    citizenDataArray.push(citizenParameters)
+    const citizenArray = await GetDBElements("Citizen","citizen_id",null,null)
+    for(const id of citizenArray){
+        let arrayToPush = []
+        const object = await LoadObject.constructCitizen(id)
+        arrayToPush.push(id)
+        arrayToPush.push(object.getName())
+        arrayToPush.push(object.getParentId())
+        arrayToPush.push(object.getTurnOfBirth())
+        arrayToPush.push(object.getMoney())
+        arrayToPush.push(object.getResidentialId())
+        arrayToPush.push(object.getEducationTurns())
+        citizenDataArray.push(arrayToPush)
+    }
+    InsertTable("CitizenCensusTable",citizenDataArray)
+}
+
+async function PrivateSector (){
+    const cityName = GetDBElements("City","name","city_id",1) 
+    await WindowPopUp(`
+    <div class="window" id="Form" style="width: 350px">
+        <div class="title-bar" id="FormHeader">
+            <div class="title-bar-text">Private sector: `+ cityName +`</div>
+            <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="document.getElementById('Form').remove()"></button> 
+            </div>
+        </div>
+        <div class="window-body" id="FormContent" style="max-height:650px; overflow-y:auto">
+            <div class="sunken-panel" style="height: 120px; width: 240px;">
+                <table class="interactive" id="IndustrialCensusTable">
+                </table>
+            </div>
+            <div class="sunken-panel" style="height: 120px; width: 240px;">
+                <table class="interactive" id="CommercialCensusTable">
+                </table>
+            </div>
+            <div class="sunken-panel" style="height: 120px; width: 240px;">
+                <table class="interactive" id="ResidentialCensusTable">
+                </table>
+            </div>
+        </div>
+    </div>
+    `, "Form","Desktop")
+
+    let industrialDataArray = []
+    const industrialParameters = ["industrial_id","name","building_id","industrial_model_id","money"]
+
+    industrialDataArray.push(industrialParameters)
+    const industrialArray = await GetDBElements("Industrial","industrial_id",null,null)
+    for(const id of industrialArray){
+        let arrayToPush = []
+        const object = await LoadObject.constructIndustrial(id)
+        arrayToPush.push(id)
+        arrayToPush.push(object.getName())
+        arrayToPush.push(object.getBuildingId())
+        arrayToPush.push(object.getIndustrialModelId())
+        arrayToPush.push(object.getMoney())
+        industrialDataArray.push(arrayToPush)
+    }
+    InsertTable("IndustrialCensusTable",industrialDataArray)
+
+    let commercialDataArray = []
+    const commercialParameters = ["commercial_id","name","building_id","commercial_model_id","money"]
+
+    commercialDataArray.push(commercialParameters)
+    const commercialArray = await GetDBElements("Commercial","commercial_id",null,null)
+    for(const id of commercialArray){
+        let arrayToPush = []
+        const object = await LoadObject.constructCommercial(id)
+        arrayToPush.push(id)
+        arrayToPush.push(object.getName())
+        arrayToPush.push(object.getBuildingId())
+        arrayToPush.push(object.getCommercialModelId())
+        arrayToPush.push(object.getMoney())
+        commercialDataArray.push(arrayToPush)
+    }
+    InsertTable("CommercialCensusTable",commercialDataArray)
+
+
+    let residentialDataArray = []
+    const residentialParameters = ["residential_id","name","building_id","rent","family_count"]
+
+    residentialDataArray.push(residentialParameters)
+    const residentialArray = await GetDBElements("Residential","residential_id",null,null)
+    for(const id of residentialArray){
+        let arrayToPush = []
+        const object = await LoadObject.constructResidential(id)
+        arrayToPush.push(id)
+        arrayToPush.push(object.getName())
+        arrayToPush.push(object.getBuildingId())
+        arrayToPush.push(object.getRent())
+        arrayToPush.push(await GetDBElements('Group_Residential_Collection','group_id','residential_id',id).length)
+        residentialDataArray.push(arrayToPush)
+    }
+    InsertTable("ResidentialCensusTable",residentialDataArray)
+}
+
+async function Simulation (){
+    UpdateDB('Tutorial','completed',1,'tutorial_id',12)
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    const nextDate = GetGameDate(1)
+    document.getElementById("Body").innerHTML += `
+    <div id="SimulationBlocker">
+        <h1 id="SimulationBlockerHeader" >Simulating - ` +  nextDate + `</h1>
+        <br><br><br>
+        <div id="SimulationProgressBars">
+            <p id="SimulationProgressBarsDetail"></p> 
+            <div class="progress-indicator segmented">
+                <span id="SimulationProgressBarsDetailProgressIndicator" class="progress-indicator-bar" style="width: 0%;" />
+            </div>
+            <br>
+            <br>
+            <p id="SimulationProgressBarsDetailSpecifics"></p>
+            <div class="progress-indicator">
+                <span id="SimulationProgressBarsDetailSpecificsProgressIndicator" class="progress-indicator-bar"  style="width: 00%;" />
+            </div>
+        </div>
+    </div>`
+    
+    await delay(1000)
+    await simulateCity(10)
+}
+
 function UpdateTutorial (){
     const tutorialUpdate = new Audio('Assets/Audio/TutorialUpdate.wav');
     const tutorialToDo = GetDBElements("Tutorial","tutorial_id","completed",0);
-    //NOO
+    
     let tutorialToDoPick = 1;
-    if (tutorialToDo.length === 0){
+    if (tutorialToDo.length == 0){
         tutorialToDoPick = 0;
     }
 
@@ -432,36 +634,6 @@ function UpdateTutorial (){
             <p class="status-bar-field">` + GetDBElements("Tutorial","tutorial_category","tutorial_id",tutorialToDo[tutorialToDoPick]) +`</p>
             <p class="status-bar-field">` + tutorialPercentage + `</p>
     `;
-}
-
-async function Simulation (){
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    const nextDate = GetGameDate(1)
-    document.getElementById("Body").innerHTML += `
-    <div id="SimulationBlocker">
-        <h1>Simulating - ` +  nextDate + `</h1>
-        <br><br><br>
-        <div id="SimulationProgressBars">
-            <p id="SimulationProgressBarsDetail"></p> 
-            <div class="progress-indicator segmented">
-                <span id="SimulationProgressBarsDetailProgressIndicator" class="progress-indicator-bar" style="width: 0%;" />
-            </div>
-            <br>
-            <br>
-            <p id="SimulationProgressBarsDetailSpecifics"></p>
-            <div class="progress-indicator">
-                <span id="SimulationProgressBarsDetailSpecificsProgressIndicator" class="progress-indicator-bar"  style="width: 00%;" />
-            </div>
-        </div>
-    </div>`
-
-    const SimulationProgressBarsDetailSpecificsProgressIndicator = document.getElementById("SimulationProgressBarsDetailSpecificsProgressIndicator")
-    const SimulationProgressBarsDetailSpecifics = document.getElementById("SimulationProgressBarsDetailSpecifics")
-    const SimulationProgressBarsDetail = document.getElementById("SimulationProgressBarsDetail")
-    const SimulationProgressBarsDetailProgressIndicator = document.getElementById("SimulationProgressBarsDetailProgressIndicator")
-    
-    await delay(1000)
-    await simulateCity(1)
 }
 
 function WindowPopUpAdd (innerHTML,Source){
