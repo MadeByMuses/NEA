@@ -71,7 +71,6 @@ function PolicyPurchaseConfirmation(id){
     if (policyContents.length === 0){
         policyContents = [1];
     }
-    console.log(policyContents)
     for (policy of policyContents){
         list += `<li><details><summary>` + GetDBElements("Policy","policy_name","policy_id",policy) +`</summary><ul><li>` + GetDBElements("Policy","policy_description","policy_id",policy) + `</li><li>` + GetDBElements("City","money_symbol",null,null) + GetDBElements("Policy","policy_act_cost","policy_id",policy) + `</li></details></li>`
     }
@@ -258,7 +257,6 @@ function UpdateTutorial(){
     else{
       tutorialToDo = tutorialToDoRaw
     }
-    console.log(tutorialToDo)
     let tutorialPercentage = (tutorialToDo[tutorialToDoPick] - 1)/(Math.max.apply(Math,GetDBElements("Tutorial","tutorial_id",null,null)) - 1) * 100 + "%"
     if (!Array.isArray(tutorialToDo)){
         tutorialPercentage = "Completed";
@@ -287,7 +285,7 @@ async function WindowPopUp(innerHTML,id,Source){
      document.getElementById(id).remove()
     }
     
-    console.log(id + " is popping up")
+    tryLog(id + " is popping up")
     await WindowPopUpAdd(innerHTML,Source)
 
     if (id != "TutorialWindow"){

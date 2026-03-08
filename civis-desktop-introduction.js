@@ -1,6 +1,30 @@
 
 // ADAPTED FROM W3SCHOOLS - https://www.w3schools.com/howto/howto_js_draggable.asp
 
+  WindowPopUp(`
+  <div class="window" id="IntroForm" style="width: 350px">
+      <div class="title-bar" id="IntroFormHeader">
+          <div class="title-bar-text">Version Update</div>
+          <div class="title-bar-controls">
+          <button aria-label="Minimize"></button>
+          <button aria-label="Maximize"></button>
+          <button aria-label="Close" onclick="document.getElementById('IntroForm').remove()"></button>
+          </div>
+      </div>
+      <div class="window-body" id="FormContent">
+        <ul class="tree-view">
+          <li>
+            Version 1.0.0
+            <ul>
+              <li>The first genuinely working release!</li>
+              <li>Nothing much to add, as right now it is just the delusion of everything works</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+  </div>
+  `,"IntroForm","StartBlocker");
+
 // Make the DIV element draggable:
 function DragElement(element) {
 
@@ -23,8 +47,8 @@ function DragElement(element) {
       pos4 = e.touches[0].clientY
     }
     else{
-    pos3 = e.clientX;
-    pos4 = e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
     }
 
     document.onmouseup = closeDragElement;
@@ -178,7 +202,7 @@ async function StartUp(){
 }
 
 async function PrepareDesktop(){
-  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] === 1){
+  if ((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) > 770) && GetDBElements("Tutorial","completed","tutorial_id",3)[0] == 1){
     Overview()
   }
   if (GetDBElements("Tutorial","completed","tutorial_id",4)[0] === 0){
@@ -186,6 +210,6 @@ async function PrepareDesktop(){
   }
   //Taskbar
   document.getElementById("TaskbarDate").innerText = "Today's date is... " + GetGameDate()
-  document.getElementById("TaskbarPopulation").innerText = "Population: " + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",2),"default")
+  document.getElementById("TaskbarPopulation").innerText = "Population: " + await GetDBElements("City_Attribute","attribute_value","city_attribute_id",2)[0]
   document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null)[0] + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3),"currency")
 }

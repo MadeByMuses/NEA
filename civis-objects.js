@@ -56,17 +56,53 @@ async function loadNames(lastName) {
     //industrial names
     const industrialForestry = new NameGenerator(["Greenside","Natural","Eco","Raw","Homely","Leafy","Barking","Hard","Wooden","Grown"],[...industrialLastNames,"forests","forestry","woods","woodlands","lumber","planks","logs","bark","trees"],false)
     const industrialAgriculture = new NameGenerator([...humanFirstNames,...humanLastNames],["farm","crops","fields","land","goods"],true)
+    const industrialOre = new NameGenerator(["Ore","Rocky","Mineral","Shiny","Gem","Sapphire","Coal","Earthy","Gaia","Mining"],[...industrialLastNames,"mines","extracters","excavaters","excavation","quarry","diggings","seam","deposit","mineshaft","veins"],false)
+    const industrialCrudeOil = new NameGenerator(["Black","Oily","Petroleum"],[...industrialLastNames,"fracking","fracked!","oil","extractors","pumps","frackers"],false)
+    const industrialRawFish = new NameGenerator(["Fresh","Ocean","Blubber","Bubbles","Salty","Scaley"],[...industrialLastNames,"boats","ships","fishers","catchers","nets","scales"],false)
+    const industrialFurniture = new NameGenerator(["Wood","Table","Oak","Birch","Spruce"],[...industrialLastNames,"makers","chippers","carpenters","crafts"],false)
+    const industrialPaper = new NameGenerator(["Paper","Sheet","Panel","Writing"],[...industrialLastNames,"mills","sawmill","creek","precision"],false)
+    const industrialMetals = new NameGenerator(["Shiny","Sparkle","Strong","Compacted"],[...industrialLastNames,"cutters","smelters","metals"],false)
+    const industrialOil = new NameGenerator(["Oily","Petro"],["Distillation"],false)
+    const industrialProcessedFish = new NameGenerator(["Shucked","Clammed","Tasty"],[...industrialLastNames,"shuckers","fishers"],false)
+    const industrialBakedGoods = new NameGenerator(humanFirstNames,["bakes","goods","products"],true)
+    const industrialMeat = new NameGenerator(humanFirstNames,["steaks","cows","lambs","meats","chops"],true)
+    const industrialMeals = new NameGenerator(["Super","Quick","Organic","Tasty","Your","99","Wonder"],["meals","dishes","to-go","chef","food","plates"],false)
+    const industrialElectronics = new NameGenerator(["64","Powerful","Sparky","Buzzing","32","16"],["bits","tech","world","gadgets"],false)
+    const industrialPlastics = new NameGenerator(["Perfect","Clear","Cut","Controlled","Perfected"],["molds","plastics","utensils"],false)
+    const industrialChemicals = new NameGenerator(["Gassy","Organic","Natural","Super","Amazing"],["drugs","pills","bottles","liquids"],false)
+    const industrialVehicles = new NameGenerator(["Speedy","Fast"],["Cars"],false)
+    const industrialSpaceships = new NameGenerator(["Moon","Planet"],["Explorers"],false)
+    const industrialSoftware = new NameGenerator(["Bit","Cell","Creative","Industrial"],["solutions","designs","software","tech","creations"],false)
+    const industrialMedia = new NameGenerator(["Creative","Purposeful","Meaningful","Modern","Indie","Unique","Special"],[...industrialLastNames,"films","content","photos","designs","creations","designs"],false)
 
     //commercial names
+    const commercialFurnitureStore = new NameGenerator(["Wood","Table","Desk","Bed","Oak","Furniture","Local"],[...commercialLastNames,"carpenters","land","world","makers","creators"],false)
+    const commercialPaperStore = new NameGenerator(["Sheets","Thin","Pretty","Oragami","Graph"],[...commercialLastNames,"papers","materials","stationery"],false)
+    const commercialOilStore = new NameGenerator(["Powerful","Organic",'Fossil',"Raw"],["oil","fuel","power","station"],false)
     const commercialFishStore = new NameGenerator(["Fish","Fishy","Seafood","Prawn","Squid","Fish-finger","Seafarer","Blue"],[...commercialLastNames,"monger","shack","bar","ocean","catch"],false)
-    const commercialBakedStore = new NameGenerator([...commercialFirstNames,"Pudding","Sweet","Baking","Treat","Sugar","Bready","Toasty",""],[...commercialFirstNames,"bakery","hut","emporium","paradise","oven"],false)
+    const commercialBakedStore = new NameGenerator([...commercialFirstNames,"Pudding","Sweet","Baking","Treat","Sugar","Bready","Toasty",""],[...commercialLastNames,"bakery","hut","emporium","paradise","oven"],false)
     const commercialButcherStore = new NameGenerator(["Slaughter","Meaty","Meat","Raw","Red","Slicing","Cut"],[...commercialLastNames,"house","butchers","butchery","cow","pig","chicken","meat","bits","chunks"],false)
+    const commercialMealStore = new NameGenerator(...humanFirstNames,[...commercialLastNames,"cafe","restaurant","dinner","bar"],true)
+    const commercialElectronicStore = new NameGenerator(["Tech","IT","Electro","PC"],["guru","support"],false)
+    const commercialPlasticStore = new NameGenerator(["Big","Small","Colourful","Truly","Pro"],["molds","bottles","tools","trinkets","whim-whams"],false)
+    const commercialChemicalStore = new NameGenerator(...commercialFirstNames,["drugs","pharmacy","pills"],false)
+    const commercialVehicleStore = new NameGenerator(...humanFirstNames,["cars","vehicles","wheels"],true)
+    const commercialSoftwareStore = new NameGenerator(["Bit","Cell","Creative","Industrial"],["solutions","designs","software","tech","creations"],false)
+    const commercialMediaStore = new NameGenerator(["Creative","Purposeful","Meaningful","Modern","Indie","Unique","Special"],[...commercialLastNames,"films","content","photos","designs","creations","designs"],false)
+
+    //
 
     //for the citizens
     const humanNames = new NameGenerator(humanFirstNames,humanLastNames,false)
     const humanNamesChild = new NameGenerator(humanFirstNames,[lastName],false)
 
-    return {entityNames,buildingNames,residentialNames,residentialBudgetNames,residentialLowerNames,humanNames,humanNamesChild,industrialForestry,industrialAgriculture,commercialFishStore,commercialBakedStore,commercialButcherStore}
+    return {entityNames,buildingNames,residentialNames,
+        residentialBudgetNames,residentialLowerNames,
+        humanNames,humanNamesChild,
+        industrialForestry,industrialAgriculture,industrialOre,industrialCrudeOil,industrialRawFish,industrialFurniture,industrialPaper,industrialMetals,industrialOil,industrialProcessedFish,
+        industrialBakedGoods,industrialMeat,industrialMeals,industrialElectronics,industrialPlastics,industrialChemicals,industrialVehicles,industrialSpaceships,industrialSoftware,industrialMedia,
+        commercialFurnitureStore,commercialPaperStore,commercialOilStore,commercialFishStore,commercialBakedStore,commercialButcherStore,commercialMealStore,commercialElectronicStore,
+        commercialPlasticStore,commercialChemicalStore,commercialVehicleStore,commercialSoftwareStore,commercialMediaStore}
 }
 
 //Simulates protected variables
@@ -114,7 +150,6 @@ class Entity{
 
 class Building extends Entity{
     //buildingId;
-    //cityVisulationChar;
     constructor (name,buildingId,cityVisulisationChar){
         super(name)
 
@@ -141,8 +176,8 @@ class Building extends Entity{
 
     async createBuilding(){
         if (this.getBuildingId() === null) {
-            await InsertDB('Building','(name)',`("`+String(this.getName())+`")`)
-            const id = await returnRecentlyAddedEntity('Building','building_id')
+            const id = await nextAttributeValue('building','building_id')
+            await InsertDB('Building','(building_id,name)',`(${id},"`+String(this.getName())+`")`)
             this.insertIntoProtectedData("buildingId", id);
         }
     }
@@ -159,7 +194,130 @@ class Building extends Entity{
         const buildingCityVisulisationChar = await this.getCityVisulisationChar();
         const buildingName = await this.getName();
 
-        saveBuilding(buildingId, buildingName, 0)
+        saveBuilding(buildingId, buildingName, buildingCityVisulisationChar)
+    }
+
+    async deleteObject(){
+        const buildingId = await this.getBuildingId()
+        await eraseBuilding(buildingId)
+    }
+}
+
+class Service extends Building {
+    constructor (name,serviceId,buildingId,cityVisulisationChar, serviceBuildingModelId, policyCollectionId){
+        super(name, buildingId, cityVisulisationChar)
+        this.insertIntoProtectedData('serviceId',serviceId)
+        this.insertIntoProtectedData('serviceBuildingModelId',serviceBuildingModelId)
+        this.insertIntoProtectedData('policyCollectionId',policyCollectionId)
+
+    }
+
+    async init(){
+        await this.createName()
+
+        await super.init()
+
+        await this.createServiceId()
+
+        await this. createJobs()
+    }
+
+    async createName(){
+        if (this.getName() == null){
+            const name = await GetDBElements("Service_Building_Model","name","service_building_model_id",await this.getServiceModelId())
+            this.insertIntoProtectedData('name',name)
+        }
+    }
+
+    async createServiceId(){
+        if (this.getServiceId() == null){
+            await InsertDB("Service_Building","(building_id)",`(${Number(await this.getBuildingId())})`)
+            const id = await GetDBElements("Service_Building","service_building_id","building_id",this.getBuildingId())
+            await this.insertIntoProtectedData('serviceId',id)
+        }
+    }
+
+    async createJobs(){
+        const listedJobsCount = await GetDBElements("Employer","employer_listing_id","building_id",await this.getBuildingId()).length
+        if (listedJobsCount == 0){
+            let jobsToAdd = await GetDBElements('Employer_Template_Service','job_id','service_building_model_id',await this.getServiceModelId())
+            for (const job of jobsToAdd){
+                const loop = await GetDBElementsDoubleCondition('Employer_Template_Service','amount','service_building_model_id',await this.getServiceModelId(),'job_id',job)[0]
+                for (let i = 0; i < loop; i++){
+                    await InsertDB('Employer','(building_id,job_id,citizen_id)','('+this.getBuildingId()+','+job+',-1)')
+                }
+            }
+        }
+    }
+
+    getServiceModelId(){
+        return this.getProtectedData().serviceBuildingModelId
+    }
+    getPolicyCollectionId(){
+        return this.getProtectedData().policyCollectionId
+    }
+    getServiceId(){
+        return this.getProtectedData().serviceId
+    }
+
+    async applicationForJob(citizen,job){  
+        const jobId = await GetDBElements('Employer','job_id','employer_listing_id',job)[0]
+        const minWeeks = await GetDBElements('Job','min_education_weeks','job_id', jobId)[0]
+        const importance = await GetDBElements('Job','importance','job_id',jobId)[0]
+        const eduDifference = citizen.getEducationTurns() - minWeeks
+        let qualificationFactor = 0
+        if (eduDifference >= 0){
+            qualificationFactor = importance
+        }
+        else{
+            qualificationFactor = Math.pow(Math.E,-1 * (Math.pow(eduDifference,2)/(2*(1-(5*importance/6))*Math.pow(Math.max(1,0.7*minWeeks))),2))
+        }
+        if (Math.random() <= qualificationFactor){
+            //YOU GOT THE JOB YAY!
+            UpdateDB('Employer','citizen_id',citizen.getCitizenId(),'employer_listing_id',job)
+            return true
+        }
+        return false
+    }
+
+    async payWorkers(){
+        //remove this as wages should be paid prior to purchasing
+        const jobsCurrent = await GetDBElements("Employer","employer_listing_id","building_id", await this.getBuildingId())
+
+        if (jobsCurrent != null){
+            for (const id of jobsCurrent){
+                const citizenId = await GetDBElements("Employer","citizen_id","employer_listing_id",id)[0]
+                if (citizenId != -1){
+                    const jobId = await GetDBElements("Employer","job_id","employer_listing_id",id)[0]
+                    const wage = await GetDBElements('Job','wage','job_id',jobId)[0]
+                    let citizen = await LoadObject.constructCitizen(citizenId)
+                    await citizen.payDay(wage)
+                    await citizen.save()
+                    await UpdateAddDB('City_Attribute','attribute_value',-1 * wage,"city_attribute_id",3)
+                }
+            }
+        }
+    }
+
+    async simulate(){
+        await this.payWorkers()
+    }
+
+    async save(){
+        await super.save()
+        const serviceId = await this.getServiceId()
+        const buildingId = await this.getBuildingId()
+        const serviceBuildingModelId = await this.getServiceModelId()
+        const policyCollectionId = await this.getPolicyCollectionId()
+
+        saveService(serviceId,buildingId,serviceBuildingModelId,policyCollectionId)
+    }
+
+    async deleteObject(){
+        await super.deleteObject()
+        const serviceId = await this.getServiceId()
+        const buildingId = await this.getBuildingId()
+        await eraseService(serviceId,buildingId)
     }
 }
 
@@ -168,8 +326,8 @@ class Residential extends Building {
     //residentialId;
     //maxResidents;
     //rent;
-    constructor(name,buildingId,cityVisulationChar,residentialModelId,residentialId){
-        super(name,buildingId,cityVisulationChar)
+    constructor(name,buildingId,cityVisulisationChar,residentialModelId,residentialId){
+        super(name,buildingId,cityVisulisationChar)
         this.insertIntoProtectedData('residentialModelId',residentialModelId)
         this.insertIntoProtectedData('residentialId',residentialId || null)
         this.insertIntoProtectedData('maxResidents',0)
@@ -206,8 +364,9 @@ class Residential extends Building {
 
     async createResidential(){
         if (this.getResidentialId() == null){
+            const id = nextAttributeValue('Residential','residential_id')
+
             await InsertDB('Residential','(building_id,residential_model_id)',"("+String(this.getBuildingId())+","+String(this.getResidentialModelId())+")")
-            const id = returnRecentlyAddedEntity('Residential','residential_id')
             this.insertIntoProtectedData("residentialId", id);
         }
     }
@@ -234,7 +393,7 @@ class Residential extends Building {
     }
 
     async save() {
-        //(name,buildingId,cityVisulationChar,residentialModelId,residentialId)
+        //(name,buildingId,cityVisulisationChar,residentialModelId,residentialId)
         await super.save()
         const buildingId = await this.getBuildingId();
         const residentialModelId = await this.getResidentialModelId();
@@ -245,8 +404,8 @@ class Residential extends Building {
 }
 
 class ResidentialBudget extends Residential{
-    constructor(name,buildingId,cityVisulationChar,residentialModelId,residentialId){
-        super(name,buildingId,cityVisulationChar,residentialModelId,residentialId)
+    constructor(name,buildingId,cityVisulisationChar,residentialModelId,residentialId){
+        super(name,buildingId,cityVisulisationChar,residentialModelId,residentialId)
     }
 
     //initialisation funciton
@@ -274,7 +433,7 @@ class Citizen extends Entity{
     //money;
     //residentialId;
     //educationTurns;
-    constructor(name,citizenId,parentId,groupId,turnOfBirth,money,residentialId,educationTurns){
+    constructor(name,citizenId,parentId,groupId,turnOfBirth,money,residentialId,educationTurns,happiness){
         super(name)
 
         this.insertIntoProtectedData('citizenId',citizenId)
@@ -284,6 +443,7 @@ class Citizen extends Entity{
         this.insertIntoProtectedData('money',money)
         this.insertIntoProtectedData('residentialId',residentialId)
         this.insertIntoProtectedData('educationTurns',educationTurns)
+        this.insertIntoProtectedData('happiness',happiness)
     }
 
     async init(){
@@ -322,10 +482,10 @@ class Citizen extends Entity{
     }
 
     async createCitizenId(){
-        if (this.getCitizenId() == null){
+        if (await this.getCitizenId() == null){
+            const id = nextAttributeValue("Citizen","citizen_id")
             await InsertDB('Citizen','(name)',`("`+String(this.getName())+`")`)
-            const id = await returnRecentlyAddedEntity('Citizen','citizen_id')
-            this.insertIntoProtectedData("citizenId", id);
+            await this.insertIntoProtectedData("citizenId", id);
         }
     }
 
@@ -336,8 +496,8 @@ class Citizen extends Entity{
                 this.insertIntoProtectedData('groupId',parent.getGroupId())
             }
             else{
-                const id = await returnRecentlyAddedEntity('Group_Collection','group_id')
-                this.insertIntoProtectedData('groupId',id + 1)
+                const id = await nextAttributeValue('Group_Collection','group_id')
+                this.insertIntoProtectedData('groupId',id)
                 await InsertDB('Group_Collection','(group_id,citizen_id)',`(${this.getGroupId()},${this.getCitizenId()})`)
                 await InsertDB('Group_Residential_Collection','(group_id,residential_id)',`(${this.getGroupId()},${this.getResidentialId()})`)
             }
@@ -356,6 +516,9 @@ class Citizen extends Entity{
     getMoney(){
         return this.getProtectedData().money;
     }
+    getHappiness(){
+        return this.getProtectedData().happiness;
+    }
     getResidentialId() {
         return this.getProtectedData().residentialId;
     }
@@ -367,13 +530,52 @@ class Citizen extends Entity{
     }
 
     async simulate(){
-        //check if homeless
-        if(this.getResidentialId() == null){
-            await this.findHouse()
+
+        const turn = await GetDBElements("City_Attribute","attribute_value","city_attribute_id",1)
+        const turnAge = turn - await this.getTurnOfBirth()
+
+        UpdateAddDB("City_Attribute","attribute_value",0.06,"city_attribute_id",203)
+        UpdateAddDB("City_Attribute","attribute_value",0.1,"city_attribute_id",205)
+        UpdateAddDB("City_Attribute","attribute_value",0.1,"city_attribute_id",207)
+
+
+        if (turnAge == 18 * 52){
+            await this.insertIntoProtectedData('residentialId',null)
+            const id = await nextAttributeValue('Group_Collection','group_id')
+            await this.insertIntoProtectedData('groupId',id)
+            await InsertDB('Group_Collection','(group_id,citizen_id)',`(${this.getGroupId()},${this.getCitizenId()})`)
+            await InsertDB('Group_Residential_Collection','(group_id,residential_id)',`(${this.getGroupId()},${this.getResidentialId()})`)
+            
         }
-        //check if unemployed
-        if(await GetDBElements('Employer','employer_listing_id','citizen_id',this.getCitizenId()).length == 0){
-            await this.findJob()
+        if (turnAge >= 18 * 52){
+            //check if homeless
+            if(this.getResidentialId() == null){
+                await this.findHouse()
+            }
+            //check if unemployed
+            if(await GetDBElements('Employer','employer_listing_id','citizen_id',this.getCitizenId()).length == 0){
+                await this.findJob()
+            }
+            await this.getGoods()
+
+            if (GetDBElements("Group_Collection","group_collection_id","group_id",this.getGroupId()).length == 1){
+                this.getMarried()
+            }
+            else{
+
+            }
+        }
+
+        if (Math.random() < 0.005){
+            UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",215)
+        }
+
+        await this.getEducated(turnAge)
+
+        const deathProbability = (0.0536/7)*Math.pow(Math.E,0.1044*((turnAge/52) - 50)) - 0.008
+        if (Math.random() < deathProbability){
+            UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",215)
+            eraseCitizen(await this.getCitizenId())
         }
     }
 
@@ -400,6 +602,7 @@ class Citizen extends Entity{
         //TODO quality of buildings
         const pickedHouse = housesInBudget[0]
         this.insertIntoProtectedData('residentialId',pickedHouse)
+        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",201)
     }
 
     async findJob(){
@@ -433,13 +636,21 @@ class Citizen extends Entity{
                     return
                 }
             }
-            else{
+            else if (GetDBElements('Industrial','industrial_id','building_id',buildingId).length != 0){
                 const employer = await LoadObject.constructIndustrial(await GetDBElements('Industrial','industrial_id','building_id',buildingId)[0])
                 if (await employer.applicationForJob(this,job[0])){
                     return
                 }
             }
+            else {
+                const employer = await LoadObject.constructService(await GetDBElements('Service_Building','service_building_id','building_id',buildingId)[0])
+                if (await employer.applicationForJob(this,job[0])){
+                    return
+                }
+            }
         }
+
+        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",201)
     }
 
     async payRentShare(rent) {
@@ -465,14 +676,164 @@ class Citizen extends Entity{
         const money = await this.getMoney();
         const educationTurns = await this.getEducationTurns();
         const residentialId = await this.getResidentialId();
+        const happiness = await this.getHappiness();
 
         //TODO dead mechanic
-        await saveCitizen(citizenId,name,parentId,turnOfBirth,money,residentialId,educationTurns,false,groupId)
+        await saveCitizen(citizenId,name,parentId,turnOfBirth,money,residentialId,educationTurns,happiness,false,groupId)
     }
 
     async payDay(wage){
-        this.insertIntoProtectedData('money',this.getMoney() + wage)
+        this.insertIntoProtectedData('money',Number(this.getMoney()) + Number(wage))
     }
+
+    async getGoods(){
+        const typeAndHappiness = [['essential',1,-2,35],['normal',3,0,3],['luxury',10,0,1]]
+
+        for (const block of typeAndHappiness){
+            //needs to get checked every new purchase
+            let buyingPower = await this.getMoney()
+            const buyingPowerReasonable = buyingPower * 0.4
+
+            const commercialModelIds = await GetDBElements("Commercial_Model","commercial_model_id","type",block[0])
+            let commercialIds = []
+            for (const id of commercialModelIds){
+                commercialIds.push(... await GetDBElements("Commercial","commercial_id","commercial_model_id",id))
+            }
+            commercialIds = SortingObject.shuffle(commercialIds)
+            let potentialStore = []
+            for (const id of commercialIds){
+                const modelId = await GetDBElements("Commercial","commercial_model_id","commercial_id",id)[0]
+                const comMaterialId = await GetDBElements("Commercial_Model","stock_material_id","commercial_model_id",modelId)[0]
+                const materialCostRaw = await GetDBElements("Material","local_price","material_id",comMaterialId)
+                const markUpPercentage = await GetDBElements("Markup","markup","type",block[0])[0]
+                const materialCost = materialCostRaw * markUpPercentage
+                const count = Math.max(0,Math.min(block[3],await Round(buyingPowerReasonable/materialCost,0)))
+                if (count > 0){
+                    const store = await LoadObject.constructCommercial(id)
+                    const maxProduct = store.getStockQuantity()
+                    if (maxProduct < count){
+                        potentialStore.push([store,maxProduct,maxProduct * materialCost])
+                        if (potentialStore.length > 50){
+                            break
+                        }
+                    }
+                    else{
+                        potentialStore.unshift([store,count,count * materialCost])
+                        break    
+                    }
+                }
+            }
+            
+            if (potentialStore.length == 0){
+                await this.insertIntoProtectedData("happiness",this.getHappiness() + (block[2] * (block[3] - 0)))
+                break
+            }
+
+            await this.insertIntoProtectedData("happiness",this.getHappiness() + (block[2] * (block[3] - potentialStore[0][2])))
+
+            const store = potentialStore[0][0]
+            await store.sell(potentialStore[0][1])
+            await this.insertIntoProtectedData("money",buyingPower - potentialStore[0][2])
+            await this.insertIntoProtectedData("happiness",this.getHappiness() + block[1])
+        }
+    }
+
+    async getMarried(){
+        const potentialPartners = await GetBach()
+        const partnerToGet = potentialPartners[Math.floor(potentialPartners.length * Math.random())]
+
+        if (Math.random() < Math.pow(400,-1)){
+            const partner = await LoadObject.constructCitizen(partnerToGet)
+            UpdateDB("Group_Collection","group_id",this.getGroupId(),"citizen_id",partnerToGet)
+            DeleteDB("Group_Residential_Collection","group_id",partner.getGroupId())
+        }
+    }
+
+    async tryForBaby(){
+        const familySize = await GetDBElements("Group_Collection","group_collection_id","group_id",await this.getGroupId()).length
+        const babySize = familySize - 2
+        if (babySize > 3){
+            return
+        }
+        const probability = Math.pow(Math.pow(4.5,babySize+1) * 100,1)
+        if (Math.random() < probability){
+            const turn = await GetDBElements("City_Attribute","attribute_value","city_attribute_id",1)[0]
+            const baby = await new Citizen(null,null,this.getParentId(),this.getGroupId(),turn,2000,this.getResidentialId(),0,100)
+            await baby.init()
+            await baby.save()
+        }
+    }
+
+    async getEducated(turnAge){
+        const educationWeeks = await this.getEducationTurns()
+        if (turnAge > 52 * 5){
+            if (educationWeeks < 80){
+                if(Math.random() < 0.22){
+                    if (!(await IsThereADeficit(208))){
+                        UpdateAddDB("City_Attribute","attribute_value",0.06,"city_attribute_id",209)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else if (educationWeeks < 150){
+                if(Math.random() < 0.22){
+                    if (!(await IsThereADeficit(210))){
+                        UpdateAddDB("City_Attribute","attribute_value",0.06,"city_attribute_id",211)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else if (educationWeeks < 240){
+                if(Math.random() < 0.22){
+                    if (!(await IsThereADeficit(212))){
+                        UpdateAddDB("City_Attribute","attribute_value",0.06,"city_attribute_id",213)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else{
+                if(Math.random() < 0.1){
+                    if (!(await IsThereADeficit(214))){
+                        UpdateAddDB("City_Attribute","attribute_value",0.06,"city_attribute_id",215)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+        }
+        else if (turnAge > 52 * 45){
+            if (educationWeeks < 80){
+                if(Math.random() < 0.1){
+                    if (!(await IsThereADeficit(208))){
+                        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",209)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else if (educationWeeks < 150){
+                if(Math.random() < 0.1){
+                    if (!(await IsThereADeficit(210))){
+                        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",211)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else if (educationWeeks < 240){
+                if(Math.random() < 0.05){
+                    if (!(await IsThereADeficit(212))){
+                        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",213)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+            else{
+                if(Math.random() < 0.01){
+                    if (!(await IsThereADeficit(214))){
+                        UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",215)
+                        this.insertIntoProtectedData("educationTurns",educationWeeks + 1)
+                    }
+                }
+            }
+        }}
 }
 
 class Commercial extends Building{
@@ -491,6 +852,7 @@ class Commercial extends Building{
         this.insertIntoProtectedData('stockQuantity',stockQuantity)
         this.insertIntoProtectedData('money',money)
         this.insertIntoProtectedData('stockMaterialId',null)
+        this.insertIntoProtectedData('type',null)
         this.insertIntoProtectedData('minStock',0)
     }    
 
@@ -508,8 +870,9 @@ class Commercial extends Building{
     }
     
     async importModelValues(){
-        this.insertIntoProtectedData('stockMaterialId',Number(GetDBElements('Commercial_Model','stock_material_id','commercial_model_id',this.getCommercialModelId())))
-        this.insertIntoProtectedData('minStock',Number(GetDBElements('Commercial_Model','min_stock','commercial_model_id',this.getCommercialModelId())))
+        this.insertIntoProtectedData('stockMaterialId',Number(await GetDBElements('Commercial_Model','stock_material_id','commercial_model_id',this.getCommercialModelId())[0]))
+        this.insertIntoProtectedData('minStock',Number(await GetDBElements('Commercial_Model','min_stock','commercial_model_id',this.getCommercialModelId())[0]))
+        this.insertIntoProtectedData('type',await GetDBElements('Commercial_Model','type','commercial_model_id',this.getCommercialModelId())[0])
     }
     
     async createName() {
@@ -517,12 +880,45 @@ class Commercial extends Building{
             const names = await loadNames();
             let newName = 'Regular Store'
             switch (Number(await this.getStockMaterialId())){
+                case(6):
+                    newName = names.commercialFurnitureStore.generate();
+                    break;
+                case(7):
+                    newName = names.commercialPaperStore.generate();
+                    break;
+                case(9):
+                    newName = names.commercialOilStore.generate();
+                    break;
                 case(10):
                     newName = names.commercialFishStore.generate();
+                    break;
                 case(11):
                     newName = names.commercialBakedStore.generate();
+                    break;
                 case(12):
-                    newName = names.commercialButcherStore.generate();
+                    newName = names.commercialMealStore.generate();
+                    break;
+                case(13):
+                    newName = names.commercialMealStore.generate();
+                    break;
+                case(14):
+                    newName = names.commercialElectronicStore.generate();
+                    break;
+                case(15):
+                    newName = names.commercialPlasticStore.generate();
+                    break;
+                case(16):
+                    newName = names.commercialChemicalStore.generate();
+                    break;
+                case(17):
+                    newName = names.commercialVehicleStore.generate();
+                    break;
+                case(19):
+                    newName = names.commercialSoftwareStore.generate();
+                    break;
+                case(20):
+                    newName = names.commercialMediaStore.generate();
+                    break;
                 }
             await this.insertIntoProtectedData('name',newName)
         }
@@ -531,7 +927,7 @@ class Commercial extends Building{
     async createCommercial(){
         if (this.getCommercialId() == null){
             await InsertDB('Commercial','(building_id,commercial_model_id)',"("+String(this.getBuildingId())+","+String(this.getCommercialModelId())+")")
-            const id = returnRecentlyAddedEntity('Commercial','commercial_id')
+            const id = await GetDBElements('Commercial','commercial_id','building_id',await this.getBuildingId())
             this.insertIntoProtectedData("commercialId", id);
         }
     }
@@ -567,6 +963,9 @@ class Commercial extends Building{
     getMinStock(){
         return this.getProtectedData().minStock
     }
+    getType(){
+        return this.getProtectedData().type
+    }
 
     async applicationForJob(citizen,job){  
         const jobId = await GetDBElements('Employer','job_id','employer_listing_id',job)[0]
@@ -592,6 +991,8 @@ class Commercial extends Building{
         //purchase simulation
         await this.payWorkers()
         await this.purchase()
+
+        UpdateAddDB("City_Attribute","attribute_value",0.07,"city_attribute_id",203)
     }
 
     async payWorkers(){
@@ -606,7 +1007,7 @@ class Commercial extends Building{
                     let citizen = await LoadObject.constructCitizen(citizenId)
                     await citizen.payDay(wage)
                     await citizen.save()
-                    this.insertIntoProtectedData('money', this.getMoney() - wage)
+                    this.insertIntoProtectedData('money', Round(Number(this.getMoney() - wage),2))
                 }
             }
         }
@@ -634,7 +1035,7 @@ class Commercial extends Building{
         for (const id of listOfPossiblePlacesToBuy){
             const industrialId = await GetDBElements('Inventory','industrial_id','inventory_id',id)[0]
             const modelId = await GetDBElements('Industrial','industrial_model_id','industrial_id',industrialId)[0]
-            if (await GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',modelId)[0]  == this.getStockMaterialId()){
+            if (await GetDBElements('Industrial_Model','stock_made_material_id','industrial_model_id',modelId)[0]  == await this.getStockMaterialId()){
                 listOfPlacesToBuy.push(id)
             }
         }
@@ -652,7 +1053,7 @@ class Commercial extends Building{
                 await industrialSeller.buyStock(inventoryId,Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
                 await industrialSeller.save()
                 this.insertIntoProtectedData('stockQuantity',this.getStockQuantity() + Math.min(sellerStockQuantity, stockToBuy, theoreticalMax))
-                this.insertIntoProtectedData('money',this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice)
+                this.insertIntoProtectedData('money',await Round(this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice,2))
                 stockToBuy -= Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
             }
 
@@ -667,12 +1068,18 @@ class Commercial extends Building{
         }
 
 
-        while (budget > importStockPrice && stockToBuy > 0) {
-            stockToBuy -= 1
-            this.insertIntoProtectedData('stockQuantity',this.getStockQuantity() + 1)
-            budget -= importStockPrice
-            this.insertIntoProtectedData('money',this.getMoney() - importStockPrice)
-        }
+        const stockPlannedToBuy = Math.max(0,Math.min(stockToBuy,Math.round(budget/importStockPrice)))
+        this.insertIntoProtectedData('stockQuantity',this.getStockQuantity() + stockPlannedToBuy)
+        this.insertIntoProtectedData('money',await Round(this.getMoney() - (stockPlannedToBuy * importStockPrice),2))
+        
+    }
+
+    async sell(quantity){
+        const stockPriceRaw = await GetDBElements("Material","trade_price","material_id",this.getStockMaterialId())[0]
+        const stockPrice = await GetDBElements("Markup","markup","type",this.getType())[0] * stockPriceRaw
+        await this.insertIntoProtectedData("money",await Round(await this.getMoney() + await payTax(Round(stockPrice * quantity,2), await GetDBElements("City_Attribute","attribute_value","city_attribute_id",906)[0]),2))
+        await this.insertIntoProtectedData("stockQuantity",Math.max(0,await this.getStockQuantity() - quantity))
+        await this.save()
     }
 
     async save() {
@@ -716,6 +1123,7 @@ class Industrial extends Building{
 
     async init(){
         //import has to come first since names are dependent on stockId
+
         await this.importModelValues()
 
         await this.createName()
@@ -749,7 +1157,8 @@ class Industrial extends Building{
                 this.insertIntoProtectedData('requirements',[id,materialId,minQuantity,usedQuantity])
                 continue
             }
-            this.insertIntoProtectedData('requirements',[current,[id,materialId,minQuantity,usedQuantity]])
+            current.push([id,materialId,minQuantity,usedQuantity])
+            this.insertIntoProtectedData('requirements',current)
         }
         if (await this.getRequirements() != null){
             if (!Array.isArray(await this.getRequirements()[0])){
@@ -757,7 +1166,7 @@ class Industrial extends Building{
             }
         }
         //create Inventory slots in inventory table
-        const industrialId = await this.getIndustrialId()
+        const industrialId = Number(await this.getIndustrialId())
         const requirements = await this.getRequirements()
         if (await GetDBElements("Inventory","inventory_id","industrial_id",industrialId).length == 0){
             if (requirements != null){
@@ -778,9 +1187,6 @@ class Industrial extends Building{
         if (!Array.isArray(await this.getInventory()[0])){
             this.insertIntoProtectedData('inventory',[await this.getInventory()])
         }
-        /*
-        window.alert(this.getRequirements())
-        window.alert(this.getInventory())*/
     }
     
     async createName() {
@@ -794,6 +1200,60 @@ class Industrial extends Building{
                 case(2):
                     newName = names.industrialAgriculture.generate();
                     break;
+                case(3):
+                    newName = names.industrialOre.generate();
+                    break;
+                case(4):
+                    newName = names.industrialCrudeOil.generate();
+                    break;
+                case(5):
+                    newName = names.industrialRawFish.generate();
+                    break;
+                case(6):
+                    newName = names.industrialFurniture.generate();
+                    break;
+                case(7):
+                    newName = names.industrialPaper.generate();
+                    break;
+                case(8):
+                    newName = names.industrialMetals.generate();
+                    break;
+                case(9):
+                    newName = names.industrialoil.generate();
+                    break;
+                case(10):
+                    newName = names.industrialProcessedFish.generate();
+                    break;
+                case(11):
+                    newName = names.industrialBakedGoods.generate();
+                    break;
+                case(12):
+                    newName = names.industrialMeat.generate();
+                    break;
+                case(13):
+                    newName = names.industrialMeals.generate();
+                    break;
+                case(14):
+                    newName = names.industrialElectronics.generate();
+                    break;
+                case(15):
+                    newName = names.industrialPlastics.generate();
+                    break;
+                case(16):
+                    newName = names.industrialChemicals.generate();
+                    break;
+                case(17):
+                    newName = names.industrialVehicles.generate();
+                    break;
+                case(18):
+                    newName = names.industrialSpaceships.generate();
+                    break;
+                case(19):
+                    newName = names.industrialSoftware.generate();
+                    break;
+                case(20):
+                    newName = names.industrialMedia.generate();
+                    break;
                 }
             await this.insertIntoProtectedData('name',newName)
         }
@@ -802,7 +1262,7 @@ class Industrial extends Building{
     async createIndustrial(){
         if (this.getIndustrialId() == null){
             await InsertDB('Industrial','(building_id,industrial_model_id)',"("+String(this.getBuildingId())+","+String(this.getIndustrialModelId())+")")
-            const id = returnRecentlyAddedEntity('Industrial','industrial_id')
+            const id = await GetDBElements('Industrial','industrial_id','building_id',await this.getIndustrialId())
             this.insertIntoProtectedData("industrialId", id);
         }
     }
@@ -818,7 +1278,6 @@ class Industrial extends Building{
             }
         }
     }
-
 
     getInventory() {
         return this.getProtectedData().inventory;
@@ -878,8 +1337,28 @@ class Industrial extends Building{
             }
             await this.purchase(inv,i)
         }
-
+        await this.payWorkers()
         await this.produce()
+        await UpdateAddDB("City_Attribute","attribute_value",0.1,"city_attribute_id",203)
+    }
+
+
+    async payWorkers(){
+        //remove this as wages should be paid prior to purchasing
+        const jobsCurrent = GetDBElements("Employer","employer_listing_id","building_id", this.getBuildingId())
+        if (jobsCurrent != null){
+            for (const id of jobsCurrent){
+                const citizenId = GetDBElements("Employer","citizen_id","employer_listing_id",id)[0]
+                if (citizenId != -1){
+                    const jobId = GetDBElements("Employer","job_id","employer_listing_id",id)[0]
+                    const wage = await GetDBElements('Job','wage','job_id',jobId)
+                    let citizen = await LoadObject.constructCitizen(citizenId)
+                    await citizen.payDay(wage)
+                    await citizen.save()
+                    this.insertIntoProtectedData('money', await Round(Number(this.getMoney() - wage),2))
+                }
+            }
+        }
     }
 
     async produce(){
@@ -925,8 +1404,19 @@ class Industrial extends Building{
         this.insertIntoProtectedData('inventory',inventory)
     }
 
+    async sellLeftOverStock(){
+        const inventory = this.getInventory()
+        const materialId = inventory[inventory.length - 1][1]
+        const quantity = inventory[inventory.length - 1][2]
+        tryLog("getting export price")
+        const exportPrice = Number(await GetDBElements("Material","trade_price","material_id",materialId)[0])
+        tryLog(exportPrice)
+        this.insertIntoProtectedData('money',await Round(this.getMoney() + await payTax(Number(exportPrice*quantity), await GetDBElements("City_Attribute","attribute_value","city_attribute_id",909)[0]),2))
+        inventory[inventory.length - 1][2] = 0
+        this.insertIntoProtectedData('inventory',inventory)
+    }
+
     async purchase(inv,index){
-        printTable('Inventory')
         const stockQuantity = inv[2]
         const minStock = await GetDBElements("Industrial_Model_Requirement","min_quantity","industrial_model_id",await this.getIndustrialModelId())[0]
         const importStockPrice = await GetDBElements("Material","trade_price","material_id",inv[1])[0]
@@ -937,7 +1427,7 @@ class Industrial extends Building{
             return
         }
         stockToBuy *= -2.5
-        stockToBuy = Math.round(stockToBuy)
+        stockToBuy = await Round(stockToBuy,0)
 
         let budget = await this.getMoney() * 0.45
         if (budget <= 0){
@@ -969,7 +1459,8 @@ class Industrial extends Building{
                 let inventoryToInsert = this.getInventory()
                 inventoryToInsert[index][2] += Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
                 this.insertIntoProtectedData('inventory',inventoryToInsert)
-                this.insertIntoProtectedData('money',this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice)
+                this.insertIntoProtectedData('money', await Round(Number(this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice),2))
+
                 stockToBuy -= Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
             }
 
@@ -1000,7 +1491,7 @@ class Industrial extends Building{
             if (inventory[i][0] == inventoryId){
                 inventory[i][2] -= quantity
                 await this.insertIntoProtectedData('inventory',inventory)
-                await this.insertIntoProtectedData('money',this.getMoney() + quantity * await GetDBElements('Material','local_price','material_id',inventory[i][1])[0])
+                await this.insertIntoProtectedData('money',await Round(this.getMoney() + await payTax(quantity * await GetDBElements('Material','local_price','material_id',inventory[i][1])[0], await GetDBElements("City_Attribute","attribute_value","city_attribute_id",909)[0]),2))
                 await this.save()
                 return
             }
@@ -1037,8 +1528,9 @@ class LoadObject{
         const citizenMoney = await GetDBElements("Citizen","money","citizen_id",citizenId)[0];
         const citizenResidentialId = await GetDBElements("Group_Residential_Collection","residential_id","group_id",citizenGroupId)[0];
         const citizenEducationTurns = await GetDBElements("Citizen","education_weeks","citizen_id",citizenId)[0];
+        const citizenHappiness = await GetDBElements("Citizen","happiness","citizen_id",citizenId)[0];
 
-        let object = (new Citizen(citizenName,citizenId,citizenParentId,citizenGroupId,citizenTurnOfBirth,citizenMoney,citizenResidentialId,citizenEducationTurns))
+        let object = (new Citizen(citizenName,citizenId,citizenParentId,citizenGroupId,citizenTurnOfBirth,citizenMoney,citizenResidentialId,citizenEducationTurns,citizenHappiness))
         await object.init()
         return object
     }
@@ -1073,6 +1565,18 @@ class LoadObject{
         const money = GetDBElements('Industrial','money','industrial_id',industrialId)[0]
 
         let object = (new Industrial(name,buildingId,industrialId,IndustrialModelId,money))
+        await object.init()
+        return object
+    }
+    
+    static async constructService(serviceId){
+        const buildingId = await GetDBElements("Service_Building","building_id","service_building_id",Number(serviceId))[0]
+        const name = await GetDBElements("Building","name","building_id",buildingId)[0]
+        const modelId = await GetDBElements("Service_Building","service_building_model_id","service_building_id",serviceId)[0]
+        const policyCollectionId = await GetDBElements("Service_Building","policy_collection_id","service_building_id",serviceId)[0]
+        const cityVisulisationChar = await GetDBElements("Service_Building","building_id","service_building_id",serviceId)[0]
+
+        let object = new Service(name,serviceId,buildingId,cityVisulisationChar,modelId,policyCollectionId)
         await object.init()
         return object
     }

@@ -1,7 +1,7 @@
 /* Global style */
 
 *{
-    font-family: "Jersey 10", sans-serif;
+  font-family: "Jersey 10", sans-serif;
     font-weight: 400;
     font-style: normal;
     color: black;
@@ -10,6 +10,7 @@
 /* Makes it the 98 aesthtics*/
 body {
     background-color: #008080;
+    overflow-x: hidden;
 }
 
 h3, h4, p {
@@ -19,7 +20,7 @@ h4{
     font-size: 1.2rem !important;
 }
 p {
-    font-size: 14px !important;
+    font-size: 1.2rem !important;
 }
 
 
@@ -50,7 +51,7 @@ button{
 
 #StartBlocker h1{
     text-align: center;
-    font-size: 200px;
+    font-size: 11rem;
     color: white;
 }
 .StartBlockerInfo{
@@ -82,6 +83,9 @@ button{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+#Form{
+    transform: translate(-70%, -30%);
 }
 
 /* Scary colour*/
@@ -199,11 +203,12 @@ button{
 /*Icons postions are alligned to the grid*/
 .desktop-grid {
 display: grid;
-grid-template-columns: repeat(2, 1fr);
+grid-template-columns: repeat(3, 1fr);
 grid-template-rows: repeat(5, 1fr);
 grid-column-gap: 10px;
 grid-row-gap: 10px;
 width: 100px;
+padding-bottom: 2rem;
 }
 
 .desktop-grid-div{
@@ -219,7 +224,7 @@ margin-top: 0%;
 @media (max-width: 770px) {
   .desktop-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
     width: 100px;
   }
@@ -321,6 +326,13 @@ margin-top: 0%;
     width: 64px;
 }
 
+#icon13 {
+    background: url(Assets/Financial.png);
+    display: inline-block;
+    height: 64px;
+    width: 64px;
+}
+
 /*Policy Purchase UI*/
 #PolicyPurchaseInterface img{
     border: 1px solid black;
@@ -328,8 +340,9 @@ margin-top: 0%;
 
 /*PP stands for policy pack cause I do not want to type the entire thing 6 times...*/
 #PP1,#PP2,#PP3,#PP4,#PP5,#PP6{
-    width: 100px;
+    max-width: 120px;
     height: 128px;
+    overflow-y: auto;
     padding:0.3em;
     border: 1px solid black;
     cursor: pointer;
@@ -361,4 +374,15 @@ margin-top: 0%;
 
 .tree-view{
     overflow-y: scroll;
+}
+
+li{
+    font-size: 1rem;
+}
+
+.financeList :nth-child(1){
+    color:red
+}
+.financeList :nth-child(2){
+    color: limegreen;
 }

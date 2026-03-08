@@ -4,26 +4,25 @@ async function Debug (){
   if (debugMode){
     document.getElementById("StartBlocker").style.visibility = "hidden"
     await NewDB("Coolville")
+    //skip tutorials
     UpdateDB("Tutorial","completed",1,"tutorial_id",2)
     UpdateDB("Tutorial","completed",1,"tutorial_id",3)
     UpdateDB("Tutorial","completed",1,"tutorial_id",4)
     await UpdateDB("Tutorial","completed",1,"tutorial_id",5)
     PrepareDesktop()
+    //add the unique policies pack to save me time
+    UpdateDB("Policy_Pack","policy_pack_unlocked",1,null,null)
+    InsertDB('Policy_Collection','(policy_id, policy_active)','(11,1)')
+    InsertDB('Policy_Collection','(policy_id, policy_active)','(12,1)')
   }
 }
 
-//This has to be done to ensure that the other js files are loaded
-window.addEventListener('load', function() {
-    document.addEventListener('click', function(event) {
-      if (event.target.tagName.toLowerCase() === 'button') {
-        const clickSound = new Audio('Assets/Audio/click.wav');
-        clickSound.play();
-      }
-      if (event.target.className.toLowerCase() === 'activation') {
-        const clickSound = new Audio('Assets/Audio/Activation.wav');
-        clickSound.play();
-      }
-  });
+function tryLog(input){
+  if (debugMode){
+    console.log(input)
+  }
+}
 
-  Debug()
-})
+function getDebugModeOn(){
+  return debugMode
+}
