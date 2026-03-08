@@ -75,7 +75,7 @@ button{
 /* Windows and pop ups */
 /* ------------- */
 /* Make sure the popup is centre or where I want it*/
-#Form, #TutorialWindow, #IntroForm{
+#Form, #TutorialWindow, #IntroForm,#Overview{
     position: absolute !important;
     top: 0;
     left:0;
@@ -84,8 +84,8 @@ button{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-#Form{
-    transform: translate(-70%, -30%);
+#Overview{
+    transform: translate(50%, -150%);
 }
 
 /* Scary colour*/

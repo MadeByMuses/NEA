@@ -833,7 +833,8 @@ class Citizen extends Entity{
                     }
                 }
             }
-        }}
+        }
+    }
 }
 
 class Commercial extends Building{

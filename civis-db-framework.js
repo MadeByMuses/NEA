@@ -178,6 +178,11 @@ async function NewDB(CityName) {
     "Exporting saves continued...",
     `The bottom most button that says 'export', that is what you press when you want to <u><b>export</b></u> your save, go on press it- it won't hurt.</p><br><button onclick="UpdateDB('Tutorial','completed',1,'tutorial_id',14)">Continue</button>`,
     "Saving"])
+  db.run(`INSERT INTO Tutorial (completed, tutorial_title, tutorial_description, tutorial_category) VALUES (?,?,?,?)`,[
+    0,
+    "Public Sector",
+    `The public sector window let's you see if there are any deficit in what you are providing <br>(in the early game you are not expected to provide ALL of these services, so watch out when you little place evolves into a new title!)</p><br><button onclick="UpdateDB('Tutorial','completed',1,'tutorial_id',15)">Continue</button>`,
+    "Saving"])
   db.run(`INSERT INTO Tutorial (completed,tutorial_title,tutorial_description,tutorial_category) VALUES
     (0,"End tutorial","You have finished the tutorial 🎊, please continue enjoying the project and see how large you can make your town","N/A")`)
 
@@ -952,7 +957,9 @@ async function NewDB(CityName) {
     (33,"Doctor",450,380,0.9,"#06fefe"),
     (34,"Crematorium technician",280,160,0.7,"#aeb914"),
     (35,"Police officer",270,170,0.9,"#25189a"),
-    (36,"Firefighter",270,170,0.9,"#dd4433")
+    (36,"Firefighter",270,170,0.9,"#dd4433"),
+
+    (37,"Teacher",230,180,0.9,"#079886")
     `)
   db.run(`CREATE TABLE Material (material_id INTEGER PRIMARY KEY, name VARCHAR(128), local_price FLOAT, trade_price FLOAT)`)
   db.run(`INSERT INTO Material (material_id,name, local_price, trade_price) VALUES
@@ -1362,6 +1369,7 @@ async function eraseCitizen(citizenId){
   const employerListingId = await GetDBElements("Employer","employer_listing_id","citizen_id",citizenId)[0]
   await UpdateDB("Employer","citizen_id",-1,"employer_listing_id",employerListingId)
 }
+
 async function availableHouses(){
   let availableHouses = [];
   const stmt = db.prepare(`SELECT r.residential_id FROM Residential r LEFT JOIN Residential_Model rm ON rm.residential_model_id = r.residential_model_id LEFT JOIN Group_Residential_Collection gc ON r.residential_id = gc.residential_id GROUP BY r.residential_id HAVING COUNT (gc.group_id) < rm.max_groups`);

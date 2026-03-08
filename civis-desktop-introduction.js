@@ -97,7 +97,7 @@ function DragElement(element) {
 
     //Is it pass the limits?
     if (boundary.top<0 || boundary.left<0 || boundary.bottom >= (window.innerHeight || document.documentElement.clientHeight) || boundary.right >= (window.innerWidth || document.documentElement.clientWidth)){
-      if (element.id === "Form"){
+      if (element.id === "Overview"){
         UpdateDB("Tutorial","completed",1,"tutorial_id",3)
       }
       element.remove(); //DEATH TO THE WINDOW

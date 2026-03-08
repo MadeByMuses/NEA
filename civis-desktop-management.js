@@ -382,22 +382,22 @@ async function Overview (){
     const population = await GetDBElements("City_attribute","attribute_value","city_attribute_id",2) 
     const status = await GetDBElements("City","status","city_id",1)
     WindowPopUp(`
-    <div class="window" id="Form" style="width: 350px">
-        <div class="title-bar" id="FormHeader">
+    <div class="window" id="Overview" style="width: 350px">
+        <div class="title-bar" id="OverviewHeader">
             <div class="title-bar-text">`+ cityName +`</div>
             <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="document.getElementById('Form').remove();UpdateDB('Tutorial','completed',1,'tutorial_id',3)"></button> <!-- That does not need to be an IF cause tutorial_id 2 is only true if this pops up --!>
+            <button aria-label="Close" onclick="document.getElementById('Overview').remove();UpdateDB('Tutorial','completed',1,'tutorial_id',3)"></button> <!-- That does not need to be an IF cause tutorial_id 2 is only true if this pops up --!>
             </div>
         </div>
-        <div class="window-body" id="FormContent">
+        <div class="window-body" id="OverviewContent">
             <h3>The current data of ` + cityName + `:</h3>
             <hr>
             <p>` + cityName + ` has a population of ` + population + `, making it have ` + status + ` status!</p>
         </div>
     </div>
-    `, "Form","Desktop")
+    `, "Overview","Desktop")
 }
 
 async function PublicSector(){
