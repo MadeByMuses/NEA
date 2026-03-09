@@ -251,15 +251,20 @@ async function NewDB(CityName) {
     (58,"Glass beacons","What a stunning view!",50,0),
     (59,"Monumental skyscrapers","Architecture defining",50,0),
 
-    (60,"Local stores","Essential Early capacity is increased by +5","CommercialZoning",50),
-    (61,"Village market","Normal Early capacity is increased by +5","CommercialZoning",50),
-    (62,"Premium Carpentry","Luxury Early capacity is increased by +3","CommercialZoning",50),
-    (63,"Produce Market","Essential Mid capacity is increased by +50","CommercialZoning",50),
-    (64,"Highstreet shops","Normal Mid capacity is increased by +50","CommercialZoning",50),
-    (65,"Local designer shops","Luxury Mid capacity is increased by +30","CommercialZoning",50),
-    (66,"High capacity produce","Essential Late capacity is increased by +50","CommercialZoning",50),
-    (67,"Multi-store shops","Normal Late capacity is increased by +50","CommercialZoning",50),
-    (68,"International luxury store","Luxury Late capacity is increased by +30","CommercialZoning",50)
+    (60,"Local stores","Essential Early capacity is increased by +5",50,0),
+    (61,"Village market","Normal Early capacity is increased by +5",50,0),
+    (62,"Premium Carpentry","Luxury Early capacity is increased by +3",50,0),
+    (63,"Produce Market","Essential Mid capacity is increased by +50",50,0),
+    (64,"Highstreet shops","Normal Mid capacity is increased by +50",50,0),
+    (65,"Local designer shops","Luxury Mid capacity is increased by +30",50,0),
+    (66,"High capacity produce","Essential Late capacity is increased by +50",50,0),
+    (67,"Multi-store shops","Normal Late capacity is increased by +50",50,0),
+    (68,"International luxury store","Luxury Late capacity is increased by +30",50,0),
+
+    (69,"Primary Education","Give the power of knowledge",50,0),
+    (70,"Secondary Education","Oh education is starting for real now",50,0),
+    (71,"College level","[Insert some wise quote by Plato]",50,0),
+    (72,"Uni dreams","They must thrive! They must know! To know is to thrive!",50,0)
     `)
     //("Error PACK","This an error 🚫",0,1);
 
@@ -348,7 +353,12 @@ async function NewDB(CityName) {
     (78,"Local designer shops","Luxury Mid capacity is increased by +30","CommercialZoning",50),
     (79,"High capacity produce","Essential Late capacity is increased by +50","CommercialZoning",50),
     (80,"Multi-store shops","Normal Late capacity is increased by +50","CommercialZoning",50),
-    (81,"International luxury store","Luxury Late capacity is increased by +30","CommercialZoning",50)
+    (81,"International luxury store","Luxury Late capacity is increased by +30","CommercialZoning",50),
+
+    (82,"Primary School","Provides +500 primary education for citizens","Education",7000),
+    (83,"Secondary School","Provides +1500 primary education for citizens","Education",17000),
+    (84,"College","Provides +3000 primary education for citizens","Education",50000),
+    (85,"University","Provides +5000 primary education for citizens","Education",110000)
     `)
 
   //Policy_Pack_Policy for Many to Many relationships
@@ -508,7 +518,11 @@ async function NewDB(CityName) {
     (8,4,1),
     (8,5,1),
     (8,4,2),
-    (8,5,2)`)
+    (8,5,2),
+    (69,82,1),
+    (70,83,1),
+    (71,84,1),
+    (72,85,1)`)
   
   db.run(`CREATE TABLE Policy_Effect (policy_effect_id INTEGER PRIMARY KEY , policy_id INTEGER, city_attribute_id INTEGER, delta_value FLOAT, method VARCHAR, dynamic_attribute_id INTEGER, FOREIGN KEY (policy_id) REFERENCES Policy(policy_id), FOREIGN KEY (city_attribute_id) REFERENCES City_Attribute(city_attribute_id))`)
   db.run(`INSERT INTO Policy_Effect (policy_id,city_attribute_id,delta_value, method,dynamic_attribute_id) VALUES
@@ -619,7 +633,11 @@ async function NewDB(CityName) {
   (78,310,30,'add',null),
   (79,312,50,'add',null),
   (80,314,50,'add',null),
-  (81,316,30,'add',null)
+  (81,316,30,'add',null),
+  (82,208,500,'add',null),
+  (83,210,1500,'add',null),
+  (84,212,3000,'add',null),
+  (85,208,5000,'add',null)
   `)
 
   db.run(`CREATE TABLE Service_Building_Model (service_building_model_id INTEGER PRIMARY KEY, policy_id INTEGER, city_visulisation_char CHAR(1), name VARCHAR(48), category VARCHAR(48), FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
