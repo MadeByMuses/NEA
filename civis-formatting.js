@@ -5,7 +5,7 @@ function GetGameDate(ahead){
   const gameStartDay = GetDBElements("City","start_date",null,null)[0];
   const gameTurn = GetDBElements("City_Attribute","attribute_value","city_attribute_id",1)[0];
   const gameDay = new Date((Number(gameTurn + ahead) * 604800000) + gameStartDay); //604800000 is the amount of milliseconds in a week (1000*60*60*24*7)
-  return gameDay.getDate() + "/" + gameDay.getMonth() + "/" + gameDay.getFullYear()
+  return gameDay.getDate() + "/" + (gameDay.getMonth()+1) + "/" + gameDay.getFullYear()
 }
 
 function FormattedNumber(number, format){
@@ -17,6 +17,10 @@ function FormattedNumber(number, format){
     default:
       return new Intl.NumberFormat(undefined).format(number);
   }
+}
+
+function Round(number,decimalPlaces){
+  return Math.round(number * (Math.pow(10,decimalPlaces))) / (Math.pow(10,decimalPlaces))
 }
 
 function DrawPieChart(id, data){
@@ -48,8 +52,7 @@ function InsertTable(id, data){
 
   const table = document.getElementById(id)
   let html = ""
-  console.log(data[0])
-  //insert the parameters in the heading
+  
   html += `<thead><tr>`
   const parameters = data[0]
   for (const parameter of parameters){
@@ -71,4 +74,10 @@ function InsertTable(id, data){
 
 }
 
+function OnlyUnique(value, index, array) {
+  return array.indexOf(value) === index;
+}
 
+function Limit(value, min, max){
+  return Math.min(Math.max(value,min),max)
+}
