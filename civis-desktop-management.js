@@ -351,20 +351,15 @@ function Settings (){
                     <summary>Alpha Testers</summary>
                     <ul>
                         <li>Ewan Smith</li>
+                        <li>Riley Searle</li>
+                        <li>Ben Prineas</li>
+                        <li>Luke Burrows</li>
                     </ul>
                     </details>
                 </li>
                 <li>
                     <details>
                     <summary>Beta Testers</summary>
-                    <ul>
-                        <li>___</li>
-                    </ul>
-                    </details>
-                </li>
-                <li>
-                    <details>
-                    <summary>Public Testers</summary>
                     <ul>
                         <li>___</li>
                     </ul>
