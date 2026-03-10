@@ -11,7 +11,7 @@
           <button aria-label="Close" onclick="document.getElementById('IntroForm').remove()"></button>
           </div>
       </div>
-      <div class="window-body" id="FormContent">
+      <div class="window-body" id="IntroFormContent">
         <ul class="tree-view">
             <li>
               <details>

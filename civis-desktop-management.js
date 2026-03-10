@@ -233,7 +233,7 @@ async function CategoryPolicyPanel(category){
             <h4>Activation fee: ` + await GetDBElements("City","money_symbol",null,null) + await GetDBElements("Policy","policy_act_cost","policy_id",n) +`</h4>
         </div>
         <br>`
-        UpdatePolicyPanel(n,0,null)
+        await UpdatePolicyPanel(n,0,null)
     }
 
 }
@@ -241,7 +241,8 @@ async function CategoryPolicyPanel(category){
 const activatedSfx = new Audio('Assets/Audio/Activation.wav')
 const warnSfx = new Audio('Assets/Audio/Hit_Hurt.wav');
 
-function UpdatePolicyPanel(id, change, method){
+async function UpdatePolicyPanel(id, change, method){
+    tryLog(id)
     if (method === 'sub' || method ==='add'){
         let inactivatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0)
         let activatedList = GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1)
@@ -268,8 +269,8 @@ function UpdatePolicyPanel(id, change, method){
         }
     }
     let element = document.getElementById("P_"+id)
-    const elementNumber = GetDBElements("Policy_Collection","policy_collection_id","policy_id",id)
-    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0).length === elementNumber.length){
+    const elementNumber = await GetDBElements("Policy_Collection","policy_collection_id","policy_id",id)
+    if (await GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",0).length === elementNumber.length){
         element.innerHTML = `<button disabled> deactivate </button>`
     }
     else{
@@ -278,7 +279,7 @@ function UpdatePolicyPanel(id, change, method){
     
     element.innerHTML += "<span style='font-size:1.5em;padding-left:1.25em;padding-right:1.25em'>" + GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length + " are active</span>"
 
-    if (GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length === elementNumber.length){
+    if (await GetDBElementsDoubleCondition("Policy_Collection","policy_collection_id","policy_id",id,"policy_active",1).length === elementNumber.length){
         element.innerHTML += `<button disabled> activate </button>`
     }
     else{
@@ -286,7 +287,7 @@ function UpdatePolicyPanel(id, change, method){
     }
 
     //Update funds
-    document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + GetDBElements("City","money_symbol",null,null)[0] + FormattedNumber(GetDBElements("City_Attribute","attribute_value","city_attribute_id",3),"currency")
+    document.getElementById("TaskbarCurrentFunds").innerText = "Current funds: " + await GetDBElements("City","money_symbol",null,null)[0] + await FormattedNumber(await GetDBElements("City_Attribute","attribute_value","city_attribute_id",3),"currency")
 }
 
 function Settings (){
