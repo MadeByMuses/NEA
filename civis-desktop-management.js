@@ -350,7 +350,7 @@ function Settings (){
                     <details open>
                     <summary>Alpha Testers</summary>
                     <ul>
-                        <li>___</li>
+                        <li>Ewan Smith</li>
                     </ul>
                     </details>
                 </li>
