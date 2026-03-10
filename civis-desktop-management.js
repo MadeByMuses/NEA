@@ -402,16 +402,16 @@ async function Overview (){
 
 async function PublicSector(){
     WindowPopUp(`
-    <div class="window" id="Form" style="width: 350px">
-        <div class="title-bar" id="FormHeader">
+    <div class="window" id="InfoBox" style="width: 350px">
+        <div class="title-bar" id="InfoBoxHeader">
             <div class="title-bar-text">Public sector</div>
             <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="document.getElementById('Form').remove();"></button>
+            <button aria-label="Close" onclick="document.getElementById('InfoBox').remove();"></button>
             </div>
         </div>
-        <div class="window-body" id="FormContent" style="max-height:70vh">
+        <div class="window-body" id="InfoBoxContent" style="max-height:70vh">
         <ul class="tree-view" style="max-height:68vh">
             <li>Roads
                 <ul class="financeList">
@@ -494,7 +494,7 @@ async function PublicSector(){
         </ul>
         </div>
     </div>
-    `, "Form","Desktop")
+    `, "InfoBox","Desktop")
 
     const activePolicies = await GetDBElements("Policy_Collection","policy_id","policy_active",1)
     const repeats = {
@@ -984,9 +984,9 @@ async function Finance(){
 }
 
 async function exchange(money){
-    UpdateAddDB("City_Attribute","attribute_value",-Number(money),"city_attribute_value",3)
-    UpdateAddDB("City_Attribute","attribute_value",Round(Number(money/100),0),"city_attribute_id",4)
-    PrepareDesktop()
+    await UpdateAddDB("City_Attribute","attribute_value",-Number(money),"city_attribute_id",3)
+    await UpdateAddDB("City_Attribute","attribute_value",Round(Number(money/100),0),"city_attribute_id",4)
+    await PrepareDesktop()
 }
 
 async function StatusCongratulations(){

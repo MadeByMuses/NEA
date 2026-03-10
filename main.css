@@ -75,7 +75,7 @@ button{
 /* Windows and pop ups */
 /* ------------- */
 /* Make sure the popup is centre or where I want it*/
-#Form, #TutorialWindow, #IntroForm,#Overview{
+#Form,#InfoBox, #TutorialWindow, #IntroForm,#Overview{
     position: absolute !important;
     top: 0;
     left:0;
