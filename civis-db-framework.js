@@ -1372,7 +1372,11 @@ async function saveCitizen(citizenId,name,parentId,turnOfBirth,money,residential
   db.run(`UPDATE Group_Collection SET group_id = ${Number(groupId)} WHERE citizen_id = ${Number(citizenId)}`)
 
   //Group Collection Table
-  db.run(`UPDATE Group_Residential_Collection SET residential_id = ${Number(residentialId)} WHERE group_id = ${Number(groupId)}`)
+  residentialId = Number(residentialId)
+  if (residentialId == undefined){
+    residentialId = null
+  }
+  db.run(`UPDATE Group_Residential_Collection SET residential_id = ${residentialId} WHERE group_id = ${Number(groupId)}`)
 }
 
 async function eraseCitizen(citizenId){
@@ -1419,6 +1423,9 @@ async function GetGlobalHappiness(){
   const average = array => array.reduce((first, second) => first + second) / array.length;
 
   const happinessArray = await GetDBElements("Citizen","happiness",null,null)
+  if (happinessArray.length == 0){
+    return 100
+  }
   let citizenHappinessAvg = average(happinessArray)
 
   //penalty
