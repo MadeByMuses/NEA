@@ -1,4 +1,4 @@
-const debugMode = false
+const debugMode = true
 
 async function Debug (){
   if (debugMode){
