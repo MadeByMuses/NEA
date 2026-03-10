@@ -408,9 +408,9 @@ async function updateProgressBars(progress, text, specificProgress, specificText
 async function checkCityStatus(){
     const populationTitles = [
         ["Isolated Dwelling", 0, 50, [3,4,5,6]],
-        ["Settlement", 15, 150, [7,8,32,11,60]],
-        ["Hamlet", 50, 200,[35,45,61]],
-        ["Outpost", 100, 250,[12,25,48,62]],
+        ["Settlement", 15, 70, [7,8,32,11,60]],
+        ["Hamlet", 50, 150,[35,45,61]],
+        ["Outpost", 100, 225,[12,25,48,62]],
         ["Village", 150, 300,[13,33,46,49]],
         ["Large Village", 250, 350,[9,14,29,38,41]],
         ["Rural Town", 500, 400,[10,15,33,26,52,63]],
