@@ -397,6 +397,7 @@ async function Overview (){
 }
 
 async function PublicSector(){
+    const currency = GetDBElements("City","money_symbol","city_id",1)[0]
     WindowPopUp(`
     <div class="window" id="InfoBox" style="width: 350px">
         <div class="title-bar" id="InfoBoxHeader">
@@ -411,79 +412,79 @@ async function PublicSector(){
         <ul class="tree-view" style="max-height:68vh">
             <li>Roads
                 <ul class="financeList">
-                    <li id="RoadsCost">0</li>
-                    <li id="RoadsRevenue">0</li>
+                    <li id="RoadsCost">` + currency + `0</li>
+                    <li id="RoadsRevenue">` + currency + `0</li>
                     <li><span id="Value200"></span> space: <span id="Status200"></span></li>
                 </ul>
             </li>
             <li>Electricity
                 <ul class="financeList">
-                    <li id="ElectricityCost">0</li>
-                    <li id="ElectricityRevenue">0</li>
+                    <li id="ElectricityCost"` + currency + `>0</li>
+                    <li id="ElectricityRevenue">` + currency + `0</li>
                     <li><span id="Value202"></span> MW: <span id="Status202"></span></li>
                 </ul>
             </li>
             <li>Water
                 <ul class="financeList">
-                    <li id="WaterCost">0</li>
-                    <li id="WaterRevenue">0</li>
+                    <li id="WaterCost">` + currency + `0</li>
+                    <li id="WaterRevenue">` + currency + `0</li>
                     <li>Drinking water</li>
                     <ul class="financeList">
-                        <li id="DrinkingWaterCost">0</li>
-                        <li id="DrinkingWaterRevenue">0</li>
+                        <li id="DrinkingWaterCost">` + currency + `0</li>
+                        <li id="DrinkingWaterRevenue">` + currency + `0</li>
                         <li><span id="Value204"></span> m^3: <span id="Status204"></span></li>
                     </ul>
                     <li>Sewage</li>
                     <ul class="financeList">
-                        <li id="SewageCost">0</li>
-                        <li id="SewageRevenue">0</li>
+                        <li id="SewageCost">` + currency + `0</li>
+                        <li id="SewageRevenue">` + currency + `0</li>
                         <li><span id="Value206"></span> m^3: <span id="Status206"></span></li>
                     </ul>
                 </ul>
             </li>
             <li>Garbage
                 <ul class="financeList">
-                    <li id="GarbageCost">0</li>
-                    <li id="GarbageRevenue">0</li>
+                    <li id="GarbageCost">` + currency + `0</li>
+                    <li id="GarbageRevenue">` + currency + `0</li>
                     <li><span id="Value220"></span> Tonnes: <span id="Status220"></span></li>
                 </ul>
             </li>
             <li>Care
                 <ul class="financeList">
-                    <li id="CareCost">0</li>
-                    <li id="CareRevenue">0</li>
+                    <li id="CareCost">` + currency + `0</li>
+                    <li id="CareRevenue">` + currency + `0</li>
                     <li>Healthcare</li>
                     <ul class="financeList">
-                        <li id="HealthcareCost">0</li>
-                        <li id="HealthcareRevenue">0</li>
+                        <li id="HealthcareCost">` + currency + `0</li>
+                        <li id="HealthcareRevenue">` + currency + `0</li>
                         <li><span id="Value216"></span> Patients: <span id="Status216"></span></li>
                     </ul>
                     <li>Deathcare</li>
                     <ul class="financeList">
-                        <li id="DeathcareCost">0</li>
-                        <li id="DeathcareRevenue">0</li>
+                        <li id="DeathcareCost">` + currency + `0</li>
+                        <li id="DeathcareRevenue">` + currency + `0</li>
                         <li><span id="Value218"></span> Bodies: <span id="Status218"></span></li>
                     </ul>
                 </ul>
             </li>
             <li>Police
                 <ul class="financeList">
-                    <li id="PoliceCost">0</li>
-                    <li id="PoliceRevenue">0</li>
+                    <li id="PoliceCost">` + currency + `0</li>
+                    <li id="PoliceRevenue">` + currency + `0</li>
                     <li><span id="Value222"></span> jail spaces: <span id="Status222"></span></li>
                 </ul>
             </li>
             <li>Fire safety
                 <ul class="financeList">
-                    <li id="FireCost">0</li>
-                    <li id="FireRevenue">0</li>
+                    <li id="FireCost">` + currency + `0</li>
+                    <li id="FireRevenue">` + currency + `0</li>
                     <li><span id="Value224"></span> protected houses: <span id="Status224"></span></li>
                 </ul>
             </li>
             <li>Government
                 <ul class="financeList">
-                    <li id="GovernmentCost">0</li>
-                    <li id="GovernmentRevenue">0</li>
+                    <li id="GovernmentCost">` + currency + `0</li>
+                    <li id="GovernmentRevenue">` + currency + `0</li>
                     <li><span id="Value226"></span> space: <span id="Status226"></span></li>
                 </ul>
             </li>
