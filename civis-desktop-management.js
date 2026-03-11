@@ -513,14 +513,14 @@ async function PublicSector(){
                     do{
                         allIdsDone = true
                         const liToChange = document.getElementById(policyTag + "Cost")
-                        const currentLi = Number(liToChange.innerText)
+                        const currentLi = Number(liToChange.innerText.slice(1))
                         if (attributeMethod == "add"){
-                            liToChange.innerText = Number(deltaValue) + Number(currentLi)
+                            liToChange.innerText = currency + (Number(deltaValue) + Number(currentLi))
                         }
                         else if (attributeMethod == "multi"){
                             const dynamicDeltaId = await GetDBElements("Policy_Effect","dynamic_attribute_id","policy_effect_id",effectId)[0]
                             const dynamicDelta = await GetDBElements("City_Attribute","attribute_value","city_attribute_id",dynamicDeltaId)[0]
-                            liToChange.innerText = (Number(deltaValue) * dynamicDelta)  + Number(currentLi)
+                            liToChange.innerText = currency + (Number(deltaValue) * dynamicDelta)  + Number(currentLi)
                         }
                         if (repeats.hasOwnProperty(policyTag)){
                             policyTag = repeats[policyTag]
@@ -533,14 +533,14 @@ async function PublicSector(){
                     do{
                         allIdsDone = true
                         const liToChange = document.getElementById(policyTag + "Revenue")
-                        const currentLi = Number(liToChange.innerText)
+                        const currentLi = Number(liToChange.innerText.slice(1))
                         if (attributeMethod == "add"){
-                            liToChange.innerText = Number(deltaValue) + Number(currentLi)
+                            liToChange.innerText = currency + (Number(deltaValue) + Number(currentLi))
                         }
                         else if (attributeMethod == "multi"){
                             const dynamicDeltaId = await GetDBElements("Policy_Effect","dynamic_attribute_id","policy_effect_id",effectId)[0]
                             const dynamicDelta = await GetDBElements("City_Attribute","attribute_value","city_attribute_id",dynamicDeltaId)[0]
-                            liToChange.innerText = (Number(deltaValue) * dynamicDelta)  + Number(currentLi)
+                            liToChange.innerText = currency + (Number(deltaValue) * dynamicDelta)  + Number(currentLi)
                         }
                         if (repeats.hasOwnProperty(policyTag)){
                             policyTag = repeats[policyTag]
