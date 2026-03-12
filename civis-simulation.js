@@ -215,7 +215,7 @@ async function industrialSimulation(){
 
 async function industrialSimulationCreateRandomiser(materialId){
     const possibleModels = GetDBElements('Industrial_Model','industrial_model_id','stock_made_material_id',Number(materialId))
-    let industrialBuilding = await (new Industrial(null,null,null,possibleModels[Math.floor(Math.random() * possibleModels.length)],2000))
+    let industrialBuilding = await (new Industrial(null,null,null,possibleModels[Math.floor(Math.random() * possibleModels.length)],null,2000))
     await industrialBuilding.init()
     return industrialBuilding
 }
@@ -244,7 +244,7 @@ async function commercialSimulation(){
 
         for (let i = 0; i < deltaLowerCommercialAmount; i++){
             const modelId = alikeModels[Math.floor(Math.random() * alikeModels.length)]
-            const building = await new Commercial(null,null,null,modelId,0,25000)
+            const building = await new Commercial(null,null,null,modelId,null,0,25000)
             await building.init()
             commercialBuidlings.push(building)
         }

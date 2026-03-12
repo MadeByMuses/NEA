@@ -640,27 +640,34 @@ async function NewDB(CityName) {
   (85,208,5000,'add',null)
   `)
 
-  db.run(`CREATE TABLE Service_Building_Model (service_building_model_id INTEGER PRIMARY KEY, policy_id INTEGER, city_visulisation_char CHAR(1), name VARCHAR(48), category VARCHAR(48), FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
-  db.run(`INSERT INTO Service_Building_Model (service_building_model_id, policy_id, city_visulisation_char, name, category) VALUES
-  (1,7,null,'Wind turbine','Electricity'),
-  (2,11,null,'Census HQ','Government'),
-  (3,12,null,'Taxes HQ','Government'),
-  (4,42,null,'Solar Farm','Electricity'),
-  (5,43,null,'Oil Plant','Electricity'),
-  (6,44,null,'Thermal Powerplant','Electricity'),
-  (7,45,null,'Local Landfill','Garbage'),
-  (8,46,null,'Large Landfill','Garbage'),
-  (9,47,null,'Incineration Plant','Garbage'),
-  (10,48,null,'Small Clinc','Healthcare'),
-  (11,49,null,'Health Centre','Healthcare'),
-  (12,50,null,'Hospital','Healthcare'),
-  (13,51,null,'Cemetery','Deathcare'),
-  (14,52,null,'Catacoumbs','Deathcare'),
-  (15,53,null,'Crematoium','Deathcare'),
-  (16,54,null,'Police Station','Police'),
-  (17,55,null,'Police HQ','Police'),
-  (18,56,null,'Fire station','Fire'),
-  (19,57,null,'Fire HQ','Fire')`)
+  db.run(`CREATE TABLE Service_Building_Model (service_building_model_id INTEGER PRIMARY KEY, policy_id INTEGER, city_visualisation_char CHAR(1), name VARCHAR(48), category VARCHAR(48), FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
+  db.run(`INSERT INTO Service_Building_Model (service_building_model_id, policy_id, city_visualisation_char, name, category) VALUES
+  (1,7,'À','Wind turbine','Electricity'),
+  (2,11,'Ø','Census HQ','Government'),
+  (3,12,'Ù','Taxes HQ','Government'),
+  (4,42,'Â','Solar Farm','Electricity'),
+  (5,43,'Ã','Oil Plant','Electricity'),
+  (6,44,'Ä','Thermal Powerplant','Electricity'),
+  (7,45,'Ñ','Local Landfill','Garbage'),
+  (8,46,'Ò','Large Landfill','Garbage'),
+  (9,47,'Ó','Incineration Plant','Garbage'),
+  (10,48,'Ë','Small Clinc','Healthcare'),
+  (11,49,'Ì','Health Centre','Healthcare'),
+  (12,50,'Í','Hospital','Healthcare'),
+  (13,51,'Î','Cemetery','Deathcare'),
+  (14,52,'Ï','Catacoumbs','Deathcare'),
+  (15,53,'Ð','Crematoium','Deathcare'),
+  (16,54,'Ô','Police Station','Police'),
+  (17,55,'Õ','Police HQ','Police'),
+  (18,56,'Ö','Fire station','Fire'),
+  (19,57,'×','Fire HQ','Fire'),
+  (20,9,'Å','Water Pumping Station','Water'),
+  (21,10,'Æ','Sewage Station','Water'),  
+  (22,8,'Á','Coal Plant','Electricity'),
+  (23,82,'Ç','Primary School','Education'),
+  (24,83,'È','Secondary School','Education'),
+  (25,84,'É','College School','Education'),
+  (26,85,'Ê','Univeristy','Education')`)
   db.run(`CREATE TABLE Employer_Template_Service (employer_template_service_id INTEGER PRIMARY KEY , service_building_model_id INTEGER, job_id INTEGER, amount INTEGER, FOREIGN KEY (service_building_model_id) REFERENCES Service_Building_Model(service_building_model_id), FOREIGN KEY (job_id) REFERENCES Job(job_id))`)
   db.run(`INSERT INTO Employer_Template_Service (service_building_model_id, job_id, amount) VALUES
   (1,26,1),
@@ -690,30 +697,30 @@ async function NewDB(CityName) {
 
   db.run(`CREATE TABLE Policy_Collection (policy_collection_id INTEGER PRIMARY KEY , policy_id INTEGER, policy_active BOOL, FOREIGN KEY (policy_id) REFERENCES Policy(policy_id))`)
 
-  db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY , name VARCHAR(128), city_visulisation_char CHAR(1))`)
+  db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY , name VARCHAR(128), city_visualisation_char CHAR(1))`)
   db.run(`CREATE TABLE Inventory (inventory_id INTEGER PRIMARY KEY , industrial_id INTEGER, material_id INTEGER, quantity INTEGER, FOREIGN KEY (industrial_id) REFERENCES Industrial(industrial_id), FOREIGN KEY (material_id) REFERENCES Material(material_id))`)
   db.run(`CREATE TABLE Industrial (industrial_id INTEGER PRIMARY KEY , building_id INTEGER, industrial_model_id INTEGER, money FLOAT, FOREIGN KEY (building_id) REFERENCES building(building_id))`)
-  db.run(`CREATE TABLE Industrial_Model (industrial_model_id INTEGER PRIMARY KEY, stock_made_material_id INTEGER, stock_made_quantity INTEGER NOT NULL, stock_made_max INTEGER NOT NULL,order_index INTEGER NOT NULL, FOREIGN KEY (stock_made_material_id) REFERENCES Material(material_id))`)
-  db.run(`INSERT INTO Industrial_Model (industrial_model_id, stock_made_material_id, stock_made_quantity, stock_made_max,order_index) VALUES
-    (1,1,1500,1,1),
-    (2,2,2300,1,1),
-    (3,3,1500,1,1),
-    (4,4,2200,1,1),
-    (5,5,1800,1,1),
-    (6,6,5  ,40,2),
-    (7,7,50,15,2),
-    (8,8,65,35,2),
-    (9,9,25,100,2),
-    (10,10,13,210,2),
-    (11,11,13,210,2),
-    (12,12,13,210,2),
-    (13,13,20,100,3),
-    (14,14,8,100,3),
-    (15,15,16,100,3),
-    (16,16,18,100,3),
-    (17,17,35,10,4),
-    (18,19,36,10,4),
-    (19,20,36,10,4)
+  db.run(`CREATE TABLE Industrial_Model (industrial_model_id INTEGER PRIMARY KEY, stock_made_material_id INTEGER, stock_made_quantity INTEGER NOT NULL, stock_made_max INTEGER NOT NULL,order_index INTEGER NOT NULL, city_visualisation_char CHAR(1), FOREIGN KEY (stock_made_material_id) REFERENCES Material(material_id))`)
+  db.run(`INSERT INTO Industrial_Model (industrial_model_id, stock_made_material_id, stock_made_quantity, stock_made_max,order_index,city_visualisation_char) VALUES
+    (1,1,1500,1,1,'A'),
+    (2,2,2300,1,1,'B'),
+    (3,3,1500,1,1,'C'),
+    (4,4,2200,1,1,'D'),
+    (5,5,1800,1,1,'E'),
+    (6,6,5  ,40,2,'F'),
+    (7,7,50,15,2,'G'),
+    (8,8,65,35,2,'H'),
+    (9,9,25,100,2,'I'),
+    (10,10,13,210,2,'J'),
+    (11,11,13,210,2,'K'),
+    (12,12,13,210,2,'L'),
+    (13,13,20,100,3,'M'),
+    (14,14,8,100,3,'N'),
+    (15,15,16,100,3,'O'),
+    (16,16,18,100,3,'P'),
+    (17,17,35,10,4,'Q'),
+    (18,19,36,10,4,'S'),
+    (19,20,36,10,4,'T')
     `)
   db.run(`CREATE TABLE Industrial_Model_Requirement (industrial_model_requirement_id INTEGER PRIMARY KEY , industrial_model_id INTEGER, material_id INTEGER NOT NULL, min_quantity INTEGER, quantity_used INTEGER, FOREIGN KEY (material_id) REFERENCES Material(material_id), FOREIGN KEY (industrial_model_id) REFERENCES Industrial_Model(industrial_model_id))`)
   db.run(`INSERT INTO Industrial_Model_Requirement (industrial_model_id, material_id, min_quantity, quantity_used) VALUES
@@ -758,50 +765,50 @@ async function NewDB(CityName) {
     (18,21,15),
     (19,22,10)`)
   db.run(`CREATE TABLE Commercial (commercial_id INTEGER PRIMARY KEY , building_id INTEGER, commercial_model_id INTEGER, stock_quantity INTEGER, money FLOAT, FOREIGN KEY (building_id) REFERENCES building(building_id))`)
-  db.run(`CREATE TABLE Commercial_Model (commercial_model_id INTEGER PRIMARY KEY, stock_material_id INTEGER, min_stock INTEGER NOT NULL, type VARCHAR(16), category VARCHAR(32), FOREIGN KEY (stock_material_id) REFERENCES Material(material_id), FOREIGN KEY (type) REFERENCES Markup(type))`)
-  db.run(`INSERT INTO Commercial_Model (commercial_model_id, stock_material_id, min_stock ,type, category) VALUES 
-    (1,10,500,'essential','essential_early'),
-    (2,11,500,'essential','essential_early'),
-    (3,12,500,'essential','essential_early'),
+  db.run(`CREATE TABLE Commercial_Model (commercial_model_id INTEGER PRIMARY KEY, stock_material_id INTEGER, min_stock INTEGER NOT NULL, type VARCHAR(16),city_visualisation_char CHAR(1), category VARCHAR(32), FOREIGN KEY (stock_material_id) REFERENCES Material(material_id), FOREIGN KEY (type) REFERENCES Markup(type))`)
+  db.run(`INSERT INTO Commercial_Model (commercial_model_id, stock_material_id, min_stock ,type,city_visualisation_char, category) VALUES 
+    (1,10,500,'essential',1,'essential_early'),
+    (2,11,500,'essential',1,'essential_early'),
+    (3,12,500,'essential',1,'essential_early'),
 
-    (4,13,300,'normal','normal_early'),
-    (5,7,300,'normal','normal_early'),
-    (6,15,300,'normal','normal_early'),
-    (7,16,300,'normal','normal_early'),
-    (8,12,300,'normal','normal_early'),
-    (9,11,300,'normal','normal_early'),
+    (4,13,300,'normal',2,'normal_early'),
+    (5,7,300,'normal',2,'normal_early'),
+    (6,15,300,'normal',2,'normal_early'),
+    (7,16,300,'normal',2,'normal_early'),
+    (8,12,300,'normal',2,'normal_early'),
+    (9,11,300,'normal',2,'normal_early'),
 
-    (10,6,100,'luxury','luxury_early'),
+    (10,6,100,'luxury',3,'luxury_early'),
 
-    (11,10,6500,'essential','essential_mid'),
-    (12,11,6500,'essential','essential_mid'),
-    (13,12,6500,'essential','essential_mid'),
+    (11,10,6500,'essential',4,'essential_mid'),
+    (12,11,6500,'essential',4,'essential_mid'),
+    (13,12,6500,'essential',4,'essential_mid'),
 
-    (14,13,1100,'normal','normal_mid'),
-    (15,7,1100,'normal','normal_mid'),
-    (16,15,1100,'normal','normal_mid'),
-    (17,16,1100,'normal','normal_mid'),
-    (18,12,1100,'normal','normal_mid'),
-    (19,11,1100,'normal','normal_mid'),
+    (14,13,1100,'normal',5,'normal_mid'),
+    (15,7,1100,'normal',5,'normal_mid'),
+    (16,15,1100,'normal',5,'normal_mid'),
+    (17,16,1100,'normal',5,'normal_mid'),
+    (18,12,1100,'normal',5,'normal_mid'),
+    (19,11,1100,'normal',5,'normal_mid'),
 
-    (20,6,350,'luxury','luxury_mid'),
-    (21,17,350,'luxury','luxury_mid'),
-    (22,19,350,'luxury','luxury_mid'),
-    (23,20,350,'luxury','luxury_mid'),
+    (20,6,350,'luxury',6,'luxury_mid'),
+    (21,17,350,'luxury',6,'luxury_mid'),
+    (22,19,350,'luxury',6,'luxury_mid'),
+    (23,20,350,'luxury',6,'luxury_mid'),
 
-    (24,10,30000,'essential','essential_late'),
-    (25,11,30000,'essential','essential_late'),
-    (26,12,30000,'essential','essential_late'),
+    (24,10,30000,'essential',7,'essential_late'),
+    (25,11,30000,'essential',7,'essential_late'),
+    (26,12,30000,'essential',7,'essential_late'),
 
-    (27,13,3500,'normal','normal_late'),
-    (28,7,3500,'normal','normal_late'),
-    (29,15,3500,'normal','normal_late'),
-    (30,16,3500,'normal','normal_late'),
+    (27,13,3500,'normal',8,'normal_late'),
+    (28,7,3500,'normal',8,'normal_late'),
+    (29,15,3500,'normal',8,'normal_late'),
+    (30,16,3500,'normal',8,'normal_late'),
 
-    (31,6,1750,'luxury','luxury_late'),
-    (32,17,1750,'luxury','luxury_late'),
-    (33,19,1750,'luxury','luxury_late'),
-    (34,20,1750,'luxury','luxury_late')
+    (31,6,1750,'luxury',9,'luxury_late'),
+    (32,17,1750,'luxury',9,'luxury_late'),
+    (33,19,1750,'luxury',9,'luxury_late'),
+    (34,20,1750,'luxury',9,'luxury_late')
     
     `)  
     //essential_early 8
@@ -1006,57 +1013,57 @@ async function NewDB(CityName) {
     (19,'Software', 18, 25),
     (20,'Media', 18, 25)`)
   db.run(`CREATE TABLE Residential (residential_id INTEGER PRIMARY KEY , building_id INTEGER, residential_model_id INTEGER, FOREIGN KEY (residential_model_id) REFERENCES Residential_Model(residential_model_id))`)
-  db.run(`CREATE TABLE Residential_Model (residential_model_id INTEGER PRIMARY KEY , max_groups INTEGER, rent FLOAT, type VARCHAR(16))`)
-  db.run(`INSERT INTO Residential_Model (max_groups, rent, type) VALUES
-    (2,70,'budget'),
-    (3,68,'budget'),
-    (4,67,'budget'),
-    (5,65,'budget'),
-    (5,120,'lower'),
-    (6,115,'lower'),
-    (7,112,'lower'),
-    (8,108,'lower'),
-    (9,105,'lower'),
-    (10,100,'lower'),
-    (5,170,'middle'),
-    (6,165,'middle'),
-    (7,160,'middle'),
-    (8,155,'middle'),
-    (9,152,'middle'),
-    (10,150,'middle'),
-    (11,148,'middle'),
-    (12,145,'middle'),
-    (1,300,'upper'),
-    (2,270,'upper'),
-    (3,265,'upper'),
-    (4,250,'upper'),
-    (45,110,'lowrent'),
-    (50,108,'lowrent'),
-    (52,106,'lowrent'),
-    (55,104,'lowrent'),
-    (60,102,'lowrent'),
-    (25,160,'affordable'),
-    (30,155,'affordable'),
-    (35,155,'affordable'),
-    (40,155,'affordable'),
-    (45,150,'affordable'),
-    (50,145,'affordable'),
-    (60,142,'affordable'),
-    (70,140,'affordable'),
-    (80,140,'affordable'),
-    (85,138,'affordable'),
-    (60,240,'regular'),
-    (65,230,'regular'),
-    (68,228,'regular'),
-    (70,220,'regular'),
-    (80,215,'regular'),
-    (90,212,'regular'),
-    (20,320,'luxury'),
-    (30,310,'luxury'),
-    (40,305,'luxury'),
-    (45,300,'luxury'),
-    (50,290,'luxury'),
-    (52,290,'luxury')`)
+  db.run(`CREATE TABLE Residential_Model (residential_model_id INTEGER PRIMARY KEY , max_groups INTEGER, rent FLOAT,city_visualisation_char CHAR(1), type VARCHAR(16))`)
+  db.run(`INSERT INTO Residential_Model (max_groups, rent, type,city_visualisation_char) VALUES
+    (2,70,'budget','a'),
+    (3,68,'budget','b'),
+    (4,67,'budget','c'),
+    (5,65,'budget','a'),
+    (5,120,'lower','d'),
+    (6,115,'lower','d'),
+    (7,112,'lower','e'),
+    (8,108,'lower','f'),
+    (9,105,'lower','e'),
+    (10,100,'lower','f'),
+    (5,170,'middle','g'),
+    (6,165,'middle','h'),
+    (7,160,'middle','i'),
+    (8,155,'middle','g'),
+    (9,152,'middle','h'),
+    (10,150,'middle','i'),
+    (11,148,'middle','g'),
+    (12,145,'middle','h'),
+    (1,300,'upper','j'),
+    (2,270,'upper','k'),
+    (3,265,'upper','l'),
+    (4,250,'upper','j'),
+    (45,110,'lowrent','m'),
+    (50,108,'lowrent','o'),
+    (52,106,'lowrent','m'),
+    (55,104,'lowrent','n'),
+    (60,102,'lowrent','o'),
+    (25,160,'affordable','r'),
+    (30,155,'affordable','p'),
+    (35,155,'affordable','q'),
+    (40,155,'affordable','r'),
+    (45,150,'affordable','p'),
+    (50,145,'affordable','q'),
+    (60,142,'affordable','r'),
+    (70,140,'affordable','p'),
+    (80,140,'affordable','q'),
+    (85,138,'affordable','r'),
+    (60,240,'regular','u'),
+    (65,230,'regular','t'),
+    (68,228,'regular','s'),
+    (70,220,'regular','u'),
+    (80,215,'regular','t'),
+    (90,212,'regular','s'),
+    (20,320,'luxury','z'),
+    (30,310,'luxury','w'),
+    (40,305,'luxury','x'),
+    (45,300,'luxury','v'),
+    (50,290,'luxury','w'),
+    (52,290,'luxury','x')`)
   db.run(`CREATE TABLE Citizen (citizen_id INTEGER PRIMARY KEY , name VARCHAR(32), parent_id INTEGER,turn_of_birth INTEGER, money FLOAT, residential_id INTEGER, education_weeks INTEGER, happiness FLOAT, dead BOOLEAN)`)
   db.run(`CREATE TABLE Group_Collection (group_collection_id INTEGER PRIMARY KEY , group_id INTEGER, citizen_id INTEGER, FOREIGN KEY (citizen_id) REFERENCES Citizen(citizen_id))`)
   db.run(`CREATE TABLE Group_Residential_Collection (group_residential_id INTEGER PRIMARY KEY , group_id INTEGER, residential_id INTEGER, FOREIGN KEY (group_id) REFERENCES Group_Collection(group_id), FOREIGN KEY (residential_id) REFERENCES Residential(residential_id))`)
@@ -1282,7 +1289,7 @@ function UnlockedPolicies(category){
 }
 
 
-//db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY , name VARCHAR(128), city_visulisation_char CHAR(1))`)
+//db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY , name VARCHAR(128), city_visualisation_char CHAR(1))`)
 function saveBuilding(buildingId, buildingName, buildingCityVisulisationChar){
   if (buildingCityVisulisationChar == null) {
     buildingCityVisulisationChar = ' '
@@ -1294,7 +1301,7 @@ function saveBuilding(buildingId, buildingName, buildingCityVisulisationChar){
     return
   }
 
-  db.run(`UPDATE Building SET name = "${buildingName}", city_visulisation_char = "${buildingCityVisulisationChar}" WHERE building_id = ${Number(buildingId)}`)
+  db.run(`UPDATE Building SET name = "${buildingName}", city_visualisation_char = "${buildingCityVisulisationChar}" WHERE building_id = ${Number(buildingId)}`)
 
 }
 
@@ -1324,6 +1331,7 @@ function saveIndustrial(industrialId, buildingId, industrialModelId, money, inve
     console.error("industrialId is not valid")
     return
   }
+  window.alert(Number(money))
   tryLog(`UPDATE Industrial SET building_id = ${Number(buildingId)}, industrial_model_id = ${Number(industrialModelId)}, money = ${Number(money)} WHERE industrial_id = ${Number(industrialId)}`)
   db.run(`UPDATE Industrial SET building_id = ${Number(buildingId)}, industrial_model_id = ${Number(industrialModelId)}, money = ${Number(money)} WHERE industrial_id = ${Number(industrialId)}`)
   tryLog(`Now saving its inventory`)

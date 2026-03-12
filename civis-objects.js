@@ -120,6 +120,9 @@ class Entity{
     }
 
     insertIntoProtectedData(key,data){
+        if (data == undefined && key == 'money'){
+            //window.alert("error: " + data)
+        }
         //set protected Data to be what it currently is AND the new data with its key
         protectedData.set(this,{...this.getProtectedData(),[key] : data})
         return
@@ -350,8 +353,9 @@ class Residential extends Building {
 
     async importModelValues(){
         //based on this object's residentialModelId, get the attributes
-        this.insertIntoProtectedData('maxResidents',GetDBElements('Residential_Model','max_groups','residential_model_id',this.getResidentialModelId()))
-        this.insertIntoProtectedData('rent',GetDBElements('Residential_Model','rent','residential_model_id',this.getResidentialModelId()))
+        this.insertIntoProtectedData('maxResidents',await GetDBElements('Residential_Model','max_groups','residential_model_id',this.getResidentialModelId())[0])
+        this.insertIntoProtectedData('rent',await GetDBElements('Residential_Model','rent','residential_model_id',this.getResidentialModelId())[0])
+        this.insertIntoProtectedData('cityVisulisationChar',await GetDBElements('Residential_Model','city_visualisation_char','residential_model_id',this.getResidentialModelId()))
     } 
     
     async createName() {
@@ -393,35 +397,12 @@ class Residential extends Building {
     }
 
     async save() {
-        //(name,buildingId,cityVisulisationChar,residentialModelId,residentialId)
         await super.save()
         const buildingId = await this.getBuildingId();
         const residentialModelId = await this.getResidentialModelId();
         const residentialId = await this.getResidentialId();
 
         saveResidential(residentialId, buildingId ,residentialModelId)
-    }
-}
-
-class ResidentialBudget extends Residential{
-    constructor(name,buildingId,cityVisulisationChar,residentialModelId,residentialId){
-        super(name,buildingId,cityVisulisationChar,residentialModelId,residentialId)
-    }
-
-    //initialisation funciton
-    async init(){
-        await this.createName()
-
-        await super.init()
-    }
-
-    async createName() {
-        if (this.getName() == null){
-            const names = await loadNames();
-            const newName = names.residentialBudgetNames.generate();
-            await this.insertIntoProtectedData('name',newName)
-        }
-        return
     }
 }
 
@@ -539,7 +520,7 @@ class Citizen extends Entity{
         UpdateAddDB("City_Attribute","attribute_value",0.1,"city_attribute_id",207)
 
 
-        if (turnAge == 18 * 52){
+        if (turnAge == 18 * 52 ){
             await this.insertIntoProtectedData('residentialId',null)
             const id = await nextAttributeValue('Group_Collection','group_id')
             await this.insertIntoProtectedData('groupId',id)
@@ -846,8 +827,8 @@ class Commercial extends Building{
     //stockQuantity
     //money;
 
-    constructor(name, buildingId,commercialId,commercialModelId,stockQuantity,money){
-        super(name,buildingId)
+    constructor(name, buildingId,commercialId,commercialModelId,cityVisulisationChar,stockQuantity,money){
+        super(name,buildingId,cityVisulisationChar)
         this.insertIntoProtectedData('commercialId',commercialId)
         this.insertIntoProtectedData('commercialModelId',Number(commercialModelId))
         this.insertIntoProtectedData('stockQuantity',stockQuantity)
@@ -874,6 +855,7 @@ class Commercial extends Building{
         this.insertIntoProtectedData('stockMaterialId',Number(await GetDBElements('Commercial_Model','stock_material_id','commercial_model_id',this.getCommercialModelId())[0]))
         this.insertIntoProtectedData('minStock',Number(await GetDBElements('Commercial_Model','min_stock','commercial_model_id',this.getCommercialModelId())[0]))
         this.insertIntoProtectedData('type',await GetDBElements('Commercial_Model','type','commercial_model_id',this.getCommercialModelId())[0])
+        this.insertIntoProtectedData('cityVisulisationChar',await GetDBElements('Commercial_Model','city_visualisation_char','commercial_model_id',this.getCommercialModelId())[0])
     }
     
     async createName() {
@@ -1111,8 +1093,8 @@ class Industrial extends Building{
         //stockMadeMax
     //money;
 
-    constructor(name, buildingId,industrialId,industrialModelId,money){
-        super(name,buildingId)
+    constructor(name, buildingId,industrialId,industrialModelId,cityVisulisationChar,money){
+        super(name,buildingId,cityVisulisationChar)
         this.insertIntoProtectedData('industrialId',industrialId)
         this.insertIntoProtectedData('inventory',null)
         this.insertIntoProtectedData('industrialModelId',industrialModelId)
@@ -1144,6 +1126,7 @@ class Industrial extends Building{
         await this.insertIntoProtectedData('stockMadeQuantity',Number(await GetDBElements('Industrial_Model','stock_made_quantity','industrial_model_id',modelId)[0]))
         await this.insertIntoProtectedData('stockMadeMax',Number(await GetDBElements('Industrial_Model','stock_made_max','industrial_model_id',modelId)[0]))
         await this.insertIntoProtectedData('orderIndex',Number(await GetDBElements('Industrial_Model','order_index','industrial_model_id',modelId)[0]))
+        await this.insertIntoProtectedData('cityVisulisationChar',await GetDBElements('Industrial_Model','city_visualisation_char','industrial_model_id',modelId)[0])
     }
 
     async requirementsInventoryImport(){ 
@@ -1340,6 +1323,7 @@ class Industrial extends Building{
         }
         await this.payWorkers()
         await this.produce()
+        //window.alert("Post Sim: " + this.getMoney())
         await UpdateAddDB("City_Attribute","attribute_value",0.1,"city_attribute_id",203)
     }
 
@@ -1357,6 +1341,7 @@ class Industrial extends Building{
                     await citizen.payDay(wage)
                     await citizen.save()
                     this.insertIntoProtectedData('money', await Round(Number(this.getMoney() - wage),2))
+                    //window.alert("money PW:" + this.getMoney())
                 }
             }
         }
@@ -1411,8 +1396,10 @@ class Industrial extends Building{
         const quantity = inventory[inventory.length - 1][2]
         tryLog("getting export price")
         const exportPrice = Number(await GetDBElements("Material","trade_price","material_id",materialId)[0])
-        tryLog(exportPrice)
+        tryLog(exportPrice)        
+       //window.alert("money SLOS:" + this.getMoney())
         this.insertIntoProtectedData('money',await Round(this.getMoney() + await payTax(Number(exportPrice*quantity), await GetDBElements("City_Attribute","attribute_value","city_attribute_id",909)[0]),2))
+
         inventory[inventory.length - 1][2] = 0
         this.insertIntoProtectedData('inventory',inventory)
     }
@@ -1461,6 +1448,7 @@ class Industrial extends Building{
                 inventoryToInsert[index][2] += Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
                 this.insertIntoProtectedData('inventory',inventoryToInsert)
                 this.insertIntoProtectedData('money', await Round(Number(this.getMoney() - Math.min(sellerStockQuantity, stockToBuy, theoreticalMax) * localStockPrice),2))
+                //window.alert("money P:" + this.getMoney())
 
                 stockToBuy -= Math.min(sellerStockQuantity, stockToBuy, theoreticalMax)
             }
@@ -1483,6 +1471,7 @@ class Industrial extends Building{
             this.insertIntoProtectedData('inventory',inventoryToInsert)
             budget -= importStockPrice
             this.insertIntoProtectedData('money',this.getMoney() - importStockPrice)
+            //window.alert("money PI:" + this.getMoney())
         }
     }
     //buyStock refers to another source buying your goods, not yourself buying somebody else's goods
@@ -1493,6 +1482,7 @@ class Industrial extends Building{
                 inventory[i][2] -= quantity
                 await this.insertIntoProtectedData('inventory',inventory)
                 await this.insertIntoProtectedData('money',await Round(this.getMoney() + await payTax(quantity * await GetDBElements('Material','local_price','material_id',inventory[i][1])[0], await GetDBElements("City_Attribute","attribute_value","city_attribute_id",909)[0]),2))
+                //window.alert("money BS:" + this.getMoney())
                 await this.save()
                 return
             }
@@ -1539,10 +1529,10 @@ class LoadObject{
     static async constructResidential(residentialId){
         const buildingId = GetDBElements("Residential","building_id","residential_id",residentialId)[0];
         const residentialName = GetDBElements("Building","name","building_id",buildingId)[0] || null;
-        const residentialChar = GetDBElements("Building","name","city_visulisation_char",buildingId)[0];
+        const cityVisulisationChar = GetDBElements("Building","city_visualisation_char","building_id",buildingId)[0];
         const residentialModelId = GetDBElements("Residential","residential_model_id","residential_id",residentialId)[0];
         
-        let object = (new Residential(residentialName, buildingId, residentialChar,residentialModelId,residentialId))
+        let object = (new Residential(residentialName, buildingId, cityVisulisationChar,residentialModelId,residentialId))
         await object.init()
         return object
     }
@@ -1550,11 +1540,12 @@ class LoadObject{
     static async constructCommercial(commercialId){
         const buildingId = await GetDBElements('Commercial','building_id','commercial_id',commercialId)[0]
         const name = await GetDBElements('Building','name','building_id',buildingId)[0]
+        const cityVisulisationChar = await GetDBElements('Building','city_visualisation_char','building_id',buildingId)[0]
         const commercialModelId = await GetDBElements('Commercial','commercial_model_id','commercial_id',commercialId)[0]
         const stockQuantity = await GetDBElements('Commercial','stock_quantity','commercial_id',commercialId)[0]
         const money = await GetDBElements('Commercial','money','commercial_id',commercialId)[0]
 
-        let object = await (new Commercial(name,buildingId,commercialId,commercialModelId,stockQuantity,money))
+        let object = await (new Commercial(name,buildingId,commercialId,commercialModelId,cityVisulisationChar,stockQuantity,money))
         await object.init()
         return object
     }
@@ -1562,10 +1553,12 @@ class LoadObject{
     static async constructIndustrial(industrialId){
         const buildingId = GetDBElements('Industrial','building_id','industrial_id',industrialId)[0]
         const name = GetDBElements('Building','name','building_id',buildingId)[0]
+        const cityVisulisationChar = GetDBElements('Building','city_visualisation_char','building_id',industrialId)[0]
         const IndustrialModelId = GetDBElements('Industrial','industrial_model_id','industrial_id',industrialId)[0]
         const money = GetDBElements('Industrial','money','industrial_id',industrialId)[0]
+        //window.alert("Loading Object:" + money)
 
-        let object = (new Industrial(name,buildingId,industrialId,IndustrialModelId,money))
+        let object = (new Industrial(name,buildingId,industrialId,IndustrialModelId,cityVisulisationChar,money))
         await object.init()
         return object
     }

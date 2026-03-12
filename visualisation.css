@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'PixelTown';
+    src: url('Assets/Font/PixelTown.ttf');
+}
+
+* {
+    font-family: 'PixelTown';
+    font-size: 48px;
+}

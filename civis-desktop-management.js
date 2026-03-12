@@ -1191,3 +1191,34 @@ async function News(){
         </div>`,
         `Form`,`Desktop`)
 }
+
+async function Visualise(){
+    const VisualiseChars = await GetDBElements('Building','city_visualisation_char',null,null)
+    const VisualiseCharsRandom =  await SortingObject.shuffle(VisualiseChars)
+    const trees = ['%','&',"'",'(',')']
+    let pageContent = `<!DOCTYPE html>
+    <html>
+    <head>
+        <title>City Visualised</title>
+        <!--Personalised CSS-->
+        <link rel="stylesheet" href="visualisation.css">
+    </head>
+    <body>`
+    while (VisualiseCharsRandom.length > 0){
+        const random = Math.floor(Math.random()*3)
+        switch (random){
+            case (0):
+                pageContent += (VisualiseCharsRandom.pop())
+                break
+            case(1):
+                pageContent += ' '
+                break
+            case(2):
+                pageContent += trees[Math.floor(Math.random() * trees.length)]
+                break
+        }
+    }
+    const tab = window.open();
+    tab.document.write(pageContent);
+    
+}
