@@ -1331,7 +1331,6 @@ function saveIndustrial(industrialId, buildingId, industrialModelId, money, inve
     console.error("industrialId is not valid")
     return
   }
-  window.alert(Number(money))
   tryLog(`UPDATE Industrial SET building_id = ${Number(buildingId)}, industrial_model_id = ${Number(industrialModelId)}, money = ${Number(money)} WHERE industrial_id = ${Number(industrialId)}`)
   db.run(`UPDATE Industrial SET building_id = ${Number(buildingId)}, industrial_model_id = ${Number(industrialModelId)}, money = ${Number(money)} WHERE industrial_id = ${Number(industrialId)}`)
   tryLog(`Now saving its inventory`)
