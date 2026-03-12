@@ -13,18 +13,35 @@
       </div>
       <div class="window-body" id="IntroFormContent">
         <ul class="tree-view">
-            <li>
-              <details>
-                <summary>Version 1.0.1</summary>
-                <ul>
-                  <li>Added alpha tester names</li>
-                  <li>Public Sector window fix</li>
-                  <li>Added .csv file for testers</li>
-                  <li>Completed policy and policy pack images</li>
-                  <li>Fixed an error on Finance panel with Incre transactions</li>
-                </ul>
-              </details>
-            </li>
+          <li>
+            <details>
+              <summary>Version 1.1.0</summary>
+              <ul>
+                <li>Implemented Visualisation function (Early stage)</li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Version 1.0.2</summary>
+              <ul>
+                <li>Public sector currency fix</li>
+                <li>Educational policies added!</li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Version 1.0.1</summary>
+              <ul>
+                <li>Added alpha tester names</li>
+                <li>Public Sector window fix</li>
+                <li>Added .csv file for testers</li>
+                <li>Completed policy and policy pack images</li>
+                <li>Fixed an error on Finance panel with Incre transactions</li>
+              </ul>
+            </details>
+          </li>
           <li>
             Version 1.0.0
             <ul>
