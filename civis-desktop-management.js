@@ -338,7 +338,7 @@ function Settings (){
             <button onclick="ExportDB()">Export</button>
             <hr>
             <h4>Many thanks to all that helped!</h4>
-            <ul class="tree-view">
+            <ul class="tree-view" style="max-height:150px">
                 <li>
                     Tools
                     <ul>
@@ -348,7 +348,7 @@ function Settings (){
                     </ul>
                 </li>
                 <li>
-                    <details open>
+                    <details>
                     <summary>Alpha Testers</summary>
                     <ul>
                         <li>Ewan Smith</li>
