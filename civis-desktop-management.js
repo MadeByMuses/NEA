@@ -1206,7 +1206,8 @@ async function Visualise(){
         <link rel="stylesheet" href="visualisation.css">
     </head>
     <body>`
-    
+    window.alert(VisualiseChars)
+    printTable('Service_Building_Model')
     if (VisualiseCharsRandom.length == 0){
         pageContent=`<!DOCTYPE html>
         <html>
@@ -1239,7 +1240,7 @@ async function Visualise(){
                 pageContent += ' '
                 break
             case(2):
-                pageContent += trees[Math.floor(Math.random() * trees.length)]
+                pageContent += `<span>` + trees[Math.floor(Math.random() * trees.length)] + `</span>`
                 break
         }
     }
