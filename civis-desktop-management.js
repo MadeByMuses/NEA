@@ -1206,6 +1206,29 @@ async function Visualise(){
         <link rel="stylesheet" href="visualisation.css">
     </head>
     <body>`
+    
+    if (VisualiseCharsRandom.length == 0){
+        pageContent=`<!DOCTYPE html>
+        <html>
+        <head>
+            <title>City Visualised</title>
+            
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
+            <style>
+            * {
+                font-family: "Jersey 10", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+            }
+            </style>
+        </head>
+        <body>
+        <h1>There is nothing to see here yet...`
+    }
+
     while (VisualiseCharsRandom.length > 0){
         const random = Math.floor(Math.random()*3)
         switch (random){
