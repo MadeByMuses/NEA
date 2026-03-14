@@ -362,7 +362,9 @@ function Settings (){
                     <details>
                     <summary>Beta Testers</summary>
                     <ul>
-                        <li>___</li>
+                        <li>Jack Causebrook</li>
+                        <li>M.A.</li>
+                        <li>T.S.</li>
                     </ul>
                     </details>
                 </li>
