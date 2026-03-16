@@ -556,11 +556,12 @@ class Citizen extends Entity{
 
         await this.getEducated(turnAge)
 
+        /*
         const deathProbability = (0.0536/7)*Math.pow(Math.E,0.1044*((turnAge/52) - 50)) - 0.008
         if (Math.random() < deathProbability){
             UpdateAddDB("City_Attribute","attribute_value",1,"city_attribute_id",215)
             eraseCitizen(await this.getCitizenId())
-        }
+        }*/
     }
 
     async findHouse(){

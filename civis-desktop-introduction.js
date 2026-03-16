@@ -15,6 +15,18 @@
         <ul class="tree-view">
           <li>
             <details>
+              <summary>Version 1.1.1</summary>
+              <ul>
+                <li>Added Beta Testers</li>
+                <li>Settings UI fix</li>
+                <li>Visualise QOL fix</li>
+                <li>Changed starting money</li>
+                <li>Tree are now coloured</li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details>
               <summary>Version 1.1.0</summary>
               <ul>
                 <li>Implemented Visualisation function (Early stage)</li>

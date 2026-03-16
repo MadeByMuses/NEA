@@ -362,7 +362,9 @@ function Settings (){
                     <details>
                     <summary>Beta Testers</summary>
                     <ul>
+                        <li>Ahan Rai</li>
                         <li>Jack Causebrook</li>
+                        <li>Oakley Hogben</li>
                         <li>M.A.</li>
                         <li>T.S.</li>
                     </ul>
