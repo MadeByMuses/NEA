@@ -27,7 +27,7 @@ async function NewDB(CityName) {
   db.run(`INSERT INTO City_Attribute (city_attribute_id, attribute_name, attribute_key_word, attribute_description, attribute_value, clear_on_simulation) VALUES 
     (1,"Current turn number","turn","What is the current turn number for the game? Used for date calculations and recording events",0,0),
     (2,"Population","population","How many people live in your town",0,0),
-    (3,"Current funds","money","How much money does the city own",50000,0),
+    (3,"Current funds","money","How much money does the city own",47000,0),
     (4,"Incre funds","incre","How much political strength does the city have?",50,0),
     (5,"Currently Purchasing","purchasing","Used to prevent warns - 1 is true and 0 is false",0,0),
     

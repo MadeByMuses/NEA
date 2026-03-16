@@ -338,7 +338,7 @@ function Settings (){
             <button onclick="ExportDB()">Export</button>
             <hr>
             <h4>Many thanks to all that helped!</h4>
-            <ul class="tree-view">
+            <ul class="tree-view" style="max-height:150px">
                 <li>
                     Tools
                     <ul>
@@ -348,7 +348,7 @@ function Settings (){
                     </ul>
                 </li>
                 <li>
-                    <details open>
+                    <details>
                     <summary>Alpha Testers</summary>
                     <ul>
                         <li>Ewan Smith</li>
@@ -362,7 +362,9 @@ function Settings (){
                     <details>
                     <summary>Beta Testers</summary>
                     <ul>
+                        <li>Ahan Rai</li>
                         <li>Jack Causebrook</li>
+                        <li>Oakley Hogben</li>
                         <li>M.A.</li>
                         <li>T.S.</li>
                     </ul>
@@ -1206,6 +1208,30 @@ async function Visualise(){
         <link rel="stylesheet" href="visualisation.css">
     </head>
     <body>`
+    window.alert(VisualiseChars)
+    printTable('Service_Building_Model')
+    if (VisualiseCharsRandom.length == 0){
+        pageContent=`<!DOCTYPE html>
+        <html>
+        <head>
+            <title>City Visualised</title>
+            
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
+            <style>
+            * {
+                font-family: "Jersey 10", sans-serif;
+                font-weight: 400;
+                font-style: normal;
+            }
+            </style>
+        </head>
+        <body>
+        <h1>There is nothing to see here yet...`
+    }
+
     while (VisualiseCharsRandom.length > 0){
         const random = Math.floor(Math.random()*3)
         switch (random){
@@ -1216,7 +1242,7 @@ async function Visualise(){
                 pageContent += ' '
                 break
             case(2):
-                pageContent += trees[Math.floor(Math.random() * trees.length)]
+                pageContent += `<span>` + trees[Math.floor(Math.random() * trees.length)] + `</span>`
                 break
         }
     }
