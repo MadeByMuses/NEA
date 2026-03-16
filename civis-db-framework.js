@@ -1101,7 +1101,7 @@ function LoadDB(){
 //EXPORT function
 function ExportDB() {
     //Name of file that is gonna get exported
-    const filename = 'CIVIS.sqlite'
+    const filename = 'CIVIS.pdf'
     //Export function
     const binaryArray = db.export();
     //Blob download in Uint8Array
