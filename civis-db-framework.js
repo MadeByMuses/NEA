@@ -691,7 +691,12 @@ async function NewDB(CityName) {
   (16,35,5),
   (17,35,35),
   (18,36,5),
-  (19,36,35)
+  (19,36,35),
+  (22,26,18),
+  (23,37,8),
+  (24,37,18),
+  (25,37,45),
+  (25,37,80)
   `)
   db.run(`CREATE TABLE Service_Building (service_building_id INTEGER PRIMARY KEY,service_building_model_id INTEGER, building_id INTEGER, policy_collection_id INTEGER,FOREIGN KEY (service_building_model_id) REFERENCES Service_Building_Model(service_building_model_id), FOREIGN KEY (building_id) REFERENCES Building(building_id), FOREIGN KEY (policy_collection_id) REFERENCES Policy_Collection(policy_collection_id))`)
 
@@ -1438,39 +1443,39 @@ async function GetGlobalHappiness(){
   //penalty
   //roads
   if (await IsThereADeficit(200)){
-    citizenHappinessAvg *= 0.70
+    citizenHappinessAvg *= 0.45
   }  
   //electricity
   if (await IsThereADeficit(202)){
-    citizenHappinessAvg *= 0.70
+    citizenHappinessAvg *= 0.20
   } 
   //water
   if (await IsThereADeficit(204)){
-    citizenHappinessAvg *= 0.65
+    citizenHappinessAvg *= 0.25
   } 
   //sewage
   if (await IsThereADeficit(206)){
-    citizenHappinessAvg *= 0.65
+    citizenHappinessAvg *= 0.30
   }
   //healthcare
   if (await IsThereADeficit(216)){
-    citizenHappinessAvg *= 0.6
+    citizenHappinessAvg *= 0.5
   }
   //deathcare
   if (await IsThereADeficit(218)){
-    citizenHappinessAvg *= 0.8
+    citizenHappinessAvg *= 0.68
   }
   //garabage
   if (await IsThereADeficit(220)){
-    citizenHappinessAvg *= 0.8
+    citizenHappinessAvg *= 0.6
   }
   //police
   if (await IsThereADeficit(222)){
-    citizenHappinessAvg *= 0.8
+    citizenHappinessAvg *= 0.7
   }
   //fire
   if (await IsThereADeficit(224)){
-    citizenHappinessAvg *= 0.8
+    citizenHappinessAvg *= 0.72
   }
   
   return Number(citizenHappinessAvg)

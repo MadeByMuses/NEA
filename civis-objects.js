@@ -197,7 +197,6 @@ class Building extends Entity{
         const buildingcityVisualisationChar = await this.getcityVisualisationChar();
         const buildingName = await this.getName();
 
-        window.alert(buildingcityVisualisationChar)
         saveBuilding(buildingId, buildingName, buildingcityVisualisationChar)
     }
 

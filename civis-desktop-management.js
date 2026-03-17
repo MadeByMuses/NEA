@@ -949,24 +949,24 @@ async function Finance(){
             <div class="field-row" style="width: 300px">
                 <label for="restax">Residential:</label>
                 <label for="restax">0%</label>
-                <input id="restax" type="range" min="0" max="0.25" value="0.08" step="0.01" oninput="document.getElementById('restaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',900);"/>
-                <label for="restax">25%</label>
+                <input id="restax" type="range" min="0" max="0.35" value="0.08" step="0.01" oninput="document.getElementById('restaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',900);"/>
+                <label for="restax">35%</label>
             </div>
             <p id="restaxval"></p>
             <br>
             <div class="field-row" style="width: 300px">
                 <label for="comtax">Commercial:</label>
                 <label for="comtax">0%</label>
-                <input id="comtax" type="range" min="0" max="0.25" value="0.08" step="0.01" oninput="document.getElementById('comtaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',906);"/>
-                <label for="comtax">25%</label>
+                <input id="comtax" type="range" min="0" max="0.35" value="0.08" step="0.01" oninput="document.getElementById('comtaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',906);"/>
+                <label for="comtax">35%</label>
             </div>
             <p id="comtaxval"></p>
             <br>
             <div class="field-row" style="width: 300px">
                 <label for="indtax">Industrial:</label>
                 <label for="indtax">0%</label>
-                <input id="indtax" type="range" min="0" max="0.25" value="0.08" step="0.01" oninput="document.getElementById('indtaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',909);"/>
-                <label for="indtax">25%</label>
+                <input id="indtax" type="range" min="0" max="0.35" value="0.08" step="0.01" oninput="document.getElementById('indtaxval').textContent = Round(this.value * 100,0) + '%'; UpdateDB('City_Attribute','attribute_value',this.value,'city_attribute_id',909);"/>
+                <label for="indtax">35%</label>
             </div>
             <p id="indtaxval"></p>
         </div>
@@ -1206,9 +1206,9 @@ async function Visualise(){
         <title>City Visualised</title>
         <!--Personalised CSS-->
         <link rel="stylesheet" href="visualisation.css">
+        <link rel="icon" type="image/x-icon" href="Favicon.ico">
     </head>
     <body>`
-    window.alert(VisualiseChars)
     printTable('Service_Building_Model')
     if (VisualiseCharsRandom.length == 0){
         pageContent=`<!DOCTYPE html>

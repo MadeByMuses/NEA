@@ -11,8 +11,19 @@
           <button aria-label="Close" onclick="document.getElementById('IntroForm').remove()"></button>
           </div>
       </div>
-      <div class="window-body" id="IntroFormContent">
-        <ul class="tree-view">
+      <div class="window-body" id="IntroFormContent" >
+        <ul class="tree-view" style="max-height:350px">
+          <li>
+            <details>
+              <summary>Version 1.1.2</summary>
+              <ul>
+                <li>Added Favicon</li>
+                <li>Removed Window Alerts</li>
+                <li>Added Employees for education</li>
+                <li>Increased Taxes range</li>
+              </ul>
+            </details>
+          </li>
           <li>
             <details>
               <summary>Version 1.1.1</summary>
