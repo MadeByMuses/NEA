@@ -1154,6 +1154,7 @@ class Industrial extends Building{
         }
         //create Inventory slots in inventory table
         const industrialId = Number(await this.getIndustrialId())
+
         const requirements = await this.getRequirements()
         if (await GetDBElements("Inventory","inventory_id","industrial_id",industrialId).length == 0){
             if (requirements != null){
@@ -1248,8 +1249,8 @@ class Industrial extends Building{
 
     async createIndustrial(){
         if (this.getIndustrialId() == null){
+            const id = await nextAttributeValue('Industrial','industrial_id')
             await InsertDB('Industrial','(building_id,industrial_model_id)',"("+String(this.getBuildingId())+","+String(this.getIndustrialModelId())+")")
-            const id = await GetDBElements('Industrial','industrial_id','building_id',await this.getIndustrialId())
             this.insertIntoProtectedData("industrialId", id);
         }
     }

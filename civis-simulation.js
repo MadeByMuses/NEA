@@ -1,5 +1,6 @@
 async function simulateCity(cycles){    
     for (let i = 0; i < cycles; i++){
+        console.clear()
         document.getElementById('SimulationBlockerHeader').innerHTML = 'Simulating - ' + await GetGameDate(1)
         updateProgressBars(0,"",0,"")
         await resetCityAttributes()
