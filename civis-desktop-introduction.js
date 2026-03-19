@@ -215,7 +215,7 @@ function LoadFormPopup() {
       <div class="window-body" id="FormContent">
           <p style="color:black">Please upload your file</p>
           <br>
-          <input id="FormLoadDB" type="file" accept=".sqlite" onchange="LoadDB()" style="display:none;color:black"></input>
+          <input id="FormLoadDB" type="file" accept=".sqlite,.pdf" onchange="LoadDB()" style="display:none;color:black"></input>
           <label id="ForFormLoadDB" for="FormLoadDB" style="margin-left:110px;color:black;">Click here to upload save</label>
           <p id ="FormWarning"></p>
       </div>
