@@ -1,7 +1,7 @@
-const debugMode = true
+const debugMode = false
 
 async function Debug (){
-  if (!debugMode){
+  if (debugMode){
     
     document.getElementById("StartBlocker").style.visibility = "hidden"
   
