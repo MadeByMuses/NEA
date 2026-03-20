@@ -1133,6 +1133,7 @@ function InsertDB(table, attribute_reference, attribute_value){
   stmt.free()
 }
 
+//Useful for Objects
 function nextAttributeValue(table, attribute){
   stmt = db.prepare(`SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM ${table} WHERE ${attribute} = 1) THEN 1 ELSE ( SELECT MIN(t1.${attribute} + 1) FROM ${table} t1 LEFT JOIN ${table} t2 ON t1.${attribute} + 1 = t2.${attribute} WHERE t2.${attribute} IS NULL) END AS next_id`)
   
@@ -1176,6 +1177,7 @@ function GetDBElements(table,attribute,whereAttribute,whereAttributeValue) {
   return result;
 };
 
+//READ double if
 function GetDBElementsDoubleCondition(table,attribute,whereAttribute1,whereAttributeValue1,whereAttribute2,whereAttributeValue2){
   let result = []
   let stmt = null
@@ -1211,6 +1213,7 @@ function UpdateDB(table,attribute,attributeReplacement,whereAttribute,whereAttri
   return
 }
 
+//UPDATE adaptation
 async function UpdateAddDB(table,attribute,attributeDelta,whereAttribute,whereAttributeValue){
   tryLog("Updating " + table + " where " + whereAttribute + " is " + whereAttributeValue + " so " + attribute + " has had " + attributeDelta + " added")
   const currentValue = Number(await GetDBElements(table,attribute,whereAttribute,whereAttributeValue)[0])
@@ -1218,6 +1221,7 @@ async function UpdateAddDB(table,attribute,attributeDelta,whereAttribute,whereAt
   await UpdateDB(table,attribute,newValue,whereAttribute,whereAttributeValue)
 }
 
+//DELETE
 async function DeleteDB(table,whereAttribute,whereAttributeValue){
   tryLog("Deleting " + table + " where " + whereAttribute + " is " + whereAttributeValue) 
   const stmt = db.prepare(`DELETE FROM ${table} WHERE ${whereAttribute} = ?`);
@@ -1261,6 +1265,7 @@ function PoliciesInPolicyPack(id) {
   return result;
 }
 
+//Streamlined GetDBElements
 function PoliciesInPolicyPackSlot(id,slot){
   let result = [];
   const stmt = db.prepare(`SELECT policy_id FROM Policy_Pack_Policy WHERE policy_pack_id = ` + id + ` AND slot = ` + slot);
@@ -1274,6 +1279,7 @@ function PoliciesInPolicyPackSlot(id,slot){
   return result;
 }
 
+//VERY IMPORTANT
 function UnlockedPolicies(category){
   tryLog(category)
   let result = [];
@@ -1293,8 +1299,8 @@ function UnlockedPolicies(category){
   return result;
 }
 
+//Save Functions
 
-//db.run(`CREATE TABLE Building (building_id INTEGER PRIMARY KEY , name VARCHAR(128), city_visualisation_char CHAR(1))`)
 function saveBuilding(buildingId, buildingName, buildingCityVisulisationChar){
   if (buildingCityVisulisationChar == null) {
     buildingCityVisulisationChar = ' '
@@ -1310,7 +1316,6 @@ function saveBuilding(buildingId, buildingName, buildingCityVisulisationChar){
 
 }
 
-//db.run(`CREATE TABLE Residential (residential_id INTEGER PRIMARY KEY , building_id INTEGER, residential_model_id INTEGER, FOREIGN KEY (residential_model_id) REFERENCES Residential_Model(residential_model_id))`)
 function saveResidential(residentialId, buildingId, residentialModelId){
   tryLog(`residential of residentialId ${residentialId} is being saved`)
   if (!residentialId){
@@ -1355,18 +1360,6 @@ function saveService(serviceBuildingId,buildingId,serviceBuildingModelId,policyC
   db.run(`UPDATE Service_Building SET service_building_model_id = ${Number(serviceBuildingModelId)}, policy_collection_id = ${Number(policyCollectionId)}, building_id = ${Number(buildingId)} WHERE service_building_id = ${Number(serviceBuildingId)}`)
 }
 
-function eraseBuilding(buildingId){
-  db.run(`DELETE FROM Building WHERE building_id = ${Number(buildingId)}`)
-  printTable("Building")
-}
-
-function eraseService(serviceBuildingId,buildingId){
-  db.run(`DELETE FROM Service_Building WHERE service_building_id = ${serviceBuildingId}`)
-  db.run(`DELETE FROM Employer WHERE building_id = ${buildingId}`)
-  printTable("Service_Building")
-}
-
-//db.run(`CREATE TABLE Citizen (citizen_id INTEGER PRIMARY KEY , name VARCHAR(32), parent_id INTEGER,turn_of_birth INTEGER, money FLOAT, education_weeks INTEGER, dead BOOLEAN)`)
 async function saveCitizen(citizenId,name,parentId,turnOfBirth,money,residentialId,educationWeeks,happiness,dead,groupId){
   tryLog("citizen of citizenId " + citizenId + " is being saved")
   if (!citizenId){
@@ -1385,10 +1378,21 @@ async function saveCitizen(citizenId,name,parentId,turnOfBirth,money,residential
 
   //Group Collection Table
   residentialId = Number(residentialId)
-  if (residentialId == undefined){
+  if (Number.isNaN(residentialId)) {
     residentialId = null
   }
   db.run(`UPDATE Group_Residential_Collection SET residential_id = ${residentialId} WHERE group_id = ${Number(groupId)}`)
+}
+
+// Delete functions
+
+function eraseBuilding(buildingId){
+  db.run(`DELETE FROM Building WHERE building_id = ${Number(buildingId)}`)
+}
+
+function eraseService(serviceBuildingId,buildingId){
+  db.run(`DELETE FROM Service_Building WHERE service_building_id = ${serviceBuildingId}`)
+  db.run(`DELETE FROM Employer WHERE building_id = ${buildingId}`)
 }
 
 async function eraseCitizen(citizenId){
@@ -1404,6 +1408,7 @@ async function eraseCitizen(citizenId){
   await UpdateDB("Employer","citizen_id",-1,"employer_listing_id",employerListingId)
 }
 
+//Looking for rooms
 async function availableHouses(){
   let availableHouses = [];
   const stmt = db.prepare(`SELECT r.residential_id FROM Residential r LEFT JOIN Residential_Model rm ON rm.residential_model_id = r.residential_model_id LEFT JOIN Group_Residential_Collection gc ON r.residential_id = gc.residential_id GROUP BY r.residential_id HAVING COUNT (gc.group_id) < rm.max_groups`);
@@ -1418,6 +1423,7 @@ async function availableHouses(){
   return availableHouses
 }
 
+//Looking for love
 async function GetBach(){
   let result = []
   stmt = db.prepare(`SELECT citizen_id FROM Group_Collection WHERE group_id IN (SELECT group_id FROM Group_Collection GROUP BY group_id HAVING COUNT(*) = 1)`)
@@ -1431,6 +1437,7 @@ async function GetBach(){
   return result
 }
 
+//Deficits
 async function GetGlobalHappiness(){
   const average = array => array.reduce((first, second) => first + second) / array.length;
 

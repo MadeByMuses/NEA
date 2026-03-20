@@ -1,9 +1,10 @@
-const debugMode = false
+const debugMode = true
 
 async function Debug (){
-  if (debugMode){
+  if (!debugMode){
     
     document.getElementById("StartBlocker").style.visibility = "hidden"
+  
     await NewDB("Coolville")
     //skip tutorials
     UpdateDB("Tutorial","completed",1,"tutorial_id",2)
